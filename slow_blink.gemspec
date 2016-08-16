@@ -8,10 +8,10 @@ Gem::Specification.new do |s|
     s.author  = "Cameron Harper"
     s.email = "contact@cjh.id.au"
     s.homepage = "https://github.com/cjhdev/slow_blink"
-    #s.files = Dir.glob("ext/**/*.{c,h,y,l,rb}") + Dir.glob("lib/**/*.rb") + Dir.glob("test/**/*.rb") + ["rakefile"]
-    #s.extensions = "ext/slow_blink/parser/extconf.rb"
+    s.files = Dir.glob("ext/slow_blink/parser/**/*.{c,h,y,l,rb}") + Dir.glob("lib/**/*.rb") + Dir.glob("test/**/*.rb") + ["rakefile"]
+    s.extensions = "ext/slow_blink/parser/extconf.rb"
     s.license = 'MIT'
-    #s.test_files = Dir.glob("test/**/*.rb")
+    s.test_files = Dir.glob("test/**/*.rb")
     s.has_rdoc = 'yard'
     s.add_development_dependency 'rake-compiler'
     s.add_development_dependency 'rake'
