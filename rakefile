@@ -3,9 +3,27 @@ require 'rake/extensiontask'
 
 DIR_SRC = "ext/slow_blink/parser"
 
+Rake::ExtensionTask.new  do |ext|
+    ext.name = "parser"
+    ext.ext_dir = "ext/slow_blink/parser"
+    ext.lib_dir = "lib/slow_blink"
+end
+
+desc "parser tests"
+Rake::TestTask.new do |t|
+    t.name = :test
+    t.libs << "lib"
+    t.test_files = FileList["test/integration/tc_*.rb"]
+end
+
 desc "run flex-bison"
 task :flexbison do    
     system "flex --outfile=#{DIR_SRC}/lexer.c --header-file=#{DIR_SRC}/lexer.h #{DIR_SRC}/parser.l"
     system "bison -d #{DIR_SRC}/parser.y --output=#{DIR_SRC}/parser.c --report=all --report-file=#{DIR_SRC}/report.txt"    
+end
+
+task :default => :test
+
+task :local => [:flexbison, :test] do    
 end
 

@@ -1,0 +1,104 @@
+
+namespace ITCH41
+
+TimestampSeconds/0x54 -> # 'T'
+  u32 Seconds
+
+MsgBase ->
+  u32 NanoSecs
+
+SystemEvent/0x53 : MsgBase -> # 'S'
+  u8 EventCode
+
+StockDirectory/0x52 : MsgBase -> # 'R'
+  string Stock,
+  u8 Category,
+  u8 Status,
+  u32 LotSize,
+  u8 LotsOnly
+
+StockTradingAction/0x48 : MsgBase -> # 'H'
+  string Stock,
+  u8 State,
+  u8 Reserved,
+  string Reason
+
+RegShoAction/0x59 : MsgBase -> # 'Y'
+  string Stock,
+  u8 Action
+
+PartPosition/0x4c : MsgBase -> # 'L'
+  string MpId,
+  string Stock,
+  u8 Primary,
+  u8 Mode,
+  u8 State
+
+AddOrder/0x41 : MsgBase -> # 'A'
+  u64 OrderRefNo,
+  u8 BuySell,
+  u32 Shares,
+  string Stock,
+  u32 Price
+
+AddOrderMpId/0x46 : MsgBase -> # 'F'
+  u64 OrderRefNo,
+  u8  BuySell,
+  u32 Shares,
+  string Stock,
+  u32 Price,
+  string MpId
+
+OrderExecuted/0x45 : MsgBase -> # 'E'
+  u64 OrderRefNo,
+  u32 Shares,
+  u64 MatchNo
+
+OrderExecutedPrice/0x43 : MsgBase -> # 'C'
+  u64 OrderRefNo,
+  u32 Shares,
+  u64 MatchNo,
+  u8  Printable,
+  u32 Price
+
+OrderCanceled/0x58 : MsgBase -> # 'X'
+  u64 OrderRefNo,
+  u32 Shares
+
+OrderDeleted/0x44 : MsgBase -> # 'D'
+  u64 OrderRefNo
+
+OrderReplaced/0x55 : MsgBase -> # 'U'
+  u64 OldRefNo,
+  u64 NewRefNo,
+  u32 Shares,
+  u32 Price
+
+Trade/0x50 : MsgBase -> # 'P'
+  u64 OrderRefNo,
+  u8  BuySell,
+  u32 Shares,
+  string Stock,
+  u32 Price,
+  u64 MatchNo
+
+CrossTrade/0x51 : MsgBase -> # 'Q'
+  u32 Shares,
+  string Stock,
+  u32 Price,
+  u64 MatchNo,
+  u8  CrossType
+
+BrokenTrade/0x42 : MsgBase -> # 'B'
+  u64 MatchNo
+
+OrderImbalance/0x49 : MsgBase -> # 'I'
+  u64 Paired,
+  u64 Imbalance,
+  u8  Direction,
+  string Stock,
+  u32 FarPrice,
+  u32 NearPrice,
+  u32 RefPrice,
+  u8  CrossType,
+  u8  Variation

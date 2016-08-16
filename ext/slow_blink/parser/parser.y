@@ -41,9 +41,16 @@ static VALUE cSlowBlink;
 
 static VALUE cLocation;
 
+static VALUE cNameWithID;
+static VALUE cCName;
+
 static VALUE cSchema;
 static VALUE cGroup;
+static VALUE cField;
 static VALUE cAnnotation;
+static VALUE cIncrementalAnnotation;
+
+static VALUE cDefinition;
 
 static VALUE cI8;
 static VALUE cI16;
@@ -62,7 +69,11 @@ static VALUE cBOOLEAN;
 static VALUE cOBJECT;
 static VALUE cBINARY;
 
-static VALUE cIncrementalAnnotation;
+static VALUE cDATE;
+static VALUE cTIME_OF_DAY_MILLI;
+static VALUE cTIME_OF_DAY_NANO;
+static VALUE cMILLI_TIME;
+static VALUE cNANO_TIME;
 
 
 /* generated **********************************************************/
@@ -124,7 +135,7 @@ top:
 schema:    
     defs
     {
-        VALUE args[] = {nil, $defs};        
+        VALUE args[] = {Qnil, $defs};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cSchema);            
     }
     |
@@ -214,10 +225,13 @@ fields:
     ;
 
 field:
-    annots type annots nameWithId opt
+    annots[typeAnnot] type annots[nameAnnot] name opt
     {
-        VALUE args[] = {$nameWithId, $type, $opt};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);    
+        VALUE args[] = {$name, $type, $opt};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
+
+        rb_funcall($$, rb_intern("annotate"), 1, $typeAnnot);
+        rb_funcall($name, rb_intern("annotate"), 1, $nameAnnot);
     }
     ;
 
@@ -458,7 +472,7 @@ annot:
     "@" qNameOrKeyword "=" literal
     {
         VALUE args[] = {$qNameOrKeyword, $literal};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, Annotation);
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cAnnotation);
     }
     ;
 
@@ -484,7 +498,7 @@ id:
     |
     "/" UintOrHex
     {
-        $UintOrHex;
+        $$ = $UintOrHex;
     }
     ;
 
@@ -505,25 +519,25 @@ compRef:
     |
     qName
     {
-        VALUE args[] = {qName};
+        VALUE args[] = {$qName};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
     }
     |
     qName "." TYPE
     {
-        VALUE args[] = {qName};
+        VALUE args[] = {$qName};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
     }
     |
     qName "." name
     {
-        VALUE args[] = {qName};
+        VALUE args[] = {$qName, $name};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
     }
     |
     qName "." name "." TYPE
     {
-        VALUE args[] = {qName, name, };
+        VALUE args[] = {$qName, $name};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
     }
     ;
@@ -606,7 +620,7 @@ keyword:
     |
     F64
     {
-        $$ = cF8;
+        $$ = cF64;
     }
     |
     DECIMAL
@@ -745,9 +759,19 @@ void Init_parser(void)
 
     cLocation = rb_const_get(cSlowBlink, rb_intern("Location"));
 
+    cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
+    cCName = rb_const_get(cSlowBlink, rb_intern("cCName"));
+
     cSchema = rb_const_get(cSlowBlink, rb_intern("Schema"));
     cGroup = rb_const_get(cSlowBlink, rb_intern("Group"));
+    cField = rb_const_get(cSlowBlink, rb_intern("Field"));
 
+    cAnnotation = rb_const_get(cSlowBlink, rb_intern("Annotation"));
+    cIncrementalAnnotation = rb_const_get(cSlowBlink, rb_intern("IncrementalAnnotation"));
+
+    cDefinition = rb_const_get(cSlowBlink, rb_intern("Definition"));
+
+    cType = rb_const_get(cSlowBlink, rb_intern("Type"));
     cU8 = rb_const_get(cSlowBlink, rb_intern("U8"));
     cU16 = rb_const_get(cSlowBlink, rb_intern("U16"));
     cU32 = rb_const_get(cSlowBlink, rb_intern("U32"));

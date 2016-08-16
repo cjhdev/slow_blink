@@ -1,0 +1,122 @@
+
+namespace OUCH42
+
+EnterOrder/0x4f -> # 'O'
+  string Token,
+  u8  BuySell,
+  u32 Shares,
+  string Stock,
+  u32 Price,
+  u32 TimeInForce,
+  string Firm,
+  u8  Display,
+  u8  Capacity,
+  u8  IntermarketSweep,
+  u32 MinimumQuantity,
+  u8  CrossType
+
+ReplaceOrder/0x55 -> # 'U'
+  string OldToken,
+  string NewToken,
+  u32 Shares,
+  u32 Price,
+  u32 TimeInForce,
+  u8  Display,
+  u8  IntermarketSweep,
+  u32 MinimumQuantity
+
+CancelOrder/0x58 -> # 'X'
+  string Token,
+  u32 Shares
+
+ModifyOrder/0x4d -> # 'M'
+  u64 Token,
+  u8  BuySell,
+  u32 Shares
+
+OuchBase ->
+  u64 Timestamp
+
+SystemEvent/0x53 : OuchBase -> # 'S'
+  u8  EventCode
+
+OrderAccepted/0x41 : OuchBase -> # 'A'
+  string Token,
+  u8 BuySell,
+  u32 Shares,
+  string Stock,
+  u32 Price,
+  u32 TimeInForce,
+  string Firm,
+  u8 Display,
+  u64 OrderRefNo,
+  u8 Capacity,
+  u8 IntermarketSweep,
+  u32 MinimumQuantity,
+  u8 CrossType,
+  u8 OrderState,
+  u8 BBOWeightInd
+
+OrderReplaced/0x75 : OuchBase -> # 'u' (instead of 'U')
+  string NewToken,
+  u8 BuySell,
+  u32 Shares,
+  string Stock,
+  u32 Price,
+  u32 TimeInForce,
+  string Firm,
+  u8 Display,
+  u64 OrderRefNo,
+  u8 Capacity,
+  u8 IntermarketSweep,
+  u32 MinimumQuantity,
+  u8 CrossType,
+  u8 OrderState,
+  string OldToken,
+  u8 BBOWeightInd
+
+OrderCanceled/0x43 : OuchBase -> # 'C'
+  string Token,
+  u32 DecrShares,
+  u8 Reason
+
+AIQCanceled/0x44 : OuchBase -> # 'D'
+  string Token,
+  u32 DecrShares,
+  u8 Reason,
+  u32 QuantityPrevented,
+  u32 ExecPrice,
+  u8 LiquidityFlag
+
+OrderExecuted/0x45 : OuchBase -> # 'E'
+  string Token,
+  u32 ExecShares,
+  u32 ExecPrice,
+  u8 LiquidityFlag,
+  u64 MatchNo
+
+BrokenTrade/0x42 : OuchBase -> # 'B'
+  string Token,
+  u64 MatchNo,
+  u8 Reason
+
+OrderRejected/0x4a : OuchBase -> # 'J'
+  string Token,
+  u8 Reason
+
+CancelPending/0x50 : OuchBase -> # 'P'
+  string Token
+
+CancelReject/0x49 : OuchBase -> # 'I'
+  string Token
+
+OrderPrioUpdate/0x54 : OuchBase -> # 'T'
+  string Token,
+  u32 Price,
+  u8 Display,
+  u64 OrderRefNo
+
+OrderModified/0x6d : OuchBase -> # 'm' (instead of 'M')
+  string Token,
+  u8 BuySell,
+  u32 Shares

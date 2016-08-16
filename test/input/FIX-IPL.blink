@@ -1,0 +1,29 @@
+# -*- Blink -*-
+
+namespace fixipl
+
+######################################################################
+
+Observation/0x01 ->
+  u32 ServiceProviderID,
+  u32 MeasurePointID,
+  string AppMsgID,
+  u64 Timestamp
+
+ConnectionRequest/0x02 ->
+  u32 ProtocolVersion,
+  u64 FromTimestamp,
+  u64 ThruTimestamp
+
+ConnectionResponse/0x03 ->
+  u64 FirstTimestamp,
+  u32 StatusCode,
+  string StatusText
+
+Status/0x04 ->
+  u64 Timestamp,
+  u32 StatusCode,
+  string StatusText
+
+StatusCodes = ConnectionAccepted/1 | ConnectionRejected | Heartbeat | BadFromTimestamp | BadThruTimestamp | BadRange | RangeRecoveryNotSupported | ReplayCompleted
+
