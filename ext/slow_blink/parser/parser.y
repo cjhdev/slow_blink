@@ -51,6 +51,8 @@ static VALUE cAnnotation;
 static VALUE cIncrementalAnnotation;
 
 static VALUE cDefinition;
+static VALUE cEnumeration;
+static VALUE cSym;
 
 static VALUE cI8;
 static VALUE cI16;
@@ -68,6 +70,7 @@ static VALUE cSTRING;
 static VALUE cBOOLEAN;
 static VALUE cOBJECT;
 static VALUE cBINARY;
+static VALUE cREF;
 
 static VALUE cDATE;
 static VALUE cTIME_OF_DAY_MILLI;
@@ -75,6 +78,11 @@ static VALUE cTIME_OF_DAY_NANO;
 static VALUE cMILLI_TIME;
 static VALUE cNANO_TIME;
 
+static VALUE cSchemaRef;
+static VALUE cDefinitionRef;
+static VALUE cDefinitionTypeRef;
+static VALUE cFieldRef;
+static VALUE cFieldTypeRef;
 
 /* generated **********************************************************/
 
@@ -175,11 +183,11 @@ def:
     ;
 
 define:
-    nameWithId "=" annots Definition
+    name "=" annots Definition
     {
-        VALUE args[] = {$nameWithId, $Definition};        
+        VALUE args[] = {$name, $Definition};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);
-        rb_funcall($$, rb_intern("annotate"), 1, $annots);
+        rb_funcall($Definition, rb_intern("annotate"), 1, $annots);
     }
     ;
 
@@ -225,13 +233,13 @@ fields:
     ;
 
 field:
-    annots[typeAnnot] type annots[nameAnnot] name opt
+    annots[typeAnnot] type annots[nameAnnot] nameWithId opt
     {
-        VALUE args[] = {$name, $type, $opt};        
+        VALUE args[] = {$nameWithId, $type, $opt};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
 
         rb_funcall($$, rb_intern("annotate"), 1, $typeAnnot);
-        rb_funcall($name, rb_intern("annotate"), 1, $nameAnnot);
+        rb_funcall($nameWithId, rb_intern("annotate"), 1, $nameAnnot);
     }
     ;
 
@@ -325,12 +333,14 @@ size:
 ref:
     qName
     {
-        $$ = rb_class_new_instance(1, &$qName, cSubGroup);    
+        VALUE args[] = {$qName, Qfalse};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
     |
     qName "*"
     {
-        $$ = rb_class_new_instance(1, &$qName, cDynamicSubGroup);    
+        VALUE args[] = {$qName, Qtrue};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
     ;
 
@@ -442,7 +452,7 @@ sym:
     annots name val
     {
         VALUE args[] = {$name, $val};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSYM);
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSym);
         rb_funcall($$, rb_intern("annotate"), 1, $annots);
     }
     ;
@@ -514,31 +524,31 @@ compRef:
     SCHEMA
     {
         VALUE args[] = {cSchema};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSchemaRef);        
     }
     |
     qName
     {
         VALUE args[] = {$qName};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionRef);        
     }
     |
     qName "." TYPE
     {
         VALUE args[] = {$qName};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionTypeRef);        
     }
     |
     qName "." name
     {
         VALUE args[] = {$qName, $name};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldRef);        
     }
     |
     qName "." name "." TYPE
     {
         VALUE args[] = {$qName, $name};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cComponentReference);        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldTypeRef);        
     }
     ;
 
@@ -580,117 +590,117 @@ qNameOrKeyword:
 keyword:
     I8
     {
-        $$ = cI8;
+        $$ = rb_str_new_cstr("i8");
     }
     |
     I16
     {
-        $$ = cI16;
+        $$ = rb_str_new_cstr("i16");
     }
     |
     I32
     {
-        $$ = cI32;
+        $$ = rb_str_new_cstr("i32");
     }
     |
     I64
     {
-        $$ = cI64;
+        $$ = rb_str_new_cstr("i64");
     }
     |
     U8
     {
-        $$ = cU8;
+        $$ = rb_str_new_cstr("u8");
     }
     |
     U16
     {
-        $$ = cU16;
+        $$ = rb_str_new_cstr("u16");
     }
     |
     U32
     {
-        $$ = cU32;
+        $$ = rb_str_new_cstr("u32");
     }
     |
     U64
     {
-        $$ = cU64;
+        $$ = rb_str_new_cstr("u64");
     }
     |
     F64
     {
-        $$ = cF64;
+        $$ = rb_str_new_cstr("f64");
     }
     |
     DECIMAL
     {
-        $$ = cDECIMAL;
+        $$ = rb_str_new_cstr("decimal");
     }
     |
     DATE
     {
-        $$ = cDATE;
+        $$ = rb_str_new_cstr("date");
     }
     |
     TIME_OF_DAY_MILLI
     {
-        $$ = cTIME_OF_DAY_MILLI;
+        $$ = rb_str_new_cstr("timeOfDayMilli");
     }
     |
     TIME_OF_DAY_NANO
     {
-        $$ = cTIME_OF_DAY_NANO;
+        $$ = rb_str_new_cstr("timeOfDayNano");
     }
     |
     NANO_TIME
     {
-        $$ = cNANO_TIME;
+        $$ = rb_str_new_cstr("nanoTime");
     }
     |
     MILLI_TIME
     {
-        $$ = cMILLI_TIME;
+        $$ = rb_str_new_cstr("milliTime");
     }
     |
     BOOLEAN
     {
-        $$ = cBOOLEAN;
+        $$ = rb_str_new_cstr("boolean");
     }
     |
     STRING
     {
-        $$ = cSTRING;
+        $$ = rb_str_new_cstr("string");
     }
     |
     BINARY
     {
-        $$ = cBINARY;
+        $$ = rb_str_new_cstr("binary");
     }
     |
     FIXED
     {
-        $$ = cFIXED;
+        $$ = rb_str_new_cstr("fixed");
     }
     |
     OBJECT
     {
-        $$ = cOBJECT;
+        $$ = rb_str_new_cstr("object");
     }
     |
     NAMESPACE
     {
-        $$ = cNameSpace;
+        $$ = rb_str_new_cstr("namespace");
     }
     |
     TYPE
     {
-        $$ = cType;
+        $$ = rb_str_new_cstr("type");
     }
     |
     SCHEMA
     {
-        $$ = cSchema;
+        $$ = rb_str_new_cstr("schema");
     }
     ;    
 
@@ -737,6 +747,10 @@ UintOrHex:
     
 Definition:
     enum
+    {
+        VALUE args[] = {$enum};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cEnumeration);
+    }
     |
     type
     ;
@@ -761,17 +775,19 @@ void Init_parser(void)
 
     cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
     cCName = rb_const_get(cSlowBlink, rb_intern("cCName"));
-
+    
     cSchema = rb_const_get(cSlowBlink, rb_intern("Schema"));
     cGroup = rb_const_get(cSlowBlink, rb_intern("Group"));
     cField = rb_const_get(cSlowBlink, rb_intern("Field"));
+    cDefinition = rb_const_get(cSlowBlink, rb_intern("Field"));
 
     cAnnotation = rb_const_get(cSlowBlink, rb_intern("Annotation"));
     cIncrementalAnnotation = rb_const_get(cSlowBlink, rb_intern("IncrementalAnnotation"));
 
     cDefinition = rb_const_get(cSlowBlink, rb_intern("Definition"));
+    cEnumeration = rb_const_get(cSlowBlink, rb_intern("Enumeration"));
+    cSym = rb_const_get(cSlowBlink, rb_intern("Sym"));
 
-    cType = rb_const_get(cSlowBlink, rb_intern("Type"));
     cU8 = rb_const_get(cSlowBlink, rb_intern("U8"));
     cU16 = rb_const_get(cSlowBlink, rb_intern("U16"));
     cU32 = rb_const_get(cSlowBlink, rb_intern("U32"));
@@ -792,7 +808,14 @@ void Init_parser(void)
     cTIME_OF_DAY_MILLI = rb_const_get(cSlowBlink, rb_intern("TIME_OF_DAY_MILLI"));
     cTIME_OF_DAY_NANO = rb_const_get(cSlowBlink, rb_intern("TIME_OF_DAY_NANO"));
     cSEQUENCE = rb_const_get(cSlowBlink, rb_intern("SEQUENCE"));
+    cREF = rb_const_get(cSlowBlink, rb_intern("REF"));
     cOBJECT = rb_const_get(cSlowBlink, rb_intern("OBJECT"));
+
+    cSchemaRef = rb_const_get(cSlowBlink, rb_intern("SchemaRef"));
+    cDefinitionRef = rb_const_get(cSlowBlink, rb_intern("DefinitionRef"));
+    cDefinitionTypeRef = rb_const_get(cSlowBlink, rb_intern("DefinitionTypeRef"));
+    cFieldRef = rb_const_get(cSlowBlink, rb_intern("FieldRef"));
+    cFieldTypeRef = rb_const_get(cSlowBlink, rb_intern("FieldTypeRef"));
     
     rb_define_module_function(cSlowBlink, "parseFileBuffer", parseFileBuffer, 1);
 }

@@ -18,16 +18,25 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Annotation
-        # @param id [String] any string
-        # @param literal [String] any string
-        def initialize(id,literal)
-            @id = id
-            @literal = literal 
+    class Field
+        include Annotatable
+        attr_reader :name, :id, :type
+        def opt?
+            @opt
+        end
+        # @param name   [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        # @param type   [Type]
+        # @param opt    [true,false] field is optional?
+        def initialize(name, type, opt)
+            @schema = nil
+            @name = name.to_s
+            @type = type
+            @opt = opt        
         end
         def to_s
-            "@#{id}='#{@literal}'"
+            "#{@type} #{@name}" + ((@opt) ? "?" : "")
+        end        
+        def link(schema,stack=[])        
         end
     end
 end
-

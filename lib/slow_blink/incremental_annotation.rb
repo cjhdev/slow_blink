@@ -18,16 +18,12 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Annotation
-        # @param id [String] any string
-        # @param literal [String] any string
-        def initialize(id,literal)
-            @id = id
-            @literal = literal 
-        end
-        def to_s
-            "@#{id}='#{@literal}'"
+    class IncrementalAnnotation
+        # @param ref [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef] annotation target
+        # @param annotations [Array<Integer,Annotation>]
+        def initialize(ref, annotations)
+            @ref = ref
+            @annotations = annotations
         end
     end
 end
-

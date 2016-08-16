@@ -18,16 +18,19 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Annotation
-        # @param id [String] any string
-        # @param literal [String] any string
-        def initialize(id,literal)
-            @id = id
-            @literal = literal 
-        end
-        def to_s
-            "@#{id}='#{@literal}'"
+    class Location
+        attr_reader :fileName, :firstLine, :lastLine, :firstCol, :lastCol
+        # @param fileName [String]
+        # @param firstLine [Integer]
+        # @param lastLine [Integer]
+        # @param firstCol [Integer]
+        # @param lastCol [Integer]
+        def initialize(fileName, firstLine, lastLine, firstCol, lastCol)
+            @fileName = fileName
+            @firstLine = firstLine
+            @lastLine = lastLine
+            @firstCol = firstCol
+            @lastCol = lastCol
         end
     end
 end
-

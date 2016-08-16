@@ -18,16 +18,26 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Annotation
-        # @param id [String] any string
-        # @param literal [String] any string
-        def initialize(id,literal)
+    class NameWithID
+
+        include Annotatable
+        
+        attr_reader :name, :id
+
+        # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        # @param id [nil,Integer]
+        def initialize(name, id)
+            @name = name.to_s
             @id = id
-            @literal = literal 
         end
+
         def to_s
-            "@#{id}='#{@literal}'"
+            if @id
+                "#{@name}/#{@id}"
+            else
+                "#{@name}"
+            end
         end
+        
     end
 end
-

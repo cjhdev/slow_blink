@@ -18,16 +18,24 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Annotation
-        # @param id [String] any string
-        # @param literal [String] any string
-        def initialize(id,literal)
-            @id = id
-            @literal = literal 
+    class CName
+
+        attr_reader :namespace, :name
+    
+        # @param namespace [nil,String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        def initialize(namespace, name)
+            @namespace = namespace.to_s
+            @name = name.to_s
         end
+
         def to_s
-            "@#{id}='#{@literal}'"
+            if @namspace
+                "#{@namespace}:#{@name}"
+            else
+                @name
+            end
         end
+        
     end
 end
-

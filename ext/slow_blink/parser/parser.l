@@ -52,11 +52,11 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 "#"[^\r\n]*        { /* skip comments */ }
 
 "\""                { BEGIN(LITERAL_C); }
-<LITERAL_C>[^\"]*   { *yylval = rb_str_new(yytext, yyleng); return LITERAL; }
+<LITERAL_C>[^\"]*   { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
 <LITERAL_C>"\""     { BEGIN(INITIAL); }
 
 "'"                 { BEGIN(LITERAL_A); }
-<LITERAL_A>[^']*    { *yylval = rb_str_new(yytext, yyleng); return LITERAL; }
+<LITERAL_A>[^']*    { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
 <LITERAL_A>"'"      { BEGIN(INITIAL); }
 
 "="                 |

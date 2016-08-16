@@ -18,16 +18,16 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Annotation
-        # @param id [String] any string
-        # @param literal [String] any string
-        def initialize(id,literal)
-            @id = id
-            @literal = literal 
+    class Definition
+        include Annotatable
+        # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        # @param enumOrType [Enumeration, Type]
+        def initialize(name, enumOrType)
+            @name = name.to_s
+            @enumOrType = enumOrType            
         end
         def to_s
-            "@#{id}='#{@literal}'"
+            "#{@name} #{@enumOrType}"
         end
     end
 end
-

@@ -18,16 +18,28 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Annotation
-        # @param id [String] any string
-        # @param literal [String] any string
-        def initialize(id,literal)
-            @id = id
-            @literal = literal 
+    class Group
+        # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        # @param superGroup [String] this group inherits superGroup
+        # @param fields [Array<Field>]
+        def initialize(name, superGroup, fields)
+            @schema = nil
+            @name = name
+            @fields = {}
+            if superGroup
+                @superGroup = superGroup.to_s
+            end
+            fields.each do |f|
+                duplicateNames = fields.select{|other|f.name == other.name}
+                duplicateIDs = fields.select{|other|f.id and (f.id == other.id)}
+            end
+            fcount = 0        
         end
         def to_s
-            "@#{id}='#{@literal}'"
+            
+        end
+        # @macro common_link
+        def link(schema,stack=[])
         end
     end
 end
-
