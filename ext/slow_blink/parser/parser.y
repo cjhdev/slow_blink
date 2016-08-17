@@ -89,13 +89,13 @@ static VALUE cFieldTypeRef;
 %}
 
 %define api.value.type {VALUE}
-%define api.pure full
+%define api.pure
 %locations
 %lex-param {yyscan_t scanner}
 %parse-param {yyscan_t scanner}{VALUE filename}{VALUE *tree}
 %define parse.error verbose
-
 %define api.token.prefix {TOK_}
+%glr-parser
 
 %token
     I8                  "i8"
@@ -774,7 +774,7 @@ void Init_parser(void)
     cLocation = rb_const_get(cSlowBlink, rb_intern("Location"));
 
     cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
-    cCName = rb_const_get(cSlowBlink, rb_intern("cCName"));
+    cCName = rb_const_get(cSlowBlink, rb_intern("CName"));
     
     cSchema = rb_const_get(cSlowBlink, rb_intern("Schema"));
     cGroup = rb_const_get(cSlowBlink, rb_intern("Group"));

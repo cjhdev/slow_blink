@@ -45,7 +45,7 @@ module SlowBlink
     end
 
     # qName.name.type
-    class Ref < FieldTypeRef
+    class FieldTypeRef < FieldRef
     end
 
 end

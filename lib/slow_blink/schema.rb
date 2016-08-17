@@ -45,7 +45,7 @@ module SlowBlink
             else
                 @namespace = nil
             end
-                
+=begin                
             @defs = []
             defs.each do |d|
                 if d.link(self)
@@ -57,9 +57,10 @@ module SlowBlink
             if errors
                 STDERR.puts "#{errors} errors while linking schema"
                 raise
-            end          
-        end
-    end
+            end
+=end            
+        end        
+    end    
 
 end
 
@@ -69,6 +70,8 @@ require 'slow_blink/annotation'
 require 'slow_blink/incremental_annotation'
 require 'slow_blink/group'
 require 'slow_blink/field'
+require 'slow_blink/c_name'
+require 'slow_blink/component_reference'
 
 require 'slow_blink/definition'
 

@@ -83,9 +83,6 @@ module SlowBlink
     class DECIMAL < Type
     end
 
-    class FIXED < Type
-    end
-
     class DATE < Type
     end
 
