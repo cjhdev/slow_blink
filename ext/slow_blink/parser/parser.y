@@ -195,7 +195,8 @@ def:
 define:
     nameWithId '=' enum
     {
-        VALUE args[] = {$nameWithId, $enum};        
+        VALUE enumArgs[] = {$enum};        
+        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cEnumeration)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
     }
     |
@@ -210,25 +211,27 @@ groupDef:
     nameWithId
     {
         VALUE args[] = {$nameWithId, Qnil, rb_ary_new()};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     |
     nameWithId ':' qName
     {
-        VALUE args[] = {$nameWithId, $qName, rb_ary_new()};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
+        VALUE refArgs[] = {$qName, Qfalse};
+        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF), rb_ary_new()};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     |
     nameWithId ':' qName RIGHT_ARROW fields
     {
-        VALUE args[] = {$nameWithId, $qName, $fields};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
+        VALUE refArgs[] = {$qName, Qfalse};
+        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF), $fields};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     |
     nameWithId RIGHT_ARROW fields
     {
         VALUE args[] = {$nameWithId, Qnil, $fields};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     ;
 

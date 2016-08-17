@@ -20,21 +20,30 @@
 module SlowBlink
 
     class Type
+
         include Annotatable
+
+        # @macro common_to_s
         def to_s
-            "#{self.class.name.downcase}"
+            "#{self.class.name.split('::').last.downcase}"
         end
+
+        # @macro common_link
         def link(schema, stack=[])
-            schema
+            @schema = schema
         end
     end
 
+    # Blink Specification 3.2
     class STRING < Type
         attr_reader :size
+
         # @param size [Integer] maximum size
         def initialize(size)
             @size = size
         end
+
+        # @macro common_to_s
         def to_s
             if @size
                 "#{super} (#{@size})"
@@ -44,67 +53,89 @@ module SlowBlink
         end
     end
 
+    # Blink Specification 3.4
     class FIXED < STRING
     end
 
+    # Blink Specification 3.3
     class BINARY < STRING
     end
 
+    # Blink Specification 3.1
     class I8 < Type
     end
 
+    # Blink Specification 3.1
     class I16 < Type
     end
 
+    # Blink Specification 3.1
     class I32 < Type
     end
 
+    # Blink Specification 3.1
     class I64 < Type
     end
 
+    # Blink Specification 3.1
     class U8 < Type
     end
 
+    # Blink Specification 3.1
     class U16 < Type
     end
 
+    # Blink Specification 3.1
     class U32 < Type
     end
 
+    # Blink Specification 3.1
     class U64 < Type
     end
 
+    # Blink Specification 3.1
     class F64 < Type
     end
 
+    # Blink Specification 3.6
     class BOOLEAN < Type
     end
 
+    # Blink Specification 3.7
     class DECIMAL < Type
     end
 
+    # Blink Specification 3.10
     class DATE < Type
     end
 
+    # Blink Specification 3.9
     class NANO_TIME < Type
     end
 
+    # Blink Specification 3.9
     class MILLI_TIME < Type
     end
 
+    # Blink Specification 3.11
     class TIME_OF_DAY_NANO < Type
     end
 
+    # Blink Specification 3.11
     class TIME_OF_DAY_MILLI < Type
     end
 
+    # Blink Specification 3.12
     class SEQUENCE < Type
         attr_reader :type
+
+        # @param type [Type] repeating type
         def initialize(type)
             @type = type
         end
     end
 
+    #
     # may be a:
     #
     # - Enumeration
@@ -112,17 +143,48 @@ module SlowBlink
     # - Dynamic Group
     # - Dynamic Object
     class REF < Type
+
+        # @return [true] dynamic reference
+        # @return [false] static reference
         def dynamic?
             @dynamic
         end
-        def initialize(qName, dynamic)
-            @qName = qName.to_s
+
+        # @param reference [String,CName] 
+        # @param dynamic [true,false] reference may be reference or subclass
+        def initialize(reference, dynamic)
+            @reference = reference
             @dynamic = dynamic
         end
+
+        # @macro common_to_s
         def to_s
-            @qName
+            if @dynamic
+                "* #{reference}"
+            else
+                "#{reference}"
+            end                
         end
+
+        def value
+            if @schema.nil?
+                raise "must be linked"
+            end
+            @object
+        end
+
+        # @macro common_link
         def link(schema, stack=[])
+            if @schema != schema
+                @schema = nil
+                @object = schema.symbol(@reference.to_s)
+                if @object
+                    @schema = schema
+                else
+                    puts "reference #{@reference} is not defined"
+                end                
+            end
+            @schema
         end
     end
 

@@ -19,20 +19,25 @@
 
 require 'slow_blink/annotatable'
 
+# @!macro [new] common_link
+#   
+#   Resolve symbols to definitions in schema
+#
+#   @param mod [Schema] module this type belongs to
+#   @param stack [Array] call stack
+#
+#   @return [Schema] linked
+#   @return [nil] not linked
+#
+
+# @!macro [new] common_to_s
+#   
+#   @return [String] blink schema
+
 module SlowBlink
 
-    # @!macro [new] common_link
-    #
-    #   Resolve symbols to definitions in schema
-    #
-    #   @param mod [Schema] module this type belongs to
-    #   @param stack [Array] call stack
-    #
-    #   @return [Schema] linked
-    #   @return [nil] not linked
-    #
-
     class Schema
+
         include Annotatable
 
         # @param namespace [nil,String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
@@ -45,9 +50,7 @@ module SlowBlink
             else
                 @namespace = nil
             end
-
-            @defs = defs
-=begin                
+                    
             @defs = []
             defs.each do |d|
                 if d.link(self)
@@ -56,12 +59,27 @@ module SlowBlink
                     errors = errors + 1
                 end
             end
-            if errors
+            if errors > 0
                 STDERR.puts "#{errors} errors while linking schema"
                 raise
             end
-=end            
-        end        
+        end
+
+        def symbol(symbol)
+            @def.detect{|d|d.name == symbol}
+        end
+
+        def to_s
+            out = ""
+            if @namespace
+                out << "namespace #{@namespace}"
+            end
+            @defs.each do |d|
+                out << d.to_s
+            end
+            out
+        end
+            
     end    
 
 end

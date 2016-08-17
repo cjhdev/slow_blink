@@ -22,6 +22,8 @@ module SlowBlink
 
         attr_reader :namespace, :name
     
+        # cName is fully qualified
+        #
         # @param namespace [nil,String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
         # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
         def initialize(namespace, name)
@@ -29,6 +31,7 @@ module SlowBlink
             @name = name.to_s
         end
 
+        # @macro common_to_s
         def to_s
             if @namspace
                 "#{@namespace}:#{@name}"

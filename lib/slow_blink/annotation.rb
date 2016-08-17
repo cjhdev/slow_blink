@@ -19,12 +19,15 @@
 
 module SlowBlink
     class Annotation
+
         # @param id [String] any string
         # @param literal [String] any string
         def initialize(id,literal)
             @id = id
             @literal = literal
         end
+
+        # @macro common_to_s
         def to_s
             "@#{id}='#{@literal}'"
         end

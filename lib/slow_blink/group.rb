@@ -18,29 +18,83 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
+
     class Group
+
+        include Annotatable
+
+        attr_reader :name
+        
         # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
-        # @param superGroup [String] this group inherits superGroup
+        # @param superGroup [REF, nil]
         # @param fields [Array<Field>]
         def initialize(name, superGroup, fields)
             @schema = nil
             @name = name
-            @fields = {}
-            if superGroup
-                @superGroup = superGroup.to_s
-            end
-            fields.each do |f|
-                @fields[field.name] = field
-                duplicateNames = fields.select{|other|f.name == other.name}
-                duplicateIDs = fields.select{|other|f.id and (f.id == other.id)}
-            end
-            fcount = 0        
+            @fields = fields
+            @superGroup = superGroup
         end
+        
+        # @macro common_to_s
         def to_s
-            
+            out = @name.to_s
+            if @superGroup
+                out << @superGroup.to_s
+            end
+            if @fields.size > 0            
+                out << " ->\n"
+                @fields.inject(out) do |acc, f|
+                    acc << "    #{f}"
+                    if @fields.last == f
+                        acc << "\n"
+                    else
+                        acc << ",\n"
+                    end
+                end
+            end
+            out
         end
+        
         # @macro common_link
         def link(schema,stack=[])
+            if @schema != schema
+                @list = {}        
+                @schema = nil
+                if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))                    
+                    @fields.each do |s|
+                        if @superGroup and @superGroup.value.field(s.name.to_s)
+                            puts "duplicate field name in supergroup"
+                            return nil
+                        elsif @list[s.name.to_s]
+                            puts "duplicate field name"
+                            return nil
+                        else
+                            if s.link(schema, stack.dup << self)
+                                @list[s.name.to_s] = s
+                            else
+                                return nil
+                            end
+                        end
+                    end
+                    @schema = schema
+                end
+            end
+            @schema            
+        end
+        
+        # @param name [String]
+        # @return [Field]
+        # @return [nil]
+        # @raise [Error]
+        def field(name)
+            if !@schema
+                raise Error.new "object must be linked"
+            end
+            result = @superGroup.field(name)
+            if !result
+                result = @list[name]
+            end
+            result
         end
     end
 end

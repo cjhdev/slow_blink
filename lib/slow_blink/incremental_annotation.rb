@@ -18,12 +18,33 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
+
+    # Blink Specification 7.3
     class IncrementalAnnotation
+    
         # @param ref [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef] annotation target
         # @param annotations [Array<Integer,Annotation>]
         def initialize(ref, annotations)
             @ref = ref
             @annotations = annotations
         end
+
+        # @macro common_to_s
+        def to_s
+            out = "#{@ref} <- "
+            @annotations.each do |a|
+                out << a.to_s
+            end
+            out
+        end
+
+        # @macro common_to_s
+        def link(schema, stack=[])
+            if @schema != schema
+                
+            end
+            @schema
+        end        
+        
     end
 end

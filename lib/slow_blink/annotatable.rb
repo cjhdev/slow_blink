@@ -20,10 +20,16 @@
 module SlowBlink
     module Annotatable
         def annotate(annotation)
-            #if @annotation.nil?
-                #@annotation = []
-            #end
-            #@annotation << annotation
+            if @annotation.nil?
+                @annotation = []
+            end
+            @annotation << annotation
+        end
+        def incrAnnotate(annotation)
+            if @incrAnnotation.nil?
+                @incrAnnotation = []
+            end
+            @incrAnnotation << incrAnnotation
         end
     end
 end

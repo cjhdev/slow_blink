@@ -19,13 +19,35 @@
 
 module SlowBlink
     class Sym
+
         include Annotatable
-        attr_reader :name, :val
+
+        # @return [String]
+        attr_reader :name
+
+        # @return [Integer]
+        attr_reader :val
+
         # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]* 
         # @param val [nil,Integer] explicit value
         def initialize(name, val)
             @name = name.to_s
             @val = val
-        end        
+        end
+
+        # @macro common_link
+        def link(schema, stack=[])
+            @schema = schema
+        end
+
+        # @macro common_to_s
+        def to_s
+            if @val
+                "#{@name}/#{@val}"
+            else
+                @name
+            end
+        end
+        
     end
 end

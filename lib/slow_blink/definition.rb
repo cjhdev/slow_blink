@@ -19,15 +19,25 @@
 
 module SlowBlink
     class Definition
+
         include Annotatable
+
         # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
         # @param enumOrType [Enumeration, Type]
         def initialize(name, enumOrType)
+            @schema = nil
             @name = name.to_s
-            @enumOrType = enumOrType            
+            @enumOrType = enumOrType
         end
+
+        # @!macro common_link
+        def link(schema, stack=[])
+            @schema = @enumOrType.link(schema, stack << self)
+        end
+
+        # @!macro common_to_s
         def to_s
-            "#{@name} #{@enumOrType}"
+            "#{@name} = #{@enumOrType}"
         end
     end
 end

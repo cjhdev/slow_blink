@@ -21,8 +21,12 @@ module SlowBlink
     class NameWithID
 
         include Annotatable
-        
-        attr_reader :name, :id
+
+        # @return [String]
+        attr_reader :name
+
+        # @param [Integer,nil]
+        attr_reader :id
 
         # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
         # @param id [nil,Integer]
@@ -31,6 +35,7 @@ module SlowBlink
             @id = id
         end
 
+        # @macro common_to_s
         def to_s
             if @id
                 "#{@name}/#{@id}"

@@ -18,12 +18,24 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
+
     class Field
+
         include Annotatable
-        attr_reader :name, :id, :type
+
+        # @return [String]
+        attr_reader :name
+        # @return [Integer]
+        attr_reader :id
+        # @return [Type]
+        attr_reader :type
+
+        # @return [true] field is optional
+        # @return [false] field is mandatory
         def opt?
             @opt
         end
+
         # @param name   [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
         # @param type   [Type]
         # @param opt    [true,false] field is optional?
@@ -33,10 +45,21 @@ module SlowBlink
             @type = type
             @opt = opt        
         end
+
+        # @!macro common_to_s
         def to_s
             "#{@type} #{@name}" + ((@opt) ? "?" : "")
-        end        
-        def link(schema,stack=[])        
+        end
+
+        # @!macro common_link
+        def link(schema,stack=[])
+            if @schema != schema
+                @schema = nil
+                if @type.link(schema, stack << self)
+                    @schema = schema
+                end
+            end
+            @schema
         end
     end
 end
