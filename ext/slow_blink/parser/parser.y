@@ -124,12 +124,13 @@ static VALUE cFieldTypeRef;
     FIXED               "fixed"
     LEFT_ARROW          "<-"
     RIGHT_ARROW         "->"
-    HEX                 "[0x][0-9a-fA-F]+"
-    UINT                "[0-9]+"
-    INT                 "[-][1-9][0-9]*"
-    NC_NAME             "[_a-zA-Z][_a-zA-Z0-9]*"
-    ESCAPED_NC_NAME     "[\\][_a-zA-Z][_a-zA-Z0-9]*"
+    HEX                 "hexnum"
+    UINT                "uint"
+    INT                 "int"
+    NC_NAME             "cname"
+    ESCAPED_NC_NAME     "\\cname"
     LITERAL             "\"<annotation>\" or '<annotation>'"
+    
     
 %%    
 
@@ -153,14 +154,23 @@ schema:
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cSchema);            
     }
     ;
-    
+
 defs:
     e
     {
         $$ = rb_ary_new();
     }
     |
-    defs def
+    defList
+    ;
+
+defList:
+    def
+    {
+        $$ = rb_ary_new_from_args(1, $def);
+    }
+    |
+    defList def
     {
         rb_ary_push($$, $def);
     }
@@ -183,40 +193,42 @@ def:
     ;
 
 define:
-    name "=" annots Definition
+    nameWithId '=' enum
     {
-        VALUE args[] = {$name, $Definition};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);
-        rb_funcall($Definition, rb_intern("annotate"), 1, $annots);
+        VALUE args[] = {$nameWithId, $enum};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
+    }
+    |
+    nameWithId '=' type
+    {
+        VALUE args[] = {$nameWithId, $type};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
     }
     ;
 
 groupDef:
-    nameWithId super body
+    nameWithId
     {
-        VALUE args[] = {$nameWithId, $super, $body};        
+        VALUE args[] = {$nameWithId, Qnil, rb_ary_new()};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
     }
-    ;
-
-super:
-    e
     |
-    ":" qName
+    nameWithId ':' qName
     {
-        $$ = $qName;
-    }
-    ;
-
-body:
-    e
-    {
-        $$ = rb_ary_new();
+        VALUE args[] = {$nameWithId, $qName, rb_ary_new()};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
     }
     |
-    RIGHT_ARROW fields
+    nameWithId ':' qName RIGHT_ARROW fields
     {
-        $$ = $fields;
+        VALUE args[] = {$nameWithId, $qName, $fields};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
+    }
+    |
+    nameWithId RIGHT_ARROW fields
+    {
+        VALUE args[] = {$nameWithId, Qnil, $fields};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
     }
     ;
 
@@ -226,7 +238,7 @@ fields:
         $$ = rb_ary_new_from_args(1, $field);
     }
     |
-    fields "," field
+    fields ',' field
     {
         rb_ary_push($$, $field);
     }
@@ -249,7 +261,7 @@ opt:
         $$ = Qfalse;
     }
     |
-    "?"
+    '?'
     {
         $$ = Qtrue;
     }
@@ -286,7 +298,7 @@ single:
     ;
 
 sequence:
-    single "[" "]"
+    single '[' ']'
     {
         $$ = rb_class_new_instance(1, &$single, cSEQUENCE);
     }
@@ -295,24 +307,28 @@ sequence:
 string:
     STRING
     {
-        $$ = rb_class_new_instance(0, NULL, cSTRING);
+        VALUE args[] = {Qnil};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
     }
     |
     STRING size
     {
-        $$ = rb_class_new_instance(1, &$size, cSTRING);
+        VALUE args[] = {$size};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
     }
     ;
 
 binary:
     BINARY
     {
-        $$ = rb_class_new_instance(0, NULL, cBINARY);
+        VALUE args[] = {Qnil};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
     }
     |
     BINARY size
     {
-        $$ = rb_class_new_instance(1, &$size, cBINARY);
+        VALUE args[] = {$size};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
     }
     ;
 
@@ -324,7 +340,7 @@ fixed:
     ;
 
 size:
-    "(" UintOrHex ")"
+    '(' UintOrHex ')'
     {
         $$ = $UintOrHex;
     }   
@@ -337,7 +353,7 @@ ref:
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
     |
-    qName "*"
+    qName '*'
     {
         VALUE args[] = {$qName, Qtrue};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
@@ -425,24 +441,21 @@ time:
 
 /* note: a single entry enum does in fact lead with a '|' */
 enum:
-    "|" sym
+    '|' sym
     {
         $$ = rb_ary_new_from_args(1, $sym);
     }
     |
-    syms "|" sym
-    {
-        rb_ary_push($$, $sym);
-    }
+    symList
     ;
 
-syms:
+symList:
     sym
     {
         $$ = rb_ary_new_from_args(1, $sym);
     }
     |
-    syms "|" sym
+    symList '|' sym
     {
         rb_ary_push($$, $sym);
     }
@@ -454,15 +467,16 @@ sym:
         VALUE args[] = {$name, $val};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSym);
         rb_funcall($$, rb_intern("annotate"), 1, $annots);
+        
     }
     ;
     
 val:
     e
     |
-    "/" IntOrHex
+    '/' AnyInt
     {
-        $$ = $IntOrHex;
+        $$ = $AnyInt;
     }
     ;
 
@@ -472,14 +486,22 @@ annots:
         $$ = rb_ary_new();
     }
     |
-    annots annot
+    annotList
+    ;
+
+annotList:
+    annot
+    {
+        $$ = rb_ary_new_from_args(1, $annot);
+    }
+    |
+    annotList annot
     {
         rb_ary_push($$, $annot);
     }
-    ;
 
 annot:
-    "@" qNameOrKeyword "=" literal
+    '@' qNameOrKeyword '=' literal
     {
         VALUE args[] = {$qNameOrKeyword, $literal};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cAnnotation);
@@ -506,7 +528,7 @@ nameWithId:
 id:
     e
     |
-    "/" UintOrHex
+    '/' UintOrHex
     {
         $$ = $UintOrHex;
     }
@@ -533,19 +555,19 @@ compRef:
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionRef);        
     }
     |
-    qName "." TYPE
+    qName '.' TYPE
     {
         VALUE args[] = {$qName};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionTypeRef);        
     }
     |
-    qName "." name
+    qName '.' name
     {
         VALUE args[] = {$qName, $name};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldRef);        
     }
     |
-    qName "." name "." TYPE
+    qName '.' name '.' TYPE
     {
         VALUE args[] = {$qName, $name};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldTypeRef);        
@@ -705,7 +727,7 @@ keyword:
     ;    
 
 cName:
-    ncName[namespace] ":" ncName[name]
+    ncName[namespace] ':' ncName[name]
     {
         VALUE args[] = {$namespace, $name};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cCName);
@@ -733,26 +755,18 @@ literalSegment:
     LITERAL
     ;
 
-IntOrHex:
+AnyInt:
     INT
     |
     HEX
+    |
+    UINT
     ;
 
 UintOrHex:
     UINT
     |
     HEX
-    ;
-    
-Definition:
-    enum
-    {
-        VALUE args[] = {$enum};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cEnumeration);
-    }
-    |
-    type
     ;
 
 e:

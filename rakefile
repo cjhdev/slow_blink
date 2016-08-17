@@ -24,6 +24,6 @@ end
 
 task :default => :test
 
-task :local => [:flexbison, :test] do    
+task :local => [:flexbison, :compile, :test] do    
 end
 

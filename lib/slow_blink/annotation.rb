@@ -23,7 +23,7 @@ module SlowBlink
         # @param literal [String] any string
         def initialize(id,literal)
             @id = id
-            @literal = literal 
+            @literal = literal
         end
         def to_s
             "@#{id}='#{@literal}'"

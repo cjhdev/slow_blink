@@ -43,6 +43,8 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 %option bison-bridge bison-locations
 %option reentrant
 %option noyywrap
+%option debug
+
 
 %x LITERAL_C
 %x LITERAL_A
@@ -68,11 +70,12 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 ")"                 |
 "*"                 |
 "|"                 |
-"@"                 |
+"."                 |
 "/"                 |
-":"                 | { return *yytext; }
+"@"                 |
+":"                 { return *yytext; }
 
-"i8"                { return TOK_I8; }
+"i8"                { return TOK_I8; }  
 "i16"               { return TOK_I16; }
 "i32"               { return TOK_I32; }
 "i64"               { return TOK_I64; }
@@ -107,7 +110,7 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 [_a-zA-Z][_a-zA-Z0-9]*      { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
 [\\][_a-zA-Z][_a-zA-Z0-9]*  { *yylval = rb_str_new(yytext, yyleng); return TOK_ESCAPED_NC_NAME; }
 
-.                   ;
+.|\n                {}
 
 %%
 

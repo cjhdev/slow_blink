@@ -3,9 +3,10 @@ Terminals unused in grammar
    "number"
 
 
-State 4 conflicts: 2 shift/reduce
-State 22 conflicts: 2 shift/reduce
-State 80 conflicts: 3 shift/reduce
+State 0 conflicts: 2 shift/reduce
+State 9 conflicts: 2 shift/reduce
+State 20 conflicts: 2 shift/reduce
+State 64 conflicts: 2 shift/reduce
 
 
 Grammar
@@ -18,216 +19,218 @@ Grammar
     3       | nsDecl defs
 
     4 defs: e
-    5     | defs def
+    5     | defList
 
-    6 def: annots define
-    7    | annots groupDef
-    8    | incrAnnot
+    6 defList: def
+    7        | defList def
 
-    9 define: name "=" annots Definition
+    8 def: annots define
+    9    | annots groupDef
+   10    | incrAnnot
 
-   10 groupDef: nameWithId super body
+   11 define: nameWithId '=' enum
+   12       | nameWithId '=' type
 
-   11 super: e
-   12      | ":" qName
+   13 groupDef: nameWithId
+   14         | nameWithId ':' qName
+   15         | nameWithId ':' qName "->" fields
+   16         | nameWithId "->" fields
 
-   13 body: e
-   14     | "->" fields
+   17 fields: field
+   18       | fields ',' field
 
-   15 fields: field
-   16       | fields "," field
+   19 field: annots type annots nameWithId opt
 
-   17 field: annots type annots nameWithId opt
+   20 opt: e
+   21    | '?'
 
-   18 opt: e
-   19    | "?"
+   22 type: single
+   23     | sequence
 
-   20 type: single
-   21     | sequence
+   24 single: ref
+   25       | time
+   26       | number
+   27       | string
+   28       | binary
+   29       | fixed
+   30       | "boolean"
+   31       | "object"
 
-   22 single: ref
-   23       | time
-   24       | number
-   25       | string
-   26       | binary
-   27       | fixed
-   28       | "boolean"
-   29       | "object"
+   32 sequence: single '[' ']'
 
-   30 sequence: single "[" "]"
+   33 string: "string"
+   34       | "string" size
 
-   31 string: "string"
-   32       | "string" size
+   35 binary: "binary"
+   36       | "binary" size
 
-   33 binary: "binary"
-   34       | "binary" size
+   37 fixed: "fixed" size
 
-   35 fixed: "fixed" size
+   38 size: '(' UintOrHex ')'
 
-   36 size: "(" UintOrHex ")"
+   39 ref: qName
+   40    | qName '*'
 
-   37 ref: qName
-   38    | qName "*"
+   41 number: "i8"
+   42       | "i16"
+   43       | "i32"
+   44       | "i64"
+   45       | "u8"
+   46       | "u16"
+   47       | "u32"
+   48       | "u64"
+   49       | "f64"
+   50       | "decimal"
 
-   39 number: "i8"
-   40       | "i16"
-   41       | "i32"
-   42       | "i64"
-   43       | "u8"
-   44       | "u16"
-   45       | "u32"
-   46       | "u64"
-   47       | "f64"
-   48       | "decimal"
+   51 time: "date"
+   52     | "timeOfDayMilli"
+   53     | "timeOfDayNano"
+   54     | "nanotime"
+   55     | "millitime"
 
-   49 time: "date"
-   50     | "timeOfDayMilli"
-   51     | "timeOfDayNano"
-   52     | "nanotime"
-   53     | "millitime"
+   56 enum: '|' sym
+   57     | symList
 
-   54 enum: "|" sym
-   55     | syms "|" sym
+   58 symList: sym
+   59        | symList '|' sym
 
-   56 syms: sym
-   57     | syms "|" sym
+   60 sym: annots name val
 
-   58 sym: annots name val
+   61 val: e
+   62    | '/' AnyInt
 
-   59 val: e
-   60    | "/" IntOrHex
+   63 annots: e
+   64       | annotList
 
-   61 annots: e
-   62       | annots annot
+   65 annotList: annot
+   66          | annotList annot
 
-   63 annot: "@" qNameOrKeyword "=" literal
+   67 annot: '@' qNameOrKeyword '=' literal
 
-   64 literal: literalSegment
-   65        | literal literalSegment
+   68 literal: literalSegment
+   69        | literal literalSegment
 
-   66 nameWithId: name id
+   70 nameWithId: name id
 
-   67 id: e
-   68   | "/" UintOrHex
+   71 id: e
+   72   | '/' UintOrHex
 
-   69 incrAnnot: compRef "<-" incrAnnotList
+   73 incrAnnot: compRef "<-" incrAnnotList
 
-   70 compRef: "schema"
-   71        | qName
-   72        | qName "." "type"
-   73        | qName "." name
-   74        | qName "." name "." "type"
+   74 compRef: "schema"
+   75        | qName
+   76        | qName '.' "type"
+   77        | qName '.' name
+   78        | qName '.' name '.' "type"
 
-   75 incrAnnotList: incrAnnotItem
-   76              | incrAnnotItem "<-" incrAnnotList
+   79 incrAnnotList: incrAnnotItem
+   80              | incrAnnotItem "<-" incrAnnotList
 
-   77 incrAnnotItem: "[-][1-9][0-9]*"
-   78              | "[0-9]+"
-   79              | "[0x][0-9a-fA-F]+"
-   80              | annot
+   81 incrAnnotItem: "int"
+   82              | "uint"
+   83              | "hexnum"
+   84              | annot
 
-   81 qName: name
-   82      | cName
+   85 qName: name
+   86      | cName
 
-   83 qNameOrKeyword: qName
-   84               | keyword
+   87 qNameOrKeyword: qName
+   88               | keyword
 
-   85 keyword: "i8"
-   86        | "i16"
-   87        | "i32"
-   88        | "i64"
-   89        | "u8"
-   90        | "u16"
-   91        | "u32"
-   92        | "u64"
-   93        | "f64"
-   94        | "decimal"
-   95        | "date"
-   96        | "timeOfDayMilli"
-   97        | "timeOfDayNano"
-   98        | "nanotime"
-   99        | "millitime"
-  100        | "boolean"
-  101        | "string"
-  102        | "binary"
-  103        | "fixed"
-  104        | "object"
-  105        | "namespace"
-  106        | "type"
-  107        | "schema"
+   89 keyword: "i8"
+   90        | "i16"
+   91        | "i32"
+   92        | "i64"
+   93        | "u8"
+   94        | "u16"
+   95        | "u32"
+   96        | "u64"
+   97        | "f64"
+   98        | "decimal"
+   99        | "date"
+  100        | "timeOfDayMilli"
+  101        | "timeOfDayNano"
+  102        | "nanotime"
+  103        | "millitime"
+  104        | "boolean"
+  105        | "string"
+  106        | "binary"
+  107        | "fixed"
+  108        | "object"
+  109        | "namespace"
+  110        | "type"
+  111        | "schema"
 
-  108 cName: ncName ":" ncName
+  112 cName: ncName ':' ncName
 
-  109 ncName: "[_a-zA-Z][_a-zA-Z0-9]*"
+  113 ncName: "cname"
 
-  110 name: "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | "[\\][_a-zA-Z][_a-zA-Z0-9]*"
+  114 name: "cname"
+  115     | "\\cname"
 
-  112 nsDecl: "namespace" name
+  116 nsDecl: "namespace" name
 
-  113 literalSegment: "\"<annotation>\" or '<annotation>'"
+  117 literalSegment: "\"<annotation>\" or '<annotation>'"
 
-  114 IntOrHex: "[-][1-9][0-9]*"
-  115         | "[0x][0-9a-fA-F]+"
+  118 AnyInt: "int"
+  119       | "hexnum"
+  120       | "uint"
 
-  116 UintOrHex: "[0-9]+"
-  117          | "[0x][0-9a-fA-F]+"
+  121 UintOrHex: "uint"
+  122          | "hexnum"
 
-  118 Definition: enum
-  119           | type
-
-  120 e: %empty
+  123 e: %empty
 
 
 Terminals, with rules where they appear
 
 $end (0) 0
+'(' (40) 38
+')' (41) 38
+'*' (42) 40
+',' (44) 18
+'.' (46) 76 77 78
+'/' (47) 62 72
+':' (58) 14 15 112
+'=' (61) 11 12 67
+'?' (63) 21
+'@' (64) 67
+'[' (91) 32
+']' (93) 32
+'|' (124) 56 59
 error (256)
-"i8" (258) 39 85
-"i16" (259) 40 86
-"i32" (260) 41 87
-"i64" (261) 42 88
-"u8" (262) 43 89
-"u16" (263) 44 90
-"u32" (264) 45 91
-"u64" (265) 46 92
-"f64" (266) 47 93
-"decimal" (267) 48 94
-"date" (268) 49 95
-"timeOfDayMilli" (269) 50 96
-"timeOfDayNano" (270) 51 97
-"nanotime" (271) 52 98
-"millitime" (272) 53 99
-"boolean" (273) 28 100
-"string" (274) 31 32 101
-"object" (275) 29 104
-"namespace" (276) 105 112
-"type" (277) 72 74 106
-"schema" (278) 70 107
-"binary" (279) 33 34 102
+"i8" (258) 41 89
+"i16" (259) 42 90
+"i32" (260) 43 91
+"i64" (261) 44 92
+"u8" (262) 45 93
+"u16" (263) 46 94
+"u32" (264) 47 95
+"u64" (265) 48 96
+"f64" (266) 49 97
+"decimal" (267) 50 98
+"date" (268) 51 99
+"timeOfDayMilli" (269) 52 100
+"timeOfDayNano" (270) 53 101
+"nanotime" (271) 54 102
+"millitime" (272) 55 103
+"boolean" (273) 30 104
+"string" (274) 33 34 105
+"object" (275) 31 108
+"namespace" (276) 109 116
+"type" (277) 76 78 110
+"schema" (278) 74 111
+"binary" (279) 35 36 106
 "number" (280)
-"fixed" (281) 35 103
-"<-" (282) 69 76
-"->" (283) 14
-"[0x][0-9a-fA-F]+" (284) 79 115 117
-"[0-9]+" (285) 78 116
-"[-][1-9][0-9]*" (286) 77 114
-"[_a-zA-Z][_a-zA-Z0-9]*" (287) 109 110
-"[\\][_a-zA-Z][_a-zA-Z0-9]*" (288) 111
-"\"<annotation>\" or '<annotation>'" (289) 113
-"=" (290) 9 63
-":" (291) 12 108
-"," (292) 16
-"?" (293) 19
-"[" (294) 30
-"]" (295) 30
-"(" (296) 36
-")" (297) 36
-"*" (298) 38
-"|" (299) 54 55 57
-"/" (300) 60 68
-"@" (301) 63
-"." (302) 72 73 74
+"fixed" (281) 37 107
+"<-" (282) 73 80
+"->" (283) 15 16
+"hexnum" (284) 83 119 122
+"uint" (285) 82 120 121
+"int" (286) 81 118
+"cname" (287) 113 114
+"\\cname" (288) 115
+"\"<annotation>\" or '<annotation>'" (289) 117
 
 
 Nonterminals, with rules where they appear
@@ -239,94 +242,92 @@ top (49)
 schema (50)
     on left: 2 3, on right: 1
 defs (51)
-    on left: 4 5, on right: 2 3 5
-def (52)
-    on left: 6 7 8, on right: 5
-define (53)
-    on left: 9, on right: 6
-groupDef (54)
-    on left: 10, on right: 7
-super (55)
-    on left: 11 12, on right: 10
-body (56)
-    on left: 13 14, on right: 10
-fields (57)
-    on left: 15 16, on right: 14 16
-field (58)
-    on left: 17, on right: 15 16
-opt (59)
-    on left: 18 19, on right: 17
-type (60)
-    on left: 20 21, on right: 17 119
-single (61)
-    on left: 22 23 24 25 26 27 28 29, on right: 20 30
-sequence (62)
-    on left: 30, on right: 21
-string (63)
-    on left: 31 32, on right: 25
-binary (64)
-    on left: 33 34, on right: 26
-fixed (65)
-    on left: 35, on right: 27
-size (66)
-    on left: 36, on right: 32 34 35
-ref (67)
-    on left: 37 38, on right: 22
-number (68)
-    on left: 39 40 41 42 43 44 45 46 47 48, on right: 24
-time (69)
-    on left: 49 50 51 52 53, on right: 23
-enum (70)
-    on left: 54 55, on right: 118
-syms (71)
-    on left: 56 57, on right: 55 57
-sym (72)
-    on left: 58, on right: 54 55 56 57
-val (73)
-    on left: 59 60, on right: 58
-annots (74)
-    on left: 61 62, on right: 6 7 9 17 58 62
+    on left: 4 5, on right: 2 3
+defList (52)
+    on left: 6 7, on right: 5 7
+def (53)
+    on left: 8 9 10, on right: 6 7
+define (54)
+    on left: 11 12, on right: 8
+groupDef (55)
+    on left: 13 14 15 16, on right: 9
+fields (56)
+    on left: 17 18, on right: 15 16 18
+field (57)
+    on left: 19, on right: 17 18
+opt (58)
+    on left: 20 21, on right: 19
+type (59)
+    on left: 22 23, on right: 12 19
+single (60)
+    on left: 24 25 26 27 28 29 30 31, on right: 22 32
+sequence (61)
+    on left: 32, on right: 23
+string (62)
+    on left: 33 34, on right: 27
+binary (63)
+    on left: 35 36, on right: 28
+fixed (64)
+    on left: 37, on right: 29
+size (65)
+    on left: 38, on right: 34 36 37
+ref (66)
+    on left: 39 40, on right: 24
+number (67)
+    on left: 41 42 43 44 45 46 47 48 49 50, on right: 26
+time (68)
+    on left: 51 52 53 54 55, on right: 25
+enum (69)
+    on left: 56 57, on right: 11
+symList (70)
+    on left: 58 59, on right: 57 59
+sym (71)
+    on left: 60, on right: 56 58 59
+val (72)
+    on left: 61 62, on right: 60
+annots (73)
+    on left: 63 64, on right: 8 9 19 60
+annotList (74)
+    on left: 65 66, on right: 64 66
 annot (75)
-    on left: 63, on right: 62 80
+    on left: 67, on right: 65 66 84
 literal (76)
-    on left: 64 65, on right: 63 65
+    on left: 68 69, on right: 67 69
 nameWithId (77)
-    on left: 66, on right: 10 17
+    on left: 70, on right: 11 12 13 14 15 16 19
 id (78)
-    on left: 67 68, on right: 66
+    on left: 71 72, on right: 70
 incrAnnot (79)
-    on left: 69, on right: 8
+    on left: 73, on right: 10
 compRef (80)
-    on left: 70 71 72 73 74, on right: 69
+    on left: 74 75 76 77 78, on right: 73
 incrAnnotList (81)
-    on left: 75 76, on right: 69 76
+    on left: 79 80, on right: 73 80
 incrAnnotItem (82)
-    on left: 77 78 79 80, on right: 75 76
+    on left: 81 82 83 84, on right: 79 80
 qName (83)
-    on left: 81 82, on right: 12 37 38 71 72 73 74 83
+    on left: 85 86, on right: 14 15 39 40 75 76 77 78 87
 qNameOrKeyword (84)
-    on left: 83 84, on right: 63
+    on left: 87 88, on right: 67
 keyword (85)
-    on left: 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 100 101 102
-    103 104 105 106 107, on right: 84
+    on left: 89 90 91 92 93 94 95 96 97 98 99 100 101 102 103 104 105
+    106 107 108 109 110 111, on right: 88
 cName (86)
-    on left: 108, on right: 82
+    on left: 112, on right: 86
 ncName (87)
-    on left: 109, on right: 108
+    on left: 113, on right: 112
 name (88)
-    on left: 110 111, on right: 9 58 66 73 74 81 112
+    on left: 114 115, on right: 60 70 77 78 85 116
 nsDecl (89)
-    on left: 112, on right: 3
+    on left: 116, on right: 3
 literalSegment (90)
-    on left: 113, on right: 64 65
-IntOrHex (91)
-    on left: 114 115, on right: 60
+    on left: 117, on right: 68 69
+AnyInt (91)
+    on left: 118 119 120, on right: 62
 UintOrHex (92)
-    on left: 116 117, on right: 36 68
-Definition (93)
-    on left: 118 119, on right: 9
-e (94)
-    on left: 120, on right: 4 11 13 18 59 61 67
+    on left: 121 122, on right: 38 72
+e (93)
+    on left: 123, on right: 4 20 61 63 71
 
 
 State 0
@@ -336,1632 +337,1721 @@ State 0
     2 schema: . defs
     3       | . nsDecl defs
     4 defs: . e
-    5     | . defs def
-  112 nsDecl: . "namespace" name
-  120 e: . %empty  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
+    5     | . defList
+    6 defList: . def
+    7        | . defList def
+    8 def: . annots define
+    9    | . annots groupDef
+   10    | . incrAnnot
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+   73 incrAnnot: . compRef "<-" incrAnnotList
+   74 compRef: . "schema"
+   75        | . qName
+   76        | . qName '.' "type"
+   77        | . qName '.' name
+   78        | . qName '.' name '.' "type"
+   85 qName: . name
+   86      | . cName
+  112 cName: . ncName ':' ncName
+  113 ncName: . "cname"
+  114 name: . "cname"
+  115     | . "\\cname"
+  116 nsDecl: . "namespace" name
+  123 e: . %empty  [$end, "cname", "\\cname"]
 
     "namespace"  shift, and go to state 1
+    "schema"     shift, and go to state 2
+    "cname"      shift, and go to state 3
+    "\\cname"    shift, and go to state 4
+    '@'          shift, and go to state 5
 
-    $default  reduce using rule 120 (e)
+    "cname"    [reduce using rule 123 (e)]
+    "\\cname"  [reduce using rule 123 (e)]
+    $default   reduce using rule 123 (e)
 
-    top     go to state 2
-    schema  go to state 3
-    defs    go to state 4
-    nsDecl  go to state 5
-    e       go to state 6
+    top        go to state 6
+    schema     go to state 7
+    defs       go to state 8
+    defList    go to state 9
+    def        go to state 10
+    annots     go to state 11
+    annotList  go to state 12
+    annot      go to state 13
+    incrAnnot  go to state 14
+    compRef    go to state 15
+    qName      go to state 16
+    cName      go to state 17
+    ncName     go to state 18
+    name       go to state 19
+    nsDecl     go to state 20
+    e          go to state 21
 
 
 State 1
 
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
-  112 nsDecl: "namespace" . name
+  114 name: . "cname"
+  115     | . "\\cname"
+  116 nsDecl: "namespace" . name
 
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 7
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
+    "cname"    shift, and go to state 22
+    "\\cname"  shift, and go to state 4
 
-    name  go to state 9
+    name  go to state 23
 
 
 State 2
 
-    0 $accept: top . $end
+   74 compRef: "schema" .
 
-    $end  shift, and go to state 10
+    $default  reduce using rule 74 (compRef)
 
 
 State 3
+
+  113 ncName: "cname" .  [':']
+  114 name: "cname" .  [$end, "schema", "<-", "->", "cname", "\\cname", '=', '[', '*', '@', '.']
+
+    ':'       reduce using rule 113 (ncName)
+    $default  reduce using rule 114 (name)
+
+
+State 4
+
+  115 name: "\\cname" .
+
+    $default  reduce using rule 115 (name)
+
+
+State 5
+
+   67 annot: '@' . qNameOrKeyword '=' literal
+   85 qName: . name
+   86      | . cName
+   87 qNameOrKeyword: . qName
+   88               | . keyword
+   89 keyword: . "i8"
+   90        | . "i16"
+   91        | . "i32"
+   92        | . "i64"
+   93        | . "u8"
+   94        | . "u16"
+   95        | . "u32"
+   96        | . "u64"
+   97        | . "f64"
+   98        | . "decimal"
+   99        | . "date"
+  100        | . "timeOfDayMilli"
+  101        | . "timeOfDayNano"
+  102        | . "nanotime"
+  103        | . "millitime"
+  104        | . "boolean"
+  105        | . "string"
+  106        | . "binary"
+  107        | . "fixed"
+  108        | . "object"
+  109        | . "namespace"
+  110        | . "type"
+  111        | . "schema"
+  112 cName: . ncName ':' ncName
+  113 ncName: . "cname"
+  114 name: . "cname"
+  115     | . "\\cname"
+
+    "i8"              shift, and go to state 24
+    "i16"             shift, and go to state 25
+    "i32"             shift, and go to state 26
+    "i64"             shift, and go to state 27
+    "u8"              shift, and go to state 28
+    "u16"             shift, and go to state 29
+    "u32"             shift, and go to state 30
+    "u64"             shift, and go to state 31
+    "f64"             shift, and go to state 32
+    "decimal"         shift, and go to state 33
+    "date"            shift, and go to state 34
+    "timeOfDayMilli"  shift, and go to state 35
+    "timeOfDayNano"   shift, and go to state 36
+    "nanotime"        shift, and go to state 37
+    "millitime"       shift, and go to state 38
+    "boolean"         shift, and go to state 39
+    "string"          shift, and go to state 40
+    "object"          shift, and go to state 41
+    "namespace"       shift, and go to state 42
+    "type"            shift, and go to state 43
+    "schema"          shift, and go to state 44
+    "binary"          shift, and go to state 45
+    "fixed"           shift, and go to state 46
+    "cname"           shift, and go to state 3
+    "\\cname"         shift, and go to state 4
+
+    qName           go to state 47
+    qNameOrKeyword  go to state 48
+    keyword         go to state 49
+    cName           go to state 17
+    ncName          go to state 18
+    name            go to state 19
+
+
+State 6
+
+    0 $accept: top . $end
+
+    $end  shift, and go to state 50
+
+
+State 7
 
     1 top: schema .
 
     $default  reduce using rule 1 (top)
 
 
-State 4
-
-    2 schema: defs .  [$end]
-    5 defs: defs . def
-    6 def: . annots define
-    7    | . annots groupDef
-    8    | . incrAnnot
-   61 annots: . e
-   62       | . annots annot
-   69 incrAnnot: . compRef "<-" incrAnnotList
-   70 compRef: . "schema"
-   71        | . qName
-   72        | . qName "." "type"
-   73        | . qName "." name
-   74        | . qName "." name "." "type"
-   81 qName: . name
-   82      | . cName
-  108 cName: . ncName ":" ncName
-  109 ncName: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
-  120 e: . %empty  ["[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
-
-    "schema"                      shift, and go to state 11
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 12
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-
-    "[_a-zA-Z][_a-zA-Z0-9]*"      [reduce using rule 120 (e)]
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  [reduce using rule 120 (e)]
-    "@"                           reduce using rule 120 (e)
-    $default                      reduce using rule 2 (schema)
-
-    def        go to state 13
-    annots     go to state 14
-    incrAnnot  go to state 15
-    compRef    go to state 16
-    qName      go to state 17
-    cName      go to state 18
-    ncName     go to state 19
-    name       go to state 20
-    e          go to state 21
-
-
-State 5
-
-    3 schema: nsDecl . defs
-    4 defs: . e
-    5     | . defs def
-  120 e: . %empty
-
-    $default  reduce using rule 120 (e)
-
-    defs  go to state 22
-    e     go to state 6
-
-
-State 6
-
-    4 defs: e .
-
-    $default  reduce using rule 4 (defs)
-
-
-State 7
-
-  110 name: "[_a-zA-Z][_a-zA-Z0-9]*" .
-
-    $default  reduce using rule 110 (name)
-
-
 State 8
 
-  111 name: "[\\][_a-zA-Z][_a-zA-Z0-9]*" .
+    2 schema: defs .
 
-    $default  reduce using rule 111 (name)
+    $default  reduce using rule 2 (schema)
 
 
 State 9
 
-  112 nsDecl: "namespace" name .
+    5 defs: defList .  [$end]
+    7 defList: defList . def
+    8 def: . annots define
+    9    | . annots groupDef
+   10    | . incrAnnot
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+   73 incrAnnot: . compRef "<-" incrAnnotList
+   74 compRef: . "schema"
+   75        | . qName
+   76        | . qName '.' "type"
+   77        | . qName '.' name
+   78        | . qName '.' name '.' "type"
+   85 qName: . name
+   86      | . cName
+  112 cName: . ncName ':' ncName
+  113 ncName: . "cname"
+  114 name: . "cname"
+  115     | . "\\cname"
+  123 e: . %empty  ["cname", "\\cname"]
 
-    $default  reduce using rule 112 (nsDecl)
+    "schema"   shift, and go to state 2
+    "cname"    shift, and go to state 3
+    "\\cname"  shift, and go to state 4
+    '@'        shift, and go to state 5
+
+    "cname"    [reduce using rule 123 (e)]
+    "\\cname"  [reduce using rule 123 (e)]
+    $default   reduce using rule 5 (defs)
+
+    def        go to state 51
+    annots     go to state 11
+    annotList  go to state 12
+    annot      go to state 13
+    incrAnnot  go to state 14
+    compRef    go to state 15
+    qName      go to state 16
+    cName      go to state 17
+    ncName     go to state 18
+    name       go to state 19
+    e          go to state 52
 
 
 State 10
+
+    6 defList: def .
+
+    $default  reduce using rule 6 (defList)
+
+
+State 11
+
+    8 def: annots . define
+    9    | annots . groupDef
+   11 define: . nameWithId '=' enum
+   12       | . nameWithId '=' type
+   13 groupDef: . nameWithId
+   14         | . nameWithId ':' qName
+   15         | . nameWithId ':' qName "->" fields
+   16         | . nameWithId "->" fields
+   70 nameWithId: . name id
+  114 name: . "cname"
+  115     | . "\\cname"
+
+    "cname"    shift, and go to state 22
+    "\\cname"  shift, and go to state 4
+
+    define      go to state 53
+    groupDef    go to state 54
+    nameWithId  go to state 55
+    name        go to state 56
+
+
+State 12
+
+   64 annots: annotList .  ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f64", "decimal", "date", "timeOfDayMilli", "timeOfDayNano", "nanotime", "millitime", "boolean", "string", "object", "binary", "fixed", "cname", "\\cname"]
+   66 annotList: annotList . annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+
+    '@'  shift, and go to state 5
+
+    $default  reduce using rule 64 (annots)
+
+    annot  go to state 57
+
+
+State 13
+
+   65 annotList: annot .
+
+    $default  reduce using rule 65 (annotList)
+
+
+State 14
+
+   10 def: incrAnnot .
+
+    $default  reduce using rule 10 (def)
+
+
+State 15
+
+   73 incrAnnot: compRef . "<-" incrAnnotList
+
+    "<-"  shift, and go to state 58
+
+
+State 16
+
+   75 compRef: qName .  ["<-"]
+   76        | qName . '.' "type"
+   77        | qName . '.' name
+   78        | qName . '.' name '.' "type"
+
+    '.'  shift, and go to state 59
+
+    $default  reduce using rule 75 (compRef)
+
+
+State 17
+
+   86 qName: cName .
+
+    $default  reduce using rule 86 (qName)
+
+
+State 18
+
+  112 cName: ncName . ':' ncName
+
+    ':'  shift, and go to state 60
+
+
+State 19
+
+   85 qName: name .
+
+    $default  reduce using rule 85 (qName)
+
+
+State 20
+
+    3 schema: nsDecl . defs
+    4 defs: . e
+    5     | . defList
+    6 defList: . def
+    7        | . defList def
+    8 def: . annots define
+    9    | . annots groupDef
+   10    | . incrAnnot
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+   73 incrAnnot: . compRef "<-" incrAnnotList
+   74 compRef: . "schema"
+   75        | . qName
+   76        | . qName '.' "type"
+   77        | . qName '.' name
+   78        | . qName '.' name '.' "type"
+   85 qName: . name
+   86      | . cName
+  112 cName: . ncName ':' ncName
+  113 ncName: . "cname"
+  114 name: . "cname"
+  115     | . "\\cname"
+  123 e: . %empty  [$end, "cname", "\\cname"]
+
+    "schema"   shift, and go to state 2
+    "cname"    shift, and go to state 3
+    "\\cname"  shift, and go to state 4
+    '@'        shift, and go to state 5
+
+    "cname"    [reduce using rule 123 (e)]
+    "\\cname"  [reduce using rule 123 (e)]
+    $default   reduce using rule 123 (e)
+
+    defs       go to state 61
+    defList    go to state 9
+    def        go to state 10
+    annots     go to state 11
+    annotList  go to state 12
+    annot      go to state 13
+    incrAnnot  go to state 14
+    compRef    go to state 15
+    qName      go to state 16
+    cName      go to state 17
+    ncName     go to state 18
+    name       go to state 19
+    e          go to state 21
+
+
+State 21
+
+    4 defs: e .  [$end]
+   63 annots: e .  ["cname", "\\cname"]
+
+    $end      reduce using rule 4 (defs)
+    $default  reduce using rule 63 (annots)
+
+
+State 22
+
+  114 name: "cname" .
+
+    $default  reduce using rule 114 (name)
+
+
+State 23
+
+  116 nsDecl: "namespace" name .
+
+    $default  reduce using rule 116 (nsDecl)
+
+
+State 24
+
+   89 keyword: "i8" .
+
+    $default  reduce using rule 89 (keyword)
+
+
+State 25
+
+   90 keyword: "i16" .
+
+    $default  reduce using rule 90 (keyword)
+
+
+State 26
+
+   91 keyword: "i32" .
+
+    $default  reduce using rule 91 (keyword)
+
+
+State 27
+
+   92 keyword: "i64" .
+
+    $default  reduce using rule 92 (keyword)
+
+
+State 28
+
+   93 keyword: "u8" .
+
+    $default  reduce using rule 93 (keyword)
+
+
+State 29
+
+   94 keyword: "u16" .
+
+    $default  reduce using rule 94 (keyword)
+
+
+State 30
+
+   95 keyword: "u32" .
+
+    $default  reduce using rule 95 (keyword)
+
+
+State 31
+
+   96 keyword: "u64" .
+
+    $default  reduce using rule 96 (keyword)
+
+
+State 32
+
+   97 keyword: "f64" .
+
+    $default  reduce using rule 97 (keyword)
+
+
+State 33
+
+   98 keyword: "decimal" .
+
+    $default  reduce using rule 98 (keyword)
+
+
+State 34
+
+   99 keyword: "date" .
+
+    $default  reduce using rule 99 (keyword)
+
+
+State 35
+
+  100 keyword: "timeOfDayMilli" .
+
+    $default  reduce using rule 100 (keyword)
+
+
+State 36
+
+  101 keyword: "timeOfDayNano" .
+
+    $default  reduce using rule 101 (keyword)
+
+
+State 37
+
+  102 keyword: "nanotime" .
+
+    $default  reduce using rule 102 (keyword)
+
+
+State 38
+
+  103 keyword: "millitime" .
+
+    $default  reduce using rule 103 (keyword)
+
+
+State 39
+
+  104 keyword: "boolean" .
+
+    $default  reduce using rule 104 (keyword)
+
+
+State 40
+
+  105 keyword: "string" .
+
+    $default  reduce using rule 105 (keyword)
+
+
+State 41
+
+  108 keyword: "object" .
+
+    $default  reduce using rule 108 (keyword)
+
+
+State 42
+
+  109 keyword: "namespace" .
+
+    $default  reduce using rule 109 (keyword)
+
+
+State 43
+
+  110 keyword: "type" .
+
+    $default  reduce using rule 110 (keyword)
+
+
+State 44
+
+  111 keyword: "schema" .
+
+    $default  reduce using rule 111 (keyword)
+
+
+State 45
+
+  106 keyword: "binary" .
+
+    $default  reduce using rule 106 (keyword)
+
+
+State 46
+
+  107 keyword: "fixed" .
+
+    $default  reduce using rule 107 (keyword)
+
+
+State 47
+
+   87 qNameOrKeyword: qName .
+
+    $default  reduce using rule 87 (qNameOrKeyword)
+
+
+State 48
+
+   67 annot: '@' qNameOrKeyword . '=' literal
+
+    '='  shift, and go to state 62
+
+
+State 49
+
+   88 qNameOrKeyword: keyword .
+
+    $default  reduce using rule 88 (qNameOrKeyword)
+
+
+State 50
 
     0 $accept: top $end .
 
     $default  accept
 
 
-State 11
-
-   70 compRef: "schema" .
-
-    $default  reduce using rule 70 (compRef)
-
-
-State 12
-
-  109 ncName: "[_a-zA-Z][_a-zA-Z0-9]*" .  [":"]
-  110 name: "[_a-zA-Z][_a-zA-Z0-9]*" .  [$end, "schema", "<-", "->", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "=", "[", "*", "@", "."]
-
-    ":"       reduce using rule 109 (ncName)
-    $default  reduce using rule 110 (name)
-
-
-State 13
-
-    5 defs: defs def .
-
-    $default  reduce using rule 5 (defs)
-
-
-State 14
-
-    6 def: annots . define
-    7    | annots . groupDef
-    9 define: . name "=" annots Definition
-   10 groupDef: . nameWithId super body
-   62 annots: annots . annot
-   63 annot: . "@" qNameOrKeyword "=" literal
-   66 nameWithId: . name id
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
-
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 7
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-    "@"                           shift, and go to state 23
-
-    define      go to state 24
-    groupDef    go to state 25
-    annot       go to state 26
-    nameWithId  go to state 27
-    name        go to state 28
-
-
-State 15
-
-    8 def: incrAnnot .
-
-    $default  reduce using rule 8 (def)
-
-
-State 16
-
-   69 incrAnnot: compRef . "<-" incrAnnotList
-
-    "<-"  shift, and go to state 29
-
-
-State 17
-
-   71 compRef: qName .  ["<-"]
-   72        | qName . "." "type"
-   73        | qName . "." name
-   74        | qName . "." name "." "type"
-
-    "."  shift, and go to state 30
-
-    $default  reduce using rule 71 (compRef)
-
-
-State 18
-
-   82 qName: cName .
-
-    $default  reduce using rule 82 (qName)
-
-
-State 19
-
-  108 cName: ncName . ":" ncName
-
-    ":"  shift, and go to state 31
-
-
-State 20
-
-   81 qName: name .
-
-    $default  reduce using rule 81 (qName)
-
-
-State 21
-
-   61 annots: e .
-
-    $default  reduce using rule 61 (annots)
-
-
-State 22
-
-    3 schema: nsDecl defs .  [$end]
-    5 defs: defs . def
-    6 def: . annots define
-    7    | . annots groupDef
-    8    | . incrAnnot
-   61 annots: . e
-   62       | . annots annot
-   69 incrAnnot: . compRef "<-" incrAnnotList
-   70 compRef: . "schema"
-   71        | . qName
-   72        | . qName "." "type"
-   73        | . qName "." name
-   74        | . qName "." name "." "type"
-   81 qName: . name
-   82      | . cName
-  108 cName: . ncName ":" ncName
-  109 ncName: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
-  120 e: . %empty  ["[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
-
-    "schema"                      shift, and go to state 11
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 12
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-
-    "[_a-zA-Z][_a-zA-Z0-9]*"      [reduce using rule 120 (e)]
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  [reduce using rule 120 (e)]
-    "@"                           reduce using rule 120 (e)
-    $default                      reduce using rule 3 (schema)
-
-    def        go to state 13
-    annots     go to state 14
-    incrAnnot  go to state 15
-    compRef    go to state 16
-    qName      go to state 17
-    cName      go to state 18
-    ncName     go to state 19
-    name       go to state 20
-    e          go to state 21
-
-
-State 23
-
-   63 annot: "@" . qNameOrKeyword "=" literal
-   81 qName: . name
-   82      | . cName
-   83 qNameOrKeyword: . qName
-   84               | . keyword
-   85 keyword: . "i8"
-   86        | . "i16"
-   87        | . "i32"
-   88        | . "i64"
-   89        | . "u8"
-   90        | . "u16"
-   91        | . "u32"
-   92        | . "u64"
-   93        | . "f64"
-   94        | . "decimal"
-   95        | . "date"
-   96        | . "timeOfDayMilli"
-   97        | . "timeOfDayNano"
-   98        | . "nanotime"
-   99        | . "millitime"
-  100        | . "boolean"
-  101        | . "string"
-  102        | . "binary"
-  103        | . "fixed"
-  104        | . "object"
-  105        | . "namespace"
-  106        | . "type"
-  107        | . "schema"
-  108 cName: . ncName ":" ncName
-  109 ncName: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
-
-    "i8"                          shift, and go to state 32
-    "i16"                         shift, and go to state 33
-    "i32"                         shift, and go to state 34
-    "i64"                         shift, and go to state 35
-    "u8"                          shift, and go to state 36
-    "u16"                         shift, and go to state 37
-    "u32"                         shift, and go to state 38
-    "u64"                         shift, and go to state 39
-    "f64"                         shift, and go to state 40
-    "decimal"                     shift, and go to state 41
-    "date"                        shift, and go to state 42
-    "timeOfDayMilli"              shift, and go to state 43
-    "timeOfDayNano"               shift, and go to state 44
-    "nanotime"                    shift, and go to state 45
-    "millitime"                   shift, and go to state 46
-    "boolean"                     shift, and go to state 47
-    "string"                      shift, and go to state 48
-    "object"                      shift, and go to state 49
-    "namespace"                   shift, and go to state 50
-    "type"                        shift, and go to state 51
-    "schema"                      shift, and go to state 52
-    "binary"                      shift, and go to state 53
-    "fixed"                       shift, and go to state 54
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 12
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-
-    qName           go to state 55
-    qNameOrKeyword  go to state 56
-    keyword         go to state 57
-    cName           go to state 18
-    ncName          go to state 19
-    name            go to state 20
-
-
-State 24
-
-    6 def: annots define .
-
-    $default  reduce using rule 6 (def)
-
-
-State 25
-
-    7 def: annots groupDef .
-
-    $default  reduce using rule 7 (def)
-
-
-State 26
-
-   62 annots: annots annot .
-
-    $default  reduce using rule 62 (annots)
-
-
-State 27
-
-   10 groupDef: nameWithId . super body
-   11 super: . e
-   12      | . ":" qName
-  120 e: . %empty  [$end, "schema", "->", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
-
-    ":"  shift, and go to state 58
-
-    $default  reduce using rule 120 (e)
-
-    super  go to state 59
-    e      go to state 60
-
-
-State 28
-
-    9 define: name . "=" annots Definition
-   66 nameWithId: name . id
-   67 id: . e
-   68   | . "/" UintOrHex
-  120 e: . %empty  [$end, "schema", "->", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", ":", "@"]
-
-    "="  shift, and go to state 61
-    "/"  shift, and go to state 62
-
-    $default  reduce using rule 120 (e)
-
-    id  go to state 63
-    e   go to state 64
-
-
-State 29
-
-   63 annot: . "@" qNameOrKeyword "=" literal
-   69 incrAnnot: compRef "<-" . incrAnnotList
-   75 incrAnnotList: . incrAnnotItem
-   76              | . incrAnnotItem "<-" incrAnnotList
-   77 incrAnnotItem: . "[-][1-9][0-9]*"
-   78              | . "[0-9]+"
-   79              | . "[0x][0-9a-fA-F]+"
-   80              | . annot
-
-    "[0x][0-9a-fA-F]+"  shift, and go to state 65
-    "[0-9]+"            shift, and go to state 66
-    "[-][1-9][0-9]*"    shift, and go to state 67
-    "@"                 shift, and go to state 23
-
-    annot          go to state 68
-    incrAnnotList  go to state 69
-    incrAnnotItem  go to state 70
-
-
-State 30
-
-   72 compRef: qName "." . "type"
-   73        | qName "." . name
-   74        | qName "." . name "." "type"
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
-
-    "type"                        shift, and go to state 71
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 7
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-
-    name  go to state 72
-
-
-State 31
-
-  108 cName: ncName ":" . ncName
-  109 ncName: . "[_a-zA-Z][_a-zA-Z0-9]*"
-
-    "[_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 73
-
-    ncName  go to state 74
-
-
-State 32
-
-   85 keyword: "i8" .
-
-    $default  reduce using rule 85 (keyword)
-
-
-State 33
-
-   86 keyword: "i16" .
-
-    $default  reduce using rule 86 (keyword)
-
-
-State 34
-
-   87 keyword: "i32" .
-
-    $default  reduce using rule 87 (keyword)
-
-
-State 35
-
-   88 keyword: "i64" .
-
-    $default  reduce using rule 88 (keyword)
-
-
-State 36
-
-   89 keyword: "u8" .
-
-    $default  reduce using rule 89 (keyword)
-
-
-State 37
-
-   90 keyword: "u16" .
-
-    $default  reduce using rule 90 (keyword)
-
-
-State 38
-
-   91 keyword: "u32" .
-
-    $default  reduce using rule 91 (keyword)
-
-
-State 39
-
-   92 keyword: "u64" .
-
-    $default  reduce using rule 92 (keyword)
-
-
-State 40
-
-   93 keyword: "f64" .
-
-    $default  reduce using rule 93 (keyword)
-
-
-State 41
-
-   94 keyword: "decimal" .
-
-    $default  reduce using rule 94 (keyword)
-
-
-State 42
-
-   95 keyword: "date" .
-
-    $default  reduce using rule 95 (keyword)
-
-
-State 43
-
-   96 keyword: "timeOfDayMilli" .
-
-    $default  reduce using rule 96 (keyword)
-
-
-State 44
-
-   97 keyword: "timeOfDayNano" .
-
-    $default  reduce using rule 97 (keyword)
-
-
-State 45
-
-   98 keyword: "nanotime" .
-
-    $default  reduce using rule 98 (keyword)
-
-
-State 46
-
-   99 keyword: "millitime" .
-
-    $default  reduce using rule 99 (keyword)
-
-
-State 47
-
-  100 keyword: "boolean" .
-
-    $default  reduce using rule 100 (keyword)
-
-
-State 48
-
-  101 keyword: "string" .
-
-    $default  reduce using rule 101 (keyword)
-
-
-State 49
-
-  104 keyword: "object" .
-
-    $default  reduce using rule 104 (keyword)
-
-
-State 50
-
-  105 keyword: "namespace" .
-
-    $default  reduce using rule 105 (keyword)
-
-
 State 51
 
-  106 keyword: "type" .
+    7 defList: defList def .
 
-    $default  reduce using rule 106 (keyword)
+    $default  reduce using rule 7 (defList)
 
 
 State 52
 
-  107 keyword: "schema" .
+   63 annots: e .
 
-    $default  reduce using rule 107 (keyword)
+    $default  reduce using rule 63 (annots)
 
 
 State 53
 
-  102 keyword: "binary" .
+    8 def: annots define .
 
-    $default  reduce using rule 102 (keyword)
+    $default  reduce using rule 8 (def)
 
 
 State 54
 
-  103 keyword: "fixed" .
+    9 def: annots groupDef .
 
-    $default  reduce using rule 103 (keyword)
+    $default  reduce using rule 9 (def)
 
 
 State 55
 
-   83 qNameOrKeyword: qName .
+   11 define: nameWithId . '=' enum
+   12       | nameWithId . '=' type
+   13 groupDef: nameWithId .  [$end, "schema", "cname", "\\cname", '@']
+   14         | nameWithId . ':' qName
+   15         | nameWithId . ':' qName "->" fields
+   16         | nameWithId . "->" fields
 
-    $default  reduce using rule 83 (qNameOrKeyword)
+    "->"  shift, and go to state 63
+    '='   shift, and go to state 64
+    ':'   shift, and go to state 65
+
+    $default  reduce using rule 13 (groupDef)
 
 
 State 56
 
-   63 annot: "@" qNameOrKeyword . "=" literal
+   70 nameWithId: name . id
+   71 id: . e
+   72   | . '/' UintOrHex
+  123 e: . %empty  [$end, "schema", "->", "cname", "\\cname", '=', ':', ',', '?', '@']
 
-    "="  shift, and go to state 75
+    '/'  shift, and go to state 66
+
+    $default  reduce using rule 123 (e)
+
+    id  go to state 67
+    e   go to state 68
 
 
 State 57
 
-   84 qNameOrKeyword: keyword .
+   66 annotList: annotList annot .
 
-    $default  reduce using rule 84 (qNameOrKeyword)
+    $default  reduce using rule 66 (annotList)
 
 
 State 58
 
-   12 super: ":" . qName
-   81 qName: . name
-   82      | . cName
-  108 cName: . ncName ":" ncName
-  109 ncName: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
+   67 annot: . '@' qNameOrKeyword '=' literal
+   73 incrAnnot: compRef "<-" . incrAnnotList
+   79 incrAnnotList: . incrAnnotItem
+   80              | . incrAnnotItem "<-" incrAnnotList
+   81 incrAnnotItem: . "int"
+   82              | . "uint"
+   83              | . "hexnum"
+   84              | . annot
 
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 12
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
+    "hexnum"  shift, and go to state 69
+    "uint"    shift, and go to state 70
+    "int"     shift, and go to state 71
+    '@'       shift, and go to state 5
 
-    qName   go to state 76
-    cName   go to state 18
-    ncName  go to state 19
-    name    go to state 20
+    annot          go to state 72
+    incrAnnotList  go to state 73
+    incrAnnotItem  go to state 74
 
 
 State 59
 
-   10 groupDef: nameWithId super . body
-   13 body: . e
-   14     | . "->" fields
-  120 e: . %empty  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
+   76 compRef: qName '.' . "type"
+   77        | qName '.' . name
+   78        | qName '.' . name '.' "type"
+  114 name: . "cname"
+  115     | . "\\cname"
 
-    "->"  shift, and go to state 77
+    "type"     shift, and go to state 75
+    "cname"    shift, and go to state 22
+    "\\cname"  shift, and go to state 4
 
-    $default  reduce using rule 120 (e)
-
-    body  go to state 78
-    e     go to state 79
+    name  go to state 76
 
 
 State 60
 
-   11 super: e .
+  112 cName: ncName ':' . ncName
+  113 ncName: . "cname"
 
-    $default  reduce using rule 11 (super)
+    "cname"  shift, and go to state 77
+
+    ncName  go to state 78
 
 
 State 61
 
-    9 define: name "=" . annots Definition
-   61 annots: . e
-   62       | . annots annot
-  120 e: . %empty
+    3 schema: nsDecl defs .
 
-    $default  reduce using rule 120 (e)
-
-    annots  go to state 80
-    e       go to state 21
+    $default  reduce using rule 3 (schema)
 
 
 State 62
 
-   68 id: "/" . UintOrHex
-  116 UintOrHex: . "[0-9]+"
-  117          | . "[0x][0-9a-fA-F]+"
+   67 annot: '@' qNameOrKeyword '=' . literal
+   68 literal: . literalSegment
+   69        | . literal literalSegment
+  117 literalSegment: . "\"<annotation>\" or '<annotation>'"
 
-    "[0x][0-9a-fA-F]+"  shift, and go to state 81
-    "[0-9]+"            shift, and go to state 82
+    "\"<annotation>\" or '<annotation>'"  shift, and go to state 79
 
-    UintOrHex  go to state 83
+    literal         go to state 80
+    literalSegment  go to state 81
 
 
 State 63
 
-   66 nameWithId: name id .
+   16 groupDef: nameWithId "->" . fields
+   17 fields: . field
+   18       | . fields ',' field
+   19 field: . annots type annots nameWithId opt
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+  123 e: . %empty  ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f64", "decimal", "date", "timeOfDayMilli", "timeOfDayNano", "nanotime", "millitime", "boolean", "string", "object", "binary", "fixed", "cname", "\\cname"]
 
-    $default  reduce using rule 66 (nameWithId)
+    '@'  shift, and go to state 5
+
+    $default  reduce using rule 123 (e)
+
+    fields     go to state 82
+    field      go to state 83
+    annots     go to state 84
+    annotList  go to state 12
+    annot      go to state 13
+    e          go to state 52
 
 
 State 64
 
-   67 id: e .
+   11 define: nameWithId '=' . enum
+   12       | nameWithId '=' . type
+   22 type: . single
+   23     | . sequence
+   24 single: . ref
+   25       | . time
+   26       | . number
+   27       | . string
+   28       | . binary
+   29       | . fixed
+   30       | . "boolean"
+   31       | . "object"
+   32 sequence: . single '[' ']'
+   33 string: . "string"
+   34       | . "string" size
+   35 binary: . "binary"
+   36       | . "binary" size
+   37 fixed: . "fixed" size
+   39 ref: . qName
+   40    | . qName '*'
+   41 number: . "i8"
+   42       | . "i16"
+   43       | . "i32"
+   44       | . "i64"
+   45       | . "u8"
+   46       | . "u16"
+   47       | . "u32"
+   48       | . "u64"
+   49       | . "f64"
+   50       | . "decimal"
+   51 time: . "date"
+   52     | . "timeOfDayMilli"
+   53     | . "timeOfDayNano"
+   54     | . "nanotime"
+   55     | . "millitime"
+   56 enum: . '|' sym
+   57     | . symList
+   58 symList: . sym
+   59        | . symList '|' sym
+   60 sym: . annots name val
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+   85 qName: . name
+   86      | . cName
+  112 cName: . ncName ':' ncName
+  113 ncName: . "cname"
+  114 name: . "cname"
+  115     | . "\\cname"
+  123 e: . %empty  ["cname", "\\cname"]
 
-    $default  reduce using rule 67 (id)
+    "i8"              shift, and go to state 85
+    "i16"             shift, and go to state 86
+    "i32"             shift, and go to state 87
+    "i64"             shift, and go to state 88
+    "u8"              shift, and go to state 89
+    "u16"             shift, and go to state 90
+    "u32"             shift, and go to state 91
+    "u64"             shift, and go to state 92
+    "f64"             shift, and go to state 93
+    "decimal"         shift, and go to state 94
+    "date"            shift, and go to state 95
+    "timeOfDayMilli"  shift, and go to state 96
+    "timeOfDayNano"   shift, and go to state 97
+    "nanotime"        shift, and go to state 98
+    "millitime"       shift, and go to state 99
+    "boolean"         shift, and go to state 100
+    "string"          shift, and go to state 101
+    "object"          shift, and go to state 102
+    "binary"          shift, and go to state 103
+    "fixed"           shift, and go to state 104
+    "cname"           shift, and go to state 3
+    "\\cname"         shift, and go to state 4
+    '|'               shift, and go to state 105
+    '@'               shift, and go to state 5
+
+    "cname"    [reduce using rule 123 (e)]
+    "\\cname"  [reduce using rule 123 (e)]
+
+    type       go to state 106
+    single     go to state 107
+    sequence   go to state 108
+    string     go to state 109
+    binary     go to state 110
+    fixed      go to state 111
+    ref        go to state 112
+    number     go to state 113
+    time       go to state 114
+    enum       go to state 115
+    symList    go to state 116
+    sym        go to state 117
+    annots     go to state 118
+    annotList  go to state 12
+    annot      go to state 13
+    qName      go to state 119
+    cName      go to state 17
+    ncName     go to state 18
+    name       go to state 19
+    e          go to state 52
 
 
 State 65
 
-   79 incrAnnotItem: "[0x][0-9a-fA-F]+" .
+   14 groupDef: nameWithId ':' . qName
+   15         | nameWithId ':' . qName "->" fields
+   85 qName: . name
+   86      | . cName
+  112 cName: . ncName ':' ncName
+  113 ncName: . "cname"
+  114 name: . "cname"
+  115     | . "\\cname"
 
-    $default  reduce using rule 79 (incrAnnotItem)
+    "cname"    shift, and go to state 3
+    "\\cname"  shift, and go to state 4
+
+    qName   go to state 120
+    cName   go to state 17
+    ncName  go to state 18
+    name    go to state 19
 
 
 State 66
 
-   78 incrAnnotItem: "[0-9]+" .
+   72 id: '/' . UintOrHex
+  121 UintOrHex: . "uint"
+  122          | . "hexnum"
 
-    $default  reduce using rule 78 (incrAnnotItem)
+    "hexnum"  shift, and go to state 121
+    "uint"    shift, and go to state 122
+
+    UintOrHex  go to state 123
 
 
 State 67
 
-   77 incrAnnotItem: "[-][1-9][0-9]*" .
+   70 nameWithId: name id .
 
-    $default  reduce using rule 77 (incrAnnotItem)
+    $default  reduce using rule 70 (nameWithId)
 
 
 State 68
 
-   80 incrAnnotItem: annot .
+   71 id: e .
 
-    $default  reduce using rule 80 (incrAnnotItem)
+    $default  reduce using rule 71 (id)
 
 
 State 69
 
-   69 incrAnnot: compRef "<-" incrAnnotList .
+   83 incrAnnotItem: "hexnum" .
 
-    $default  reduce using rule 69 (incrAnnot)
+    $default  reduce using rule 83 (incrAnnotItem)
 
 
 State 70
 
-   75 incrAnnotList: incrAnnotItem .  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
-   76              | incrAnnotItem . "<-" incrAnnotList
+   82 incrAnnotItem: "uint" .
 
-    "<-"  shift, and go to state 84
-
-    $default  reduce using rule 75 (incrAnnotList)
+    $default  reduce using rule 82 (incrAnnotItem)
 
 
 State 71
 
-   72 compRef: qName "." "type" .
+   81 incrAnnotItem: "int" .
 
-    $default  reduce using rule 72 (compRef)
+    $default  reduce using rule 81 (incrAnnotItem)
 
 
 State 72
 
-   73 compRef: qName "." name .  ["<-"]
-   74        | qName "." name . "." "type"
+   84 incrAnnotItem: annot .
 
-    "."  shift, and go to state 85
-
-    $default  reduce using rule 73 (compRef)
+    $default  reduce using rule 84 (incrAnnotItem)
 
 
 State 73
 
-  109 ncName: "[_a-zA-Z][_a-zA-Z0-9]*" .
+   73 incrAnnot: compRef "<-" incrAnnotList .
 
-    $default  reduce using rule 109 (ncName)
+    $default  reduce using rule 73 (incrAnnot)
 
 
 State 74
 
-  108 cName: ncName ":" ncName .
+   79 incrAnnotList: incrAnnotItem .  [$end, "schema", "cname", "\\cname", '@']
+   80              | incrAnnotItem . "<-" incrAnnotList
 
-    $default  reduce using rule 108 (cName)
+    "<-"  shift, and go to state 124
+
+    $default  reduce using rule 79 (incrAnnotList)
 
 
 State 75
 
-   63 annot: "@" qNameOrKeyword "=" . literal
-   64 literal: . literalSegment
-   65        | . literal literalSegment
-  113 literalSegment: . "\"<annotation>\" or '<annotation>'"
+   76 compRef: qName '.' "type" .
 
-    "\"<annotation>\" or '<annotation>'"  shift, and go to state 86
-
-    literal         go to state 87
-    literalSegment  go to state 88
+    $default  reduce using rule 76 (compRef)
 
 
 State 76
 
-   12 super: ":" qName .
+   77 compRef: qName '.' name .  ["<-"]
+   78        | qName '.' name . '.' "type"
 
-    $default  reduce using rule 12 (super)
+    '.'  shift, and go to state 125
+
+    $default  reduce using rule 77 (compRef)
 
 
 State 77
 
-   14 body: "->" . fields
-   15 fields: . field
-   16       | . fields "," field
-   17 field: . annots type annots nameWithId opt
-   61 annots: . e
-   62       | . annots annot
-  120 e: . %empty
+  113 ncName: "cname" .
 
-    $default  reduce using rule 120 (e)
-
-    fields  go to state 89
-    field   go to state 90
-    annots  go to state 91
-    e       go to state 21
+    $default  reduce using rule 113 (ncName)
 
 
 State 78
 
-   10 groupDef: nameWithId super body .
+  112 cName: ncName ':' ncName .
 
-    $default  reduce using rule 10 (groupDef)
+    $default  reduce using rule 112 (cName)
 
 
 State 79
 
-   13 body: e .
+  117 literalSegment: "\"<annotation>\" or '<annotation>'" .
 
-    $default  reduce using rule 13 (body)
+    $default  reduce using rule 117 (literalSegment)
 
 
 State 80
 
-    9 define: name "=" annots . Definition
-   20 type: . single
-   21     | . sequence
-   22 single: . ref
-   23       | . time
-   24       | . number
-   25       | . string
-   26       | . binary
-   27       | . fixed
-   28       | . "boolean"
-   29       | . "object"
-   30 sequence: . single "[" "]"
-   31 string: . "string"
-   32       | . "string" size
-   33 binary: . "binary"
-   34       | . "binary" size
-   35 fixed: . "fixed" size
-   37 ref: . qName
-   38    | . qName "*"
-   39 number: . "i8"
-   40       | . "i16"
-   41       | . "i32"
-   42       | . "i64"
-   43       | . "u8"
-   44       | . "u16"
-   45       | . "u32"
-   46       | . "u64"
-   47       | . "f64"
-   48       | . "decimal"
-   49 time: . "date"
-   50     | . "timeOfDayMilli"
-   51     | . "timeOfDayNano"
-   52     | . "nanotime"
-   53     | . "millitime"
-   54 enum: . "|" sym
-   55     | . syms "|" sym
-   56 syms: . sym
-   57     | . syms "|" sym
-   58 sym: . annots name val
-   61 annots: . e
-   62       | . annots annot
-   62       | annots . annot
-   63 annot: . "@" qNameOrKeyword "=" literal
-   81 qName: . name
-   82      | . cName
-  108 cName: . ncName ":" ncName
-  109 ncName: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
-  118 Definition: . enum
-  119           | . type
-  120 e: . %empty  ["[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
+   67 annot: '@' qNameOrKeyword '=' literal .  [$end, "i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f64", "decimal", "date", "timeOfDayMilli", "timeOfDayNano", "nanotime", "millitime", "boolean", "string", "object", "schema", "binary", "fixed", "<-", "cname", "\\cname", '@']
+   69 literal: literal . literalSegment
+  117 literalSegment: . "\"<annotation>\" or '<annotation>'"
 
-    "i8"                          shift, and go to state 92
-    "i16"                         shift, and go to state 93
-    "i32"                         shift, and go to state 94
-    "i64"                         shift, and go to state 95
-    "u8"                          shift, and go to state 96
-    "u16"                         shift, and go to state 97
-    "u32"                         shift, and go to state 98
-    "u64"                         shift, and go to state 99
-    "f64"                         shift, and go to state 100
-    "decimal"                     shift, and go to state 101
-    "date"                        shift, and go to state 102
-    "timeOfDayMilli"              shift, and go to state 103
-    "timeOfDayNano"               shift, and go to state 104
-    "nanotime"                    shift, and go to state 105
-    "millitime"                   shift, and go to state 106
-    "boolean"                     shift, and go to state 107
-    "string"                      shift, and go to state 108
-    "object"                      shift, and go to state 109
-    "binary"                      shift, and go to state 110
-    "fixed"                       shift, and go to state 111
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 12
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-    "|"                           shift, and go to state 112
-    "@"                           shift, and go to state 23
+    "\"<annotation>\" or '<annotation>'"  shift, and go to state 79
 
-    "[_a-zA-Z][_a-zA-Z0-9]*"      [reduce using rule 120 (e)]
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  [reduce using rule 120 (e)]
-    "@"                           [reduce using rule 120 (e)]
+    $default  reduce using rule 67 (annot)
 
-    type        go to state 113
-    single      go to state 114
-    sequence    go to state 115
-    string      go to state 116
-    binary      go to state 117
-    fixed       go to state 118
-    ref         go to state 119
-    number      go to state 120
-    time        go to state 121
-    enum        go to state 122
-    syms        go to state 123
-    sym         go to state 124
-    annots      go to state 125
-    annot       go to state 26
-    qName       go to state 126
-    cName       go to state 18
-    ncName      go to state 19
-    name        go to state 20
-    Definition  go to state 127
-    e           go to state 21
+    literalSegment  go to state 126
 
 
 State 81
 
-  117 UintOrHex: "[0x][0-9a-fA-F]+" .
+   68 literal: literalSegment .
 
-    $default  reduce using rule 117 (UintOrHex)
+    $default  reduce using rule 68 (literal)
 
 
 State 82
 
-  116 UintOrHex: "[0-9]+" .
+   16 groupDef: nameWithId "->" fields .  [$end, "schema", "cname", "\\cname", '@']
+   18 fields: fields . ',' field
 
-    $default  reduce using rule 116 (UintOrHex)
+    ','  shift, and go to state 127
+
+    $default  reduce using rule 16 (groupDef)
 
 
 State 83
 
-   68 id: "/" UintOrHex .
+   17 fields: field .
 
-    $default  reduce using rule 68 (id)
+    $default  reduce using rule 17 (fields)
 
 
 State 84
 
-   63 annot: . "@" qNameOrKeyword "=" literal
-   75 incrAnnotList: . incrAnnotItem
-   76              | . incrAnnotItem "<-" incrAnnotList
-   76              | incrAnnotItem "<-" . incrAnnotList
-   77 incrAnnotItem: . "[-][1-9][0-9]*"
-   78              | . "[0-9]+"
-   79              | . "[0x][0-9a-fA-F]+"
-   80              | . annot
+   19 field: annots . type annots nameWithId opt
+   22 type: . single
+   23     | . sequence
+   24 single: . ref
+   25       | . time
+   26       | . number
+   27       | . string
+   28       | . binary
+   29       | . fixed
+   30       | . "boolean"
+   31       | . "object"
+   32 sequence: . single '[' ']'
+   33 string: . "string"
+   34       | . "string" size
+   35 binary: . "binary"
+   36       | . "binary" size
+   37 fixed: . "fixed" size
+   39 ref: . qName
+   40    | . qName '*'
+   41 number: . "i8"
+   42       | . "i16"
+   43       | . "i32"
+   44       | . "i64"
+   45       | . "u8"
+   46       | . "u16"
+   47       | . "u32"
+   48       | . "u64"
+   49       | . "f64"
+   50       | . "decimal"
+   51 time: . "date"
+   52     | . "timeOfDayMilli"
+   53     | . "timeOfDayNano"
+   54     | . "nanotime"
+   55     | . "millitime"
+   85 qName: . name
+   86      | . cName
+  112 cName: . ncName ':' ncName
+  113 ncName: . "cname"
+  114 name: . "cname"
+  115     | . "\\cname"
 
-    "[0x][0-9a-fA-F]+"  shift, and go to state 65
-    "[0-9]+"            shift, and go to state 66
-    "[-][1-9][0-9]*"    shift, and go to state 67
-    "@"                 shift, and go to state 23
+    "i8"              shift, and go to state 85
+    "i16"             shift, and go to state 86
+    "i32"             shift, and go to state 87
+    "i64"             shift, and go to state 88
+    "u8"              shift, and go to state 89
+    "u16"             shift, and go to state 90
+    "u32"             shift, and go to state 91
+    "u64"             shift, and go to state 92
+    "f64"             shift, and go to state 93
+    "decimal"         shift, and go to state 94
+    "date"            shift, and go to state 95
+    "timeOfDayMilli"  shift, and go to state 96
+    "timeOfDayNano"   shift, and go to state 97
+    "nanotime"        shift, and go to state 98
+    "millitime"       shift, and go to state 99
+    "boolean"         shift, and go to state 100
+    "string"          shift, and go to state 101
+    "object"          shift, and go to state 102
+    "binary"          shift, and go to state 103
+    "fixed"           shift, and go to state 104
+    "cname"           shift, and go to state 3
+    "\\cname"         shift, and go to state 4
 
-    annot          go to state 68
-    incrAnnotList  go to state 128
-    incrAnnotItem  go to state 70
+    type      go to state 128
+    single    go to state 107
+    sequence  go to state 108
+    string    go to state 109
+    binary    go to state 110
+    fixed     go to state 111
+    ref       go to state 112
+    number    go to state 113
+    time      go to state 114
+    qName     go to state 119
+    cName     go to state 17
+    ncName    go to state 18
+    name      go to state 19
 
 
 State 85
 
-   74 compRef: qName "." name "." . "type"
-
-    "type"  shift, and go to state 129
-
-
-State 86
-
-  113 literalSegment: "\"<annotation>\" or '<annotation>'" .
-
-    $default  reduce using rule 113 (literalSegment)
-
-
-State 87
-
-   63 annot: "@" qNameOrKeyword "=" literal .  [$end, "i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f64", "decimal", "date", "timeOfDayMilli", "timeOfDayNano", "nanotime", "millitime", "boolean", "string", "object", "schema", "binary", "fixed", "<-", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "|", "@"]
-   65 literal: literal . literalSegment
-  113 literalSegment: . "\"<annotation>\" or '<annotation>'"
-
-    "\"<annotation>\" or '<annotation>'"  shift, and go to state 86
-
-    $default  reduce using rule 63 (annot)
-
-    literalSegment  go to state 130
-
-
-State 88
-
-   64 literal: literalSegment .
-
-    $default  reduce using rule 64 (literal)
-
-
-State 89
-
-   14 body: "->" fields .  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
-   16 fields: fields . "," field
-
-    ","  shift, and go to state 131
-
-    $default  reduce using rule 14 (body)
-
-
-State 90
-
-   15 fields: field .
-
-    $default  reduce using rule 15 (fields)
-
-
-State 91
-
-   17 field: annots . type annots nameWithId opt
-   20 type: . single
-   21     | . sequence
-   22 single: . ref
-   23       | . time
-   24       | . number
-   25       | . string
-   26       | . binary
-   27       | . fixed
-   28       | . "boolean"
-   29       | . "object"
-   30 sequence: . single "[" "]"
-   31 string: . "string"
-   32       | . "string" size
-   33 binary: . "binary"
-   34       | . "binary" size
-   35 fixed: . "fixed" size
-   37 ref: . qName
-   38    | . qName "*"
-   39 number: . "i8"
-   40       | . "i16"
-   41       | . "i32"
-   42       | . "i64"
-   43       | . "u8"
-   44       | . "u16"
-   45       | . "u32"
-   46       | . "u64"
-   47       | . "f64"
-   48       | . "decimal"
-   49 time: . "date"
-   50     | . "timeOfDayMilli"
-   51     | . "timeOfDayNano"
-   52     | . "nanotime"
-   53     | . "millitime"
-   62 annots: annots . annot
-   63 annot: . "@" qNameOrKeyword "=" literal
-   81 qName: . name
-   82      | . cName
-  108 cName: . ncName ":" ncName
-  109 ncName: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
-
-    "i8"                          shift, and go to state 92
-    "i16"                         shift, and go to state 93
-    "i32"                         shift, and go to state 94
-    "i64"                         shift, and go to state 95
-    "u8"                          shift, and go to state 96
-    "u16"                         shift, and go to state 97
-    "u32"                         shift, and go to state 98
-    "u64"                         shift, and go to state 99
-    "f64"                         shift, and go to state 100
-    "decimal"                     shift, and go to state 101
-    "date"                        shift, and go to state 102
-    "timeOfDayMilli"              shift, and go to state 103
-    "timeOfDayNano"               shift, and go to state 104
-    "nanotime"                    shift, and go to state 105
-    "millitime"                   shift, and go to state 106
-    "boolean"                     shift, and go to state 107
-    "string"                      shift, and go to state 108
-    "object"                      shift, and go to state 109
-    "binary"                      shift, and go to state 110
-    "fixed"                       shift, and go to state 111
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 12
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-    "@"                           shift, and go to state 23
-
-    type      go to state 132
-    single    go to state 114
-    sequence  go to state 115
-    string    go to state 116
-    binary    go to state 117
-    fixed     go to state 118
-    ref       go to state 119
-    number    go to state 120
-    time      go to state 121
-    annot     go to state 26
-    qName     go to state 126
-    cName     go to state 18
-    ncName    go to state 19
-    name      go to state 20
-
-
-State 92
-
-   39 number: "i8" .
-
-    $default  reduce using rule 39 (number)
-
-
-State 93
-
-   40 number: "i16" .
-
-    $default  reduce using rule 40 (number)
-
-
-State 94
-
-   41 number: "i32" .
+   41 number: "i8" .
 
     $default  reduce using rule 41 (number)
 
 
-State 95
+State 86
 
-   42 number: "i64" .
+   42 number: "i16" .
 
     $default  reduce using rule 42 (number)
 
 
-State 96
+State 87
 
-   43 number: "u8" .
+   43 number: "i32" .
 
     $default  reduce using rule 43 (number)
 
 
-State 97
+State 88
 
-   44 number: "u16" .
+   44 number: "i64" .
 
     $default  reduce using rule 44 (number)
 
 
-State 98
+State 89
 
-   45 number: "u32" .
+   45 number: "u8" .
 
     $default  reduce using rule 45 (number)
 
 
-State 99
+State 90
 
-   46 number: "u64" .
+   46 number: "u16" .
 
     $default  reduce using rule 46 (number)
 
 
-State 100
+State 91
 
-   47 number: "f64" .
+   47 number: "u32" .
 
     $default  reduce using rule 47 (number)
 
 
-State 101
+State 92
 
-   48 number: "decimal" .
+   48 number: "u64" .
 
     $default  reduce using rule 48 (number)
 
 
-State 102
+State 93
 
-   49 time: "date" .
+   49 number: "f64" .
 
-    $default  reduce using rule 49 (time)
-
-
-State 103
-
-   50 time: "timeOfDayMilli" .
-
-    $default  reduce using rule 50 (time)
+    $default  reduce using rule 49 (number)
 
 
-State 104
+State 94
 
-   51 time: "timeOfDayNano" .
+   50 number: "decimal" .
+
+    $default  reduce using rule 50 (number)
+
+
+State 95
+
+   51 time: "date" .
 
     $default  reduce using rule 51 (time)
 
 
-State 105
+State 96
 
-   52 time: "nanotime" .
+   52 time: "timeOfDayMilli" .
 
     $default  reduce using rule 52 (time)
 
 
-State 106
+State 97
 
-   53 time: "millitime" .
+   53 time: "timeOfDayNano" .
 
     $default  reduce using rule 53 (time)
 
 
+State 98
+
+   54 time: "nanotime" .
+
+    $default  reduce using rule 54 (time)
+
+
+State 99
+
+   55 time: "millitime" .
+
+    $default  reduce using rule 55 (time)
+
+
+State 100
+
+   30 single: "boolean" .
+
+    $default  reduce using rule 30 (single)
+
+
+State 101
+
+   33 string: "string" .  [$end, "schema", "cname", "\\cname", '[', '@']
+   34       | "string" . size
+   38 size: . '(' UintOrHex ')'
+
+    '('  shift, and go to state 129
+
+    $default  reduce using rule 33 (string)
+
+    size  go to state 130
+
+
+State 102
+
+   31 single: "object" .
+
+    $default  reduce using rule 31 (single)
+
+
+State 103
+
+   35 binary: "binary" .  [$end, "schema", "cname", "\\cname", '[', '@']
+   36       | "binary" . size
+   38 size: . '(' UintOrHex ')'
+
+    '('  shift, and go to state 129
+
+    $default  reduce using rule 35 (binary)
+
+    size  go to state 131
+
+
+State 104
+
+   37 fixed: "fixed" . size
+   38 size: . '(' UintOrHex ')'
+
+    '('  shift, and go to state 129
+
+    size  go to state 132
+
+
+State 105
+
+   56 enum: '|' . sym
+   60 sym: . annots name val
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+  123 e: . %empty  ["cname", "\\cname"]
+
+    '@'  shift, and go to state 5
+
+    $default  reduce using rule 123 (e)
+
+    sym        go to state 133
+    annots     go to state 118
+    annotList  go to state 12
+    annot      go to state 13
+    e          go to state 52
+
+
+State 106
+
+   12 define: nameWithId '=' type .
+
+    $default  reduce using rule 12 (define)
+
+
 State 107
 
-   28 single: "boolean" .
+   22 type: single .  [$end, "schema", "cname", "\\cname", '@']
+   32 sequence: single . '[' ']'
 
-    $default  reduce using rule 28 (single)
+    '['  shift, and go to state 134
+
+    $default  reduce using rule 22 (type)
 
 
 State 108
 
-   31 string: "string" .  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "[", "@"]
-   32       | "string" . size
-   36 size: . "(" UintOrHex ")"
+   23 type: sequence .
 
-    "("  shift, and go to state 133
-
-    $default  reduce using rule 31 (string)
-
-    size  go to state 134
+    $default  reduce using rule 23 (type)
 
 
 State 109
 
-   29 single: "object" .
-
-    $default  reduce using rule 29 (single)
-
-
-State 110
-
-   33 binary: "binary" .  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "[", "@"]
-   34       | "binary" . size
-   36 size: . "(" UintOrHex ")"
-
-    "("  shift, and go to state 133
-
-    $default  reduce using rule 33 (binary)
-
-    size  go to state 135
-
-
-State 111
-
-   35 fixed: "fixed" . size
-   36 size: . "(" UintOrHex ")"
-
-    "("  shift, and go to state 133
-
-    size  go to state 136
-
-
-State 112
-
-   54 enum: "|" . sym
-   58 sym: . annots name val
-   61 annots: . e
-   62       | . annots annot
-  120 e: . %empty
-
-    $default  reduce using rule 120 (e)
-
-    sym     go to state 137
-    annots  go to state 125
-    e       go to state 21
-
-
-State 113
-
-  119 Definition: type .
-
-    $default  reduce using rule 119 (Definition)
-
-
-State 114
-
-   20 type: single .  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
-   30 sequence: single . "[" "]"
-
-    "["  shift, and go to state 138
-
-    $default  reduce using rule 20 (type)
-
-
-State 115
-
-   21 type: sequence .
-
-    $default  reduce using rule 21 (type)
-
-
-State 116
-
-   25 single: string .
-
-    $default  reduce using rule 25 (single)
-
-
-State 117
-
-   26 single: binary .
-
-    $default  reduce using rule 26 (single)
-
-
-State 118
-
-   27 single: fixed .
+   27 single: string .
 
     $default  reduce using rule 27 (single)
 
 
-State 119
+State 110
 
-   22 single: ref .
+   28 single: binary .
 
-    $default  reduce using rule 22 (single)
+    $default  reduce using rule 28 (single)
 
 
-State 120
+State 111
 
-   24 single: number .
+   29 single: fixed .
+
+    $default  reduce using rule 29 (single)
+
+
+State 112
+
+   24 single: ref .
 
     $default  reduce using rule 24 (single)
 
 
+State 113
+
+   26 single: number .
+
+    $default  reduce using rule 26 (single)
+
+
+State 114
+
+   25 single: time .
+
+    $default  reduce using rule 25 (single)
+
+
+State 115
+
+   11 define: nameWithId '=' enum .
+
+    $default  reduce using rule 11 (define)
+
+
+State 116
+
+   57 enum: symList .  [$end, "schema", "cname", "\\cname", '@']
+   59 symList: symList . '|' sym
+
+    '|'  shift, and go to state 135
+
+    $default  reduce using rule 57 (enum)
+
+
+State 117
+
+   58 symList: sym .
+
+    $default  reduce using rule 58 (symList)
+
+
+State 118
+
+   60 sym: annots . name val
+  114 name: . "cname"
+  115     | . "\\cname"
+
+    "cname"    shift, and go to state 22
+    "\\cname"  shift, and go to state 4
+
+    name  go to state 136
+
+
+State 119
+
+   39 ref: qName .  [$end, "schema", "cname", "\\cname", '[', '@']
+   40    | qName . '*'
+
+    '*'  shift, and go to state 137
+
+    $default  reduce using rule 39 (ref)
+
+
+State 120
+
+   14 groupDef: nameWithId ':' qName .  [$end, "schema", "cname", "\\cname", '@']
+   15         | nameWithId ':' qName . "->" fields
+
+    "->"  shift, and go to state 138
+
+    $default  reduce using rule 14 (groupDef)
+
+
 State 121
 
-   23 single: time .
+  122 UintOrHex: "hexnum" .
 
-    $default  reduce using rule 23 (single)
+    $default  reduce using rule 122 (UintOrHex)
 
 
 State 122
 
-  118 Definition: enum .
+  121 UintOrHex: "uint" .
 
-    $default  reduce using rule 118 (Definition)
+    $default  reduce using rule 121 (UintOrHex)
 
 
 State 123
 
-   55 enum: syms . "|" sym
-   57 syms: syms . "|" sym
+   72 id: '/' UintOrHex .
 
-    "|"  shift, and go to state 139
+    $default  reduce using rule 72 (id)
 
 
 State 124
 
-   56 syms: sym .
+   67 annot: . '@' qNameOrKeyword '=' literal
+   79 incrAnnotList: . incrAnnotItem
+   80              | . incrAnnotItem "<-" incrAnnotList
+   80              | incrAnnotItem "<-" . incrAnnotList
+   81 incrAnnotItem: . "int"
+   82              | . "uint"
+   83              | . "hexnum"
+   84              | . annot
 
-    $default  reduce using rule 56 (syms)
+    "hexnum"  shift, and go to state 69
+    "uint"    shift, and go to state 70
+    "int"     shift, and go to state 71
+    '@'       shift, and go to state 5
+
+    annot          go to state 72
+    incrAnnotList  go to state 139
+    incrAnnotItem  go to state 74
 
 
 State 125
 
-   58 sym: annots . name val
-   62 annots: annots . annot
-   63 annot: . "@" qNameOrKeyword "=" literal
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
+   78 compRef: qName '.' name '.' . "type"
 
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 7
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-    "@"                           shift, and go to state 23
-
-    annot  go to state 26
-    name   go to state 140
+    "type"  shift, and go to state 140
 
 
 State 126
 
-   37 ref: qName .  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "[", "@"]
-   38    | qName . "*"
+   69 literal: literal literalSegment .
 
-    "*"  shift, and go to state 141
-
-    $default  reduce using rule 37 (ref)
+    $default  reduce using rule 69 (literal)
 
 
 State 127
 
-    9 define: name "=" annots Definition .
+   18 fields: fields ',' . field
+   19 field: . annots type annots nameWithId opt
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+  123 e: . %empty  ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f64", "decimal", "date", "timeOfDayMilli", "timeOfDayNano", "nanotime", "millitime", "boolean", "string", "object", "binary", "fixed", "cname", "\\cname"]
 
-    $default  reduce using rule 9 (define)
+    '@'  shift, and go to state 5
+
+    $default  reduce using rule 123 (e)
+
+    field      go to state 141
+    annots     go to state 84
+    annotList  go to state 12
+    annot      go to state 13
+    e          go to state 52
 
 
 State 128
 
-   76 incrAnnotList: incrAnnotItem "<-" incrAnnotList .
+   19 field: annots type . annots nameWithId opt
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+  123 e: . %empty  ["cname", "\\cname"]
 
-    $default  reduce using rule 76 (incrAnnotList)
+    '@'  shift, and go to state 5
+
+    $default  reduce using rule 123 (e)
+
+    annots     go to state 142
+    annotList  go to state 12
+    annot      go to state 13
+    e          go to state 52
 
 
 State 129
 
-   74 compRef: qName "." name "." "type" .
+   38 size: '(' . UintOrHex ')'
+  121 UintOrHex: . "uint"
+  122          | . "hexnum"
 
-    $default  reduce using rule 74 (compRef)
+    "hexnum"  shift, and go to state 121
+    "uint"    shift, and go to state 122
+
+    UintOrHex  go to state 143
 
 
 State 130
 
-   65 literal: literal literalSegment .
+   34 string: "string" size .
 
-    $default  reduce using rule 65 (literal)
+    $default  reduce using rule 34 (string)
 
 
 State 131
 
-   16 fields: fields "," . field
-   17 field: . annots type annots nameWithId opt
-   61 annots: . e
-   62       | . annots annot
-  120 e: . %empty
+   36 binary: "binary" size .
 
-    $default  reduce using rule 120 (e)
-
-    field   go to state 142
-    annots  go to state 91
-    e       go to state 21
+    $default  reduce using rule 36 (binary)
 
 
 State 132
 
-   17 field: annots type . annots nameWithId opt
-   61 annots: . e
-   62       | . annots annot
-  120 e: . %empty
+   37 fixed: "fixed" size .
 
-    $default  reduce using rule 120 (e)
-
-    annots  go to state 143
-    e       go to state 21
+    $default  reduce using rule 37 (fixed)
 
 
 State 133
 
-   36 size: "(" . UintOrHex ")"
-  116 UintOrHex: . "[0-9]+"
-  117          | . "[0x][0-9a-fA-F]+"
+   56 enum: '|' sym .
 
-    "[0x][0-9a-fA-F]+"  shift, and go to state 81
-    "[0-9]+"            shift, and go to state 82
-
-    UintOrHex  go to state 144
+    $default  reduce using rule 56 (enum)
 
 
 State 134
 
-   32 string: "string" size .
+   32 sequence: single '[' . ']'
 
-    $default  reduce using rule 32 (string)
+    ']'  shift, and go to state 144
 
 
 State 135
 
-   34 binary: "binary" size .
+   59 symList: symList '|' . sym
+   60 sym: . annots name val
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+  123 e: . %empty  ["cname", "\\cname"]
 
-    $default  reduce using rule 34 (binary)
+    '@'  shift, and go to state 5
+
+    $default  reduce using rule 123 (e)
+
+    sym        go to state 145
+    annots     go to state 118
+    annotList  go to state 12
+    annot      go to state 13
+    e          go to state 52
 
 
 State 136
 
-   35 fixed: "fixed" size .
+   60 sym: annots name . val
+   61 val: . e
+   62    | . '/' AnyInt
+  123 e: . %empty  [$end, "schema", "cname", "\\cname", '|', '@']
 
-    $default  reduce using rule 35 (fixed)
+    '/'  shift, and go to state 146
+
+    $default  reduce using rule 123 (e)
+
+    val  go to state 147
+    e    go to state 148
 
 
 State 137
 
-   54 enum: "|" sym .
+   40 ref: qName '*' .
 
-    $default  reduce using rule 54 (enum)
+    $default  reduce using rule 40 (ref)
 
 
 State 138
 
-   30 sequence: single "[" . "]"
+   15 groupDef: nameWithId ':' qName "->" . fields
+   17 fields: . field
+   18       | . fields ',' field
+   19 field: . annots type annots nameWithId opt
+   63 annots: . e
+   64       | . annotList
+   65 annotList: . annot
+   66          | . annotList annot
+   67 annot: . '@' qNameOrKeyword '=' literal
+  123 e: . %empty  ["i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f64", "decimal", "date", "timeOfDayMilli", "timeOfDayNano", "nanotime", "millitime", "boolean", "string", "object", "binary", "fixed", "cname", "\\cname"]
 
-    "]"  shift, and go to state 145
+    '@'  shift, and go to state 5
+
+    $default  reduce using rule 123 (e)
+
+    fields     go to state 149
+    field      go to state 83
+    annots     go to state 84
+    annotList  go to state 12
+    annot      go to state 13
+    e          go to state 52
 
 
 State 139
 
-   55 enum: syms "|" . sym
-   57 syms: syms "|" . sym
-   58 sym: . annots name val
-   61 annots: . e
-   62       | . annots annot
-  120 e: . %empty
+   80 incrAnnotList: incrAnnotItem "<-" incrAnnotList .
 
-    $default  reduce using rule 120 (e)
-
-    sym     go to state 146
-    annots  go to state 125
-    e       go to state 21
+    $default  reduce using rule 80 (incrAnnotList)
 
 
 State 140
 
-   58 sym: annots name . val
-   59 val: . e
-   60    | . "/" IntOrHex
-  120 e: . %empty  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "|", "@"]
+   78 compRef: qName '.' name '.' "type" .
 
-    "/"  shift, and go to state 147
-
-    $default  reduce using rule 120 (e)
-
-    val  go to state 148
-    e    go to state 149
+    $default  reduce using rule 78 (compRef)
 
 
 State 141
 
-   38 ref: qName "*" .
+   18 fields: fields ',' field .
 
-    $default  reduce using rule 38 (ref)
+    $default  reduce using rule 18 (fields)
 
 
 State 142
 
-   16 fields: fields "," field .
+   19 field: annots type annots . nameWithId opt
+   70 nameWithId: . name id
+  114 name: . "cname"
+  115     | . "\\cname"
 
-    $default  reduce using rule 16 (fields)
+    "cname"    shift, and go to state 22
+    "\\cname"  shift, and go to state 4
+
+    nameWithId  go to state 150
+    name        go to state 56
 
 
 State 143
 
-   17 field: annots type annots . nameWithId opt
-   62 annots: annots . annot
-   63 annot: . "@" qNameOrKeyword "=" literal
-   66 nameWithId: . name id
-  110 name: . "[_a-zA-Z][_a-zA-Z0-9]*"
-  111     | . "[\\][_a-zA-Z][_a-zA-Z0-9]*"
+   38 size: '(' UintOrHex . ')'
 
-    "[_a-zA-Z][_a-zA-Z0-9]*"      shift, and go to state 7
-    "[\\][_a-zA-Z][_a-zA-Z0-9]*"  shift, and go to state 8
-    "@"                           shift, and go to state 23
-
-    annot       go to state 26
-    nameWithId  go to state 150
-    name        go to state 151
+    ')'  shift, and go to state 151
 
 
 State 144
 
-   36 size: "(" UintOrHex . ")"
+   32 sequence: single '[' ']' .
 
-    ")"  shift, and go to state 152
+    $default  reduce using rule 32 (sequence)
 
 
 State 145
 
-   30 sequence: single "[" "]" .
+   59 symList: symList '|' sym .
 
-    $default  reduce using rule 30 (sequence)
+    $default  reduce using rule 59 (symList)
 
 
 State 146
 
-   55 enum: syms "|" sym .  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", "@"]
-   57 syms: syms "|" sym .  ["|"]
+   62 val: '/' . AnyInt
+  118 AnyInt: . "int"
+  119       | . "hexnum"
+  120       | . "uint"
 
-    "|"       reduce using rule 57 (syms)
-    $default  reduce using rule 55 (enum)
+    "hexnum"  shift, and go to state 152
+    "uint"    shift, and go to state 153
+    "int"     shift, and go to state 154
+
+    AnyInt  go to state 155
 
 
 State 147
 
-   60 val: "/" . IntOrHex
-  114 IntOrHex: . "[-][1-9][0-9]*"
-  115         | . "[0x][0-9a-fA-F]+"
+   60 sym: annots name val .
 
-    "[0x][0-9a-fA-F]+"  shift, and go to state 153
-    "[-][1-9][0-9]*"    shift, and go to state 154
-
-    IntOrHex  go to state 155
+    $default  reduce using rule 60 (sym)
 
 
 State 148
 
-   58 sym: annots name val .
+   61 val: e .
 
-    $default  reduce using rule 58 (sym)
+    $default  reduce using rule 61 (val)
 
 
 State 149
 
-   59 val: e .
+   15 groupDef: nameWithId ':' qName "->" fields .  [$end, "schema", "cname", "\\cname", '@']
+   18 fields: fields . ',' field
 
-    $default  reduce using rule 59 (val)
+    ','  shift, and go to state 127
+
+    $default  reduce using rule 15 (groupDef)
 
 
 State 150
 
-   17 field: annots type annots nameWithId . opt
-   18 opt: . e
-   19    | . "?"
-  120 e: . %empty  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", ",", "@"]
+   19 field: annots type annots nameWithId . opt
+   20 opt: . e
+   21    | . '?'
+  123 e: . %empty  [$end, "schema", "cname", "\\cname", ',', '@']
 
-    "?"  shift, and go to state 156
+    '?'  shift, and go to state 156
 
-    $default  reduce using rule 120 (e)
+    $default  reduce using rule 123 (e)
 
     opt  go to state 157
     e    go to state 158
@@ -1969,63 +2059,55 @@ State 150
 
 State 151
 
-   66 nameWithId: name . id
-   67 id: . e
-   68   | . "/" UintOrHex
-  120 e: . %empty  [$end, "schema", "[_a-zA-Z][_a-zA-Z0-9]*", "[\\][_a-zA-Z][_a-zA-Z0-9]*", ",", "?", "@"]
+   38 size: '(' UintOrHex ')' .
 
-    "/"  shift, and go to state 62
-
-    $default  reduce using rule 120 (e)
-
-    id  go to state 63
-    e   go to state 64
+    $default  reduce using rule 38 (size)
 
 
 State 152
 
-   36 size: "(" UintOrHex ")" .
+  119 AnyInt: "hexnum" .
 
-    $default  reduce using rule 36 (size)
+    $default  reduce using rule 119 (AnyInt)
 
 
 State 153
 
-  115 IntOrHex: "[0x][0-9a-fA-F]+" .
+  120 AnyInt: "uint" .
 
-    $default  reduce using rule 115 (IntOrHex)
+    $default  reduce using rule 120 (AnyInt)
 
 
 State 154
 
-  114 IntOrHex: "[-][1-9][0-9]*" .
+  118 AnyInt: "int" .
 
-    $default  reduce using rule 114 (IntOrHex)
+    $default  reduce using rule 118 (AnyInt)
 
 
 State 155
 
-   60 val: "/" IntOrHex .
+   62 val: '/' AnyInt .
 
-    $default  reduce using rule 60 (val)
+    $default  reduce using rule 62 (val)
 
 
 State 156
 
-   19 opt: "?" .
+   21 opt: '?' .
 
-    $default  reduce using rule 19 (opt)
+    $default  reduce using rule 21 (opt)
 
 
 State 157
 
-   17 field: annots type annots nameWithId opt .
+   19 field: annots type annots nameWithId opt .
 
-    $default  reduce using rule 17 (field)
+    $default  reduce using rule 19 (field)
 
 
 State 158
 
-   18 opt: e .
+   20 opt: e .
 
-    $default  reduce using rule 18 (opt)
+    $default  reduce using rule 20 (opt)

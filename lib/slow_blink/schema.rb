@@ -45,6 +45,8 @@ module SlowBlink
             else
                 @namespace = nil
             end
+
+            @defs = defs
 =begin                
             @defs = []
             defs.each do |d|

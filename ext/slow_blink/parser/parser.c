@@ -273,16 +273,16 @@ static YYLTYPE yyloc_default
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  10
+#define YYFINAL  50
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   226
+#define YYLAST   181
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  48
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  47
+#define YYNNTS  46
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  121
+#define YYNRULES  124
 /* YYNRULES -- Number of states.  */
 #define YYNSTATES  159
 /* YYMAXRHS -- Maximum number of symbols on right-hand side of rule.  */
@@ -293,7 +293,7 @@ static YYLTYPE yyloc_default
 
 /* YYTRANSLATE(X) -- Bison symbol number corresponding to X.  */
 #define YYUNDEFTOK  2
-#define YYMAXUTOK   302
+#define YYMAXUTOK   289
 
 #define YYTRANSLATE(YYX)                                                \
   ((unsigned int) (YYX) <= YYMAXUTOK ? yytranslate[YYX] : YYUNDEFTOK)
@@ -305,15 +305,15 @@ static const unsigned char yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+      41,    42,    43,     2,    37,     2,    47,    45,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     2,    36,     2,
+       2,    35,     2,    38,    46,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,    39,     2,    40,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,    44,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -329,28 +329,26 @@ static const unsigned char yytranslate[] =
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
       15,    16,    17,    18,    19,    20,    21,    22,    23,    24,
-      25,    26,    27,    28,    29,    30,    31,    32,    33,    34,
-      35,    36,    37,    38,    39,    40,    41,    42,    43,    44,
-      45,    46,    47
+      25,    26,    27,    28,    29,    30,    31,    32,    33,    34
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,   137,   137,   144,   150,   158,   163,   170,   176,   182,
-     186,   195,   203,   205,   212,   217,   224,   229,   236,   247,
-     252,   259,   261,   265,   267,   269,   271,   273,   275,   277,
-     282,   289,   296,   301,   308,   313,   320,   327,   334,   340,
-     348,   353,   358,   363,   368,   373,   378,   383,   388,   393,
-     400,   405,   410,   415,   420,   428,   433,   440,   445,   452,
-     461,   463,   470,   475,   482,   490,   492,   499,   507,   509,
-     516,   524,   530,   536,   542,   548,   556,   561,   569,   571,
-     573,   575,   579,   581,   585,   587,   591,   596,   601,   606,
-     611,   616,   621,   626,   631,   636,   641,   646,   651,   656,
-     661,   666,   671,   676,   681,   686,   691,   696,   701,   708,
-     716,   720,   722,   726,   733,   737,   739,   743,   745,   749,
-     755,   759
+       0,   138,   138,   145,   151,   159,   164,   168,   173,   180,
+     186,   192,   196,   202,   210,   216,   222,   228,   236,   241,
+     248,   259,   264,   271,   273,   277,   279,   281,   283,   285,
+     287,   289,   294,   301,   308,   314,   322,   328,   336,   343,
+     350,   356,   364,   369,   374,   379,   384,   389,   394,   399,
+     404,   409,   416,   421,   426,   431,   436,   444,   449,   453,
+     458,   465,   475,   477,   484,   489,   493,   498,   504,   512,
+     514,   521,   529,   531,   538,   546,   552,   558,   564,   570,
+     578,   583,   591,   593,   595,   597,   601,   603,   607,   609,
+     613,   618,   623,   628,   633,   638,   643,   648,   653,   658,
+     663,   668,   673,   678,   683,   688,   693,   698,   703,   708,
+     713,   718,   723,   730,   738,   742,   744,   748,   755,   759,
+     761,   763,   767,   769,   773
 };
 #endif
 
@@ -364,44 +362,43 @@ static const char *const yytname[] =
   "\"decimal\"", "\"date\"", "\"timeOfDayMilli\"", "\"timeOfDayNano\"",
   "\"nanotime\"", "\"millitime\"", "\"boolean\"", "\"string\"",
   "\"object\"", "\"namespace\"", "\"type\"", "\"schema\"", "\"binary\"",
-  "\"number\"", "\"fixed\"", "\"<-\"", "\"->\"", "\"[0x][0-9a-fA-F]+\"",
-  "\"[0-9]+\"", "\"[-][1-9][0-9]*\"", "\"[_a-zA-Z][_a-zA-Z0-9]*\"",
-  "\"[\\\\][_a-zA-Z][_a-zA-Z0-9]*\"",
-  "\"\\\"<annotation>\\\" or '<annotation>'\"", "\"=\"", "\":\"", "\",\"",
-  "\"?\"", "\"[\"", "\"]\"", "\"(\"", "\")\"", "\"*\"", "\"|\"", "\"/\"",
-  "\"@\"", "\".\"", "$accept", "top", "schema", "defs", "def", "define",
-  "groupDef", "super", "body", "fields", "field", "opt", "type", "single",
-  "sequence", "string", "binary", "fixed", "size", "ref", "number", "time",
-  "enum", "syms", "sym", "val", "annots", "annot", "literal", "nameWithId",
+  "\"number\"", "\"fixed\"", "\"<-\"", "\"->\"", "\"hexnum\"", "\"uint\"",
+  "\"int\"", "\"cname\"", "\"\\\\cname\"",
+  "\"\\\"<annotation>\\\" or '<annotation>'\"", "'='", "':'", "','", "'?'",
+  "'['", "']'", "'('", "')'", "'*'", "'|'", "'/'", "'@'", "'.'", "$accept",
+  "top", "schema", "defs", "defList", "def", "define", "groupDef",
+  "fields", "field", "opt", "type", "single", "sequence", "string",
+  "binary", "fixed", "size", "ref", "number", "time", "enum", "symList",
+  "sym", "val", "annots", "annotList", "annot", "literal", "nameWithId",
   "id", "incrAnnot", "compRef", "incrAnnotList", "incrAnnotItem", "qName",
   "qNameOrKeyword", "keyword", "cName", "ncName", "name", "nsDecl",
-  "literalSegment", "IntOrHex", "UintOrHex", "Definition", "e", YY_NULLPTR
+  "literalSegment", "AnyInt", "UintOrHex", "e", YY_NULLPTR
 };
 #endif
 
-#define YYPACT_NINF -106
-#define YYTABLE_NINF -122
+#define YYPACT_NINF -93
+#define YYTABLE_NINF -115
 
   /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
      STATE-NUM.  */
 static const short int yypact[] =
 {
-     -17,     9,    18,  -106,   -11,  -106,  -106,  -106,  -106,  -106,
-    -106,  -106,   -10,  -106,   -16,  -106,    -7,   -15,  -106,    14,
-    -106,  -106,    -9,   193,  -106,  -106,  -106,    15,    -2,   -21,
-       7,     4,  -106,  -106,  -106,  -106,  -106,  -106,  -106,  -106,
-    -106,  -106,  -106,  -106,  -106,  -106,  -106,  -106,  -106,  -106,
-    -106,  -106,  -106,  -106,  -106,  -106,    19,  -106,    12,    24,
-    -106,  -106,    17,  -106,  -106,  -106,  -106,  -106,  -106,  -106,
-      26,  -106,     8,  -106,  -106,    22,  -106,  -106,  -106,  -106,
-      72,  -106,  -106,  -106,   -21,    35,  -106,    22,  -106,    25,
-    -106,   149,  -106,  -106,  -106,  -106,  -106,  -106,  -106,  -106,
-    -106,  -106,  -106,  -106,  -106,  -106,  -106,  -106,    23,  -106,
-      23,    23,  -106,  -106,    27,  -106,  -106,  -106,  -106,  -106,
-    -106,  -106,  -106,    21,  -106,   -16,    20,  -106,  -106,  -106,
-    -106,  -106,  -106,    17,  -106,  -106,  -106,  -106,    28,  -106,
-      48,  -106,  -106,   -16,    30,  -106,    29,   -18,  -106,  -106,
-      31,    49,  -106,  -106,  -106,  -106,  -106,  -106,  -106
+      32,   -14,   -93,   -28,   -93,    18,    45,   -93,   -93,    25,
+     -93,   -14,     3,   -93,   -93,    27,     5,   -93,    23,   -93,
+      84,    61,   -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,
+     -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,
+     -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,    35,   -93,
+     -93,   -93,   -93,   -93,   -93,   -21,    36,   -93,    74,   -16,
+      48,   -93,    49,     3,    82,    34,    43,   -93,   -93,   -93,
+     -93,   -93,   -93,   -93,    50,   -93,    37,   -93,   -93,   -93,
+      49,   -93,    72,   -93,   148,   -93,   -93,   -93,   -93,   -93,
+     -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93,
+     -93,    69,   -93,    69,    69,     3,   -93,    73,   -93,   -93,
+     -93,   -93,   -93,   -93,   -93,   -93,    67,   -93,   -14,    75,
+      93,   -93,   -93,   -93,    74,   100,   -93,     3,     3,    43,
+     -93,   -93,   -93,   -93,    83,     3,    79,   -93,     3,   -93,
+     -93,   -93,   -14,    85,   -93,   -93,   -20,   -93,   -93,    72,
+      87,   -93,   -93,   -93,   -93,   -93,   -93,   -93,   -93
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -409,42 +406,42 @@ static const short int yypact[] =
      means the default is an error.  */
 static const unsigned char yydefact[] =
 {
-     121,     0,     0,     2,     3,   121,     5,   111,   112,   113,
-       1,    71,   111,     6,     0,     9,     0,    72,    83,     0,
-      82,    62,     4,     0,     7,     8,    63,   121,   121,     0,
-       0,     0,    86,    87,    88,    89,    90,    91,    92,    93,
-      94,    95,    96,    97,    98,    99,   100,   101,   102,   105,
-     106,   107,   108,   103,   104,    84,     0,    85,     0,   121,
-      12,   121,     0,    67,    68,    80,    79,    78,    81,    70,
-      76,    73,    74,   110,   109,     0,    13,   121,    11,    14,
-       0,   118,   117,    69,     0,     0,   114,    64,    65,    15,
-      16,     0,    40,    41,    42,    43,    44,    45,    46,    47,
-      48,    49,    50,    51,    52,    53,    54,    29,    32,    30,
-      34,     0,   121,   120,    21,    22,    26,    27,    28,    23,
-      25,    24,   119,     0,    57,     0,    38,    10,    77,    75,
-      66,   121,   121,     0,    33,    35,    36,    55,     0,   121,
-     121,    39,    17,     0,     0,    31,    56,     0,    59,    60,
-     121,   121,    37,   116,   115,    61,    20,    18,    19
+     124,     0,    75,   115,   116,     0,     0,     2,     3,     6,
+       7,     0,    65,    66,    11,     0,    76,    87,     0,    86,
+     124,    64,   115,   117,    90,    91,    92,    93,    94,    95,
+      96,    97,    98,    99,   100,   101,   102,   103,   104,   105,
+     106,   109,   110,   111,   112,   107,   108,    88,     0,    89,
+       1,     8,    64,     9,    10,    14,   124,    67,     0,     0,
+       0,     4,     0,   124,     0,     0,     0,    71,    72,    84,
+      83,    82,    85,    74,    80,    77,    78,   114,   113,   118,
+      68,    69,    17,    18,     0,    42,    43,    44,    45,    46,
+      47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+      31,    34,    32,    36,     0,   124,    13,    23,    24,    28,
+      29,    30,    25,    27,    26,    12,    58,    59,     0,    40,
+      15,   123,   122,    73,     0,     0,    70,   124,   124,     0,
+      35,    37,    38,    57,     0,   124,   124,    41,   124,    81,
+      79,    19,     0,     0,    33,    60,     0,    61,    62,    16,
+     124,    39,   120,   121,   119,    63,    22,    20,    21
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const signed char yypgoto[] =
 {
-    -106,  -106,  -106,    62,  -106,  -106,  -106,  -106,  -106,  -106,
-     -61,  -106,     6,  -106,  -106,  -106,  -106,  -106,   -62,  -106,
-    -106,  -106,  -106,  -106,  -105,  -106,    -3,   -23,  -106,   -48,
-    -106,  -106,  -106,    16,  -106,   -20,  -106,  -106,  -106,    68,
-       1,  -106,    32,  -106,   -32,  -106,     0
+     -93,   -93,   -93,   109,   -93,   122,   -93,   -93,    -6,     6,
+     -93,    51,   -93,   -93,   -93,   -93,   -93,   -29,   -93,   -93,
+     -93,   -93,   -93,   -92,   -93,   -59,   -93,   -11,   -93,    -8,
+     -93,   -93,   -93,    13,   -93,    -2,   -93,   -93,   -93,    78,
+       1,   -93,    59,   -93,    11,     0
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const short int yydefgoto[] =
 {
-      -1,     2,     3,     4,    13,    24,    25,    59,    78,    89,
-      90,   157,   113,   114,   115,   116,   117,   118,   134,   119,
-     120,   121,   122,   123,   124,   148,   125,    26,    87,    27,
-      63,    15,    16,    69,    70,    17,    56,    57,    18,    19,
-      20,     5,    88,   155,    83,   127,    21
+      -1,     6,     7,     8,     9,    10,    53,    54,    82,    83,
+     157,   106,   107,   108,   109,   110,   111,   130,   112,   113,
+     114,   115,   116,   117,   147,    11,    12,    13,    80,    55,
+      67,    14,    15,    73,    74,    16,    48,    49,    17,    18,
+      19,    20,    81,   155,   123,    52
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -452,114 +449,106 @@ static const short int yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const short int yytable[] =
 {
-       6,    14,     9,    55,     1,     6,    68,   137,    65,    66,
-      67,   153,    11,   154,    11,    28,     7,     8,    10,    14,
-      29,    12,     8,    12,     8,    23,  -110,    60,    64,    71,
-      23,    72,    30,    61,   146,  -121,    73,  -121,    76,     7,
-       8,     7,     8,    62,    12,     8,    81,    82,   135,   136,
-      31,    58,    77,    84,    75,    85,    86,   129,    80,    79,
-     126,    68,   131,   141,   133,   139,   138,    22,   145,   156,
-     142,   126,   152,   -58,    91,    92,    93,    94,    95,    96,
-      97,    98,    99,   100,   101,   102,   103,   104,   105,   106,
-     107,   108,   109,   147,    62,   150,   110,   132,   111,    74,
-     128,   144,     0,     0,    12,     8,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,   112,     0,    23,   130,
-       0,     0,     0,     0,     0,     0,   140,     0,    91,   143,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-     149,     0,     0,     0,   151,     0,     0,     0,     0,     0,
-     158,    64,    92,    93,    94,    95,    96,    97,    98,    99,
-     100,   101,   102,   103,   104,   105,   106,   107,   108,   109,
-       0,     0,     0,   110,     0,   111,     0,     0,     0,     0,
-       0,    12,     8,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,    23,    32,    33,    34,    35,
-      36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-      46,    47,    48,    49,    50,    51,    52,    53,     0,    54,
-       0,     0,     0,     0,     0,    12,     8
+      21,    57,    23,    47,    84,   118,    75,    63,  -114,   152,
+     153,   154,    56,   133,    64,    65,    22,     4,    22,     4,
+      21,    24,    25,    26,    27,    28,    29,    30,    31,    32,
+      33,    34,    35,    36,    37,    38,    39,    40,    41,    42,
+      43,    44,    45,   145,    46,    50,   118,    72,     2,     5,
+       3,     4,    59,     1,    58,     2,    68,     3,     4,    60,
+      76,    -5,   119,   120,     3,     4,     3,     4,    84,   142,
+      62,     5,   121,   122,   131,   132,   118,   124,     5,    84,
+      77,    66,   119,    79,   125,    85,    86,    87,    88,    89,
+      90,    91,    92,    93,    94,    95,    96,    97,    98,    99,
+     100,   101,   102,    69,    70,    71,   103,     2,   104,   127,
+     129,   135,   134,    72,     3,     4,     3,     4,   137,   136,
+       5,   138,   140,   144,   146,   156,   105,   151,     5,    61,
+       5,    51,   149,   141,   150,   128,   148,   139,    78,   126,
+     143,     0,     0,    56,     0,     0,     0,     0,     0,     0,
+     158,    85,    86,    87,    88,    89,    90,    91,    92,    93,
+      94,    95,    96,    97,    98,    99,   100,   101,   102,     0,
+       0,     0,   103,     0,   104,     0,     0,     0,     0,     0,
+       3,     4
 };
 
 static const short int yycheck[] =
 {
-       0,     4,     1,    23,    21,     5,    29,   112,    29,    30,
-      31,    29,    23,    31,    23,    14,    32,    33,     0,    22,
-      27,    32,    33,    32,    33,    46,    36,    27,    28,    22,
-      46,    30,    47,    35,   139,    46,    32,    46,    58,    32,
-      33,    32,    33,    45,    32,    33,    29,    30,   110,   111,
-      36,    36,    28,    27,    35,    47,    34,    22,    61,    59,
-      80,    84,    37,    43,    41,    44,    39,     5,    40,    38,
-     131,    91,    42,    44,    77,     3,     4,     5,     6,     7,
+       0,    12,     1,     5,    63,    64,    22,    28,    36,    29,
+      30,    31,    11,   105,    35,    36,    32,    33,    32,    33,
+      20,     3,     4,     5,     6,     7,     8,     9,    10,    11,
+      12,    13,    14,    15,    16,    17,    18,    19,    20,    21,
+      22,    23,    24,   135,    26,     0,   105,    58,    23,    46,
+      32,    33,    47,    21,    27,    23,    56,    32,    33,    36,
+      59,     0,    64,    65,    32,    33,    32,    33,   127,   128,
+      35,    46,    29,    30,   103,   104,   135,    27,    46,   138,
+      32,    45,    84,    34,    47,     3,     4,     5,     6,     7,
        8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
-      18,    19,    20,    45,    45,   143,    24,    91,    26,    31,
-      84,   133,    -1,    -1,    32,    33,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    -1,    44,    -1,    46,    87,
-      -1,    -1,    -1,    -1,    -1,    -1,   125,    -1,   131,   132,
-      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-     140,    -1,    -1,    -1,   143,    -1,    -1,    -1,    -1,    -1,
-     150,   151,     3,     4,     5,     6,     7,     8,     9,    10,
-      11,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      -1,    -1,    -1,    24,    -1,    26,    -1,    -1,    -1,    -1,
-      -1,    32,    33,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
-      -1,    -1,    -1,    -1,    -1,    46,     3,     4,     5,     6,
-       7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
-      17,    18,    19,    20,    21,    22,    23,    24,    -1,    26,
-      -1,    -1,    -1,    -1,    -1,    32,    33
+      18,    19,    20,    29,    30,    31,    24,    23,    26,    37,
+      41,    44,    39,   124,    32,    33,    32,    33,    43,   118,
+      46,    28,    22,    40,    45,    38,    44,    42,    46,    20,
+      46,     9,   138,   127,   142,    84,   136,   124,    60,    80,
+     129,    -1,    -1,   142,    -1,    -1,    -1,    -1,    -1,    -1,
+     150,     3,     4,     5,     6,     7,     8,     9,    10,    11,
+      12,    13,    14,    15,    16,    17,    18,    19,    20,    -1,
+      -1,    -1,    24,    -1,    26,    -1,    -1,    -1,    -1,    -1,
+      32,    33
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const unsigned char yystos[] =
 {
-       0,    21,    49,    50,    51,    89,    94,    32,    33,    88,
-       0,    23,    32,    52,    74,    79,    80,    83,    86,    87,
-      88,    94,    51,    46,    53,    54,    75,    77,    88,    27,
-      47,    36,     3,     4,     5,     6,     7,     8,     9,    10,
-      11,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      21,    22,    23,    24,    26,    83,    84,    85,    36,    55,
-      94,    35,    45,    78,    94,    29,    30,    31,    75,    81,
-      82,    22,    88,    32,    87,    35,    83,    28,    56,    94,
-      74,    29,    30,    92,    27,    47,    34,    76,    90,    57,
-      58,    74,     3,     4,     5,     6,     7,     8,     9,    10,
-      11,    12,    13,    14,    15,    16,    17,    18,    19,    20,
-      24,    26,    44,    60,    61,    62,    63,    64,    65,    67,
-      68,    69,    70,    71,    72,    74,    83,    93,    81,    22,
-      90,    37,    60,    41,    66,    66,    66,    72,    39,    44,
-      88,    43,    58,    74,    92,    40,    72,    45,    73,    94,
-      77,    88,    42,    29,    31,    91,    38,    59,    94
+       0,    21,    23,    32,    33,    46,    49,    50,    51,    52,
+      53,    73,    74,    75,    79,    80,    83,    86,    87,    88,
+      89,    93,    32,    88,     3,     4,     5,     6,     7,     8,
+       9,    10,    11,    12,    13,    14,    15,    16,    17,    18,
+      19,    20,    21,    22,    23,    24,    26,    83,    84,    85,
+       0,    53,    93,    54,    55,    77,    88,    75,    27,    47,
+      36,    51,    35,    28,    35,    36,    45,    78,    93,    29,
+      30,    31,    75,    81,    82,    22,    88,    32,    87,    34,
+      76,    90,    56,    57,    73,     3,     4,     5,     6,     7,
+       8,     9,    10,    11,    12,    13,    14,    15,    16,    17,
+      18,    19,    20,    24,    26,    44,    59,    60,    61,    62,
+      63,    64,    66,    67,    68,    69,    70,    71,    73,    83,
+      83,    29,    30,    92,    27,    47,    90,    37,    59,    41,
+      65,    65,    65,    71,    39,    44,    88,    43,    28,    81,
+      22,    57,    73,    92,    40,    71,    45,    72,    93,    56,
+      77,    42,    29,    30,    31,    91,    38,    58,    93
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const unsigned char yyr1[] =
 {
-       0,    48,    49,    50,    50,    51,    51,    52,    52,    52,
-      53,    54,    55,    55,    56,    56,    57,    57,    58,    59,
-      59,    60,    60,    61,    61,    61,    61,    61,    61,    61,
-      61,    62,    63,    63,    64,    64,    65,    66,    67,    67,
-      68,    68,    68,    68,    68,    68,    68,    68,    68,    68,
-      69,    69,    69,    69,    69,    70,    70,    71,    71,    72,
-      73,    73,    74,    74,    75,    76,    76,    77,    78,    78,
-      79,    80,    80,    80,    80,    80,    81,    81,    82,    82,
-      82,    82,    83,    83,    84,    84,    85,    85,    85,    85,
+       0,    48,    49,    50,    50,    51,    51,    52,    52,    53,
+      53,    53,    54,    54,    55,    55,    55,    55,    56,    56,
+      57,    58,    58,    59,    59,    60,    60,    60,    60,    60,
+      60,    60,    60,    61,    62,    62,    63,    63,    64,    65,
+      66,    66,    67,    67,    67,    67,    67,    67,    67,    67,
+      67,    67,    68,    68,    68,    68,    68,    69,    69,    70,
+      70,    71,    72,    72,    73,    73,    74,    74,    75,    76,
+      76,    77,    78,    78,    79,    80,    80,    80,    80,    80,
+      81,    81,    82,    82,    82,    82,    83,    83,    84,    84,
       85,    85,    85,    85,    85,    85,    85,    85,    85,    85,
-      85,    85,    85,    85,    85,    85,    85,    85,    85,    86,
-      87,    88,    88,    89,    90,    91,    91,    92,    92,    93,
-      93,    94
+      85,    85,    85,    85,    85,    85,    85,    85,    85,    85,
+      85,    85,    85,    86,    87,    88,    88,    89,    90,    91,
+      91,    91,    92,    92,    93
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const unsigned char yyr2[] =
 {
-       0,     2,     1,     1,     2,     1,     2,     2,     2,     1,
-       4,     3,     1,     2,     1,     2,     1,     3,     5,     1,
+       0,     2,     1,     1,     2,     1,     1,     1,     2,     2,
+       2,     1,     3,     3,     1,     3,     5,     3,     1,     3,
+       5,     1,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     3,     1,     2,     1,     2,     2,     3,
+       1,     2,     1,     1,     1,     1,     1,     1,     1,     1,
+       1,     1,     1,     1,     1,     1,     1,     2,     1,     1,
+       3,     3,     1,     2,     1,     1,     1,     2,     4,     1,
+       2,     2,     1,     2,     3,     1,     1,     3,     3,     5,
+       1,     3,     1,     1,     1,     1,     1,     1,     1,     1,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     3,     1,     2,     1,     2,     2,     3,     1,     2,
        1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     2,     3,     1,     3,     3,
-       1,     2,     1,     2,     4,     1,     2,     2,     1,     2,
-       3,     1,     1,     3,     3,     5,     1,     3,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     1,
-       1,     1,     1,     1,     1,     1,     1,     1,     1,     3,
-       1,     1,     1,     2,     1,     1,     1,     1,     1,     1,
-       1,     0
+       1,     1,     1,     3,     1,     1,     1,     2,     1,     1,
+       1,     1,     1,     1,     0
 };
 
 
@@ -578,7 +567,7 @@ static const unsigned char yydprec[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0
+       0,     0,     0,     0,     0
 };
 
 /* YYMERGER[RULE-NUM] -- Index of merging function for rule #RULE-NUM.  */
@@ -596,7 +585,7 @@ static const unsigned char yymerger[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0
+       0,     0,     0,     0,     0
 };
 
 /* YYIMMEDIATE[RULE-NUM] -- True iff rule #RULE-NUM is not to be deferred, as
@@ -615,7 +604,7 @@ static const yybool yyimmediate[] =
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0
+       0,     0,     0,     0,     0
 };
 
 /* YYCONFLP[YYPACT[STATE-NUM]] -- Pointer into YYCONFL of start of
@@ -626,35 +615,31 @@ static const unsigned char yyconflp[] =
 {
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     1,     3,     5,     7,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     5,     7,     0,
+       0,     0,     0,     0,     1,     3,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,    13,    15,     9,    11,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
        0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     9,    11,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,    13,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,     0,     0
+       0,     0
 };
 
 /* YYCONFL[I] -- lists of conflicting rule numbers, each terminated by
    0, pointed into by YYCONFLP.  */
 static const short int yyconfl[] =
 {
-       0,   121,     0,   121,     0,   121,     0,   121,     0,   121,
-       0,   121,     0,   121,     0
+       0,   124,     0,   124,     0,   124,     0,   124,     0,   124,
+       0,   124,     0,   124,     0,   124,     0
 };
 
 /* Error token number */
@@ -1159,126 +1144,145 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
   switch (yyn)
     {
         case 2:
-#line 138 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 139 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         *tree = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
-#line 1167 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1152 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 3:
-#line 145 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 146 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {Qnil, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cSchema);            
     }
-#line 1176 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1161 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 4:
-#line 151 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 152 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cSchema);            
     }
-#line 1185 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1170 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 5:
-#line 159 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 160 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
     }
-#line 1193 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 6:
-#line 164 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
-    }
-#line 1201 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1178 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 7:
-#line 171 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 169 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
-        rb_funcall(((*yyvalp)), rb_intern("annotate"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval));
+        ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1210 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1186 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 8:
-#line 177 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 174 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+    }
+#line 1194 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 9:
+#line 181 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
         rb_funcall(((*yyvalp)), rb_intern("annotate"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval));
     }
-#line 1219 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1203 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 10:
 #line 187 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);
-        rb_funcall((((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), rb_intern("annotate"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval));
+        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
+        rb_funcall(((*yyvalp)), rb_intern("annotate"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval));
     }
-#line 1229 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1212 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 11:
-#line 196 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 12:
+#line 197 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
     }
-#line 1238 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1221 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 13:
-#line 206 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 203 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
     }
-#line 1246 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1230 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 14:
-#line 213 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 211 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_ary_new();
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), Qnil, rb_ary_new()};        
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
     }
-#line 1254 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1239 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 15:
-#line 218 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 217 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), rb_ary_new()};        
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
     }
-#line 1262 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1248 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 16:
-#line 225 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 223 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
     }
-#line 1270 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1257 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 17:
-#line 230 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 229 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), Qnil, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
     }
-#line 1278 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1266 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 18:
 #line 237 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+    }
+#line 1274 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 19:
+#line 242 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+    }
+#line 1282 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 20:
+#line 249 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
@@ -1286,618 +1290,614 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
         rb_funcall(((*yyvalp)), rb_intern("annotate"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval));
         rb_funcall((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), rb_intern("annotate"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval));
     }
-#line 1290 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1294 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 19:
-#line 248 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 21:
+#line 260 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = Qfalse;
     }
-#line 1298 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1302 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 20:
-#line 253 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 22:
+#line 265 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = Qtrue;
     }
-#line 1306 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 29:
-#line 278 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cBOOLEAN);
-    }
-#line 1314 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 30:
-#line 283 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cOBJECT);
-    }
-#line 1322 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1310 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 31:
 #line 290 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(1, &(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), cSEQUENCE);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cBOOLEAN);
     }
-#line 1330 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1318 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 32:
-#line 297 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 295 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cSTRING);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cOBJECT);
     }
-#line 1338 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1326 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 33:
 #line 302 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(1, &(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), cSTRING);
+        ((*yyvalp)) = rb_class_new_instance(1, &(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), cSEQUENCE);
     }
-#line 1346 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1334 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 34:
 #line 309 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cBINARY);
+        VALUE args[] = {Qnil};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
     }
-#line 1354 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1343 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 35:
-#line 314 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 315 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(1, &(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), cBINARY);
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
     }
-#line 1362 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1352 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 36:
-#line 321 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 323 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(1, &(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), cFIXED);
+        VALUE args[] = {Qnil};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
+    }
+#line 1361 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 37:
+#line 329 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
     }
 #line 1370 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 37:
-#line 328 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 38:
+#line 337 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval);
+        ((*yyvalp)) = rb_class_new_instance(1, &(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), cFIXED);
     }
 #line 1378 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 38:
-#line 335 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 39:
+#line 344 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval);
+    }
+#line 1386 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 40:
+#line 351 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), Qfalse};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
-#line 1387 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1395 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 39:
-#line 341 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 41:
+#line 357 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), Qtrue};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
-#line 1396 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 40:
-#line 349 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cI8);
-    }
 #line 1404 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 41:
-#line 354 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 42:
+#line 365 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cI16);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cI8);
     }
 #line 1412 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 42:
-#line 359 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 43:
+#line 370 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cI32);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cI16);
     }
 #line 1420 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 43:
-#line 364 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 44:
+#line 375 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cI64);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cI32);
     }
 #line 1428 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 44:
-#line 369 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 45:
+#line 380 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cU8);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cI64);
     }
 #line 1436 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 45:
-#line 374 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 46:
+#line 385 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cU16);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cU8);
     }
 #line 1444 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 46:
-#line 379 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 47:
+#line 390 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cU32);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cU16);
     }
 #line 1452 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 47:
-#line 384 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 48:
+#line 395 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cU64);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cU32);
     }
 #line 1460 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 48:
-#line 389 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 49:
+#line 400 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cF64);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cU64);
     }
 #line 1468 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 49:
-#line 394 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 50:
+#line 405 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cDECIMAL);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cF64);
     }
 #line 1476 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 50:
-#line 401 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 51:
+#line 410 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cDATE);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cDECIMAL);
     }
 #line 1484 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 51:
-#line 406 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 52:
+#line 417 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cTIME_OF_DAY_MILLI);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cDATE);
     }
 #line 1492 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 52:
-#line 411 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 53:
+#line 422 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cTIME_OF_DAY_NANO);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cTIME_OF_DAY_MILLI);
     }
 #line 1500 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 53:
-#line 416 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 54:
+#line 427 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cNANO_TIME);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cTIME_OF_DAY_NANO);
     }
 #line 1508 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 54:
-#line 421 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 55:
+#line 432 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_class_new_instance(0, NULL, cMILLI_TIME);
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cNANO_TIME);
     }
 #line 1516 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 55:
-#line 429 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 56:
+#line 437 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+        ((*yyvalp)) = rb_class_new_instance(0, NULL, cMILLI_TIME);
     }
 #line 1524 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 56:
-#line 434 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 57:
+#line 445 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+        ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
 #line 1532 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 57:
-#line 441 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 59:
+#line 454 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
 #line 1540 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 58:
-#line 446 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 60:
+#line 459 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
 #line 1548 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 59:
-#line 453 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 61:
+#line 466 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSym);
         rb_funcall(((*yyvalp)), rb_intern("annotate"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval));
+        
     }
-#line 1558 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 61:
-#line 464 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
-    }
-#line 1566 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 62:
-#line 471 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        ((*yyvalp)) = rb_ary_new();
-    }
-#line 1574 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1559 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 63:
-#line 476 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 478 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
-#line 1582 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1567 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 64:
-#line 483 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 485 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cAnnotation);
+        ((*yyvalp)) = rb_ary_new();
+    }
+#line 1575 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 66:
+#line 494 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+    }
+#line 1583 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 67:
+#line 499 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
 #line 1591 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 66:
-#line 493 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 68:
+#line 505 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        rb_str_append(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cAnnotation);
     }
-#line 1599 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1600 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 67:
-#line 500 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 70:
+#line 515 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cNameWithID);
+        rb_str_append(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
 #line 1608 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 69:
-#line 510 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 71:
+#line 522 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cNameWithID);
     }
-#line 1616 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1617 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 70:
-#line 517 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 73:
+#line 532 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cIncrementalAnnotation);
+        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
 #line 1625 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 71:
-#line 525 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 74:
+#line 539 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {cSchema};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSchemaRef);        
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cIncrementalAnnotation);
     }
 #line 1634 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 72:
-#line 531 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 75:
+#line 547 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionRef);        
+        VALUE args[] = {cSchema};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSchemaRef);        
     }
 #line 1643 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 73:
-#line 537 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 76:
+#line 553 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionTypeRef);        
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionRef);        
     }
 #line 1652 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 74:
-#line 543 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 77:
+#line 559 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldRef);        
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionTypeRef);        
     }
 #line 1661 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 75:
-#line 549 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 78:
+#line 565 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldTypeRef);        
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldRef);        
     }
 #line 1670 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 76:
-#line 557 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 79:
+#line 571 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldTypeRef);        
     }
-#line 1678 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1679 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 77:
-#line 562 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 80:
+#line 579 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
-        rb_ary_unshift(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval));
+        ((*yyvalp)) = rb_ary_new_from_args(1, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
 #line 1687 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 86:
-#line 592 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 81:
+#line 584 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("i8");
+        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
+        rb_ary_unshift(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval));
     }
-#line 1695 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 87:
-#line 597 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        ((*yyvalp)) = rb_str_new_cstr("i16");
-    }
-#line 1703 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 88:
-#line 602 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        ((*yyvalp)) = rb_str_new_cstr("i32");
-    }
-#line 1711 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
-    break;
-
-  case 89:
-#line 607 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
-    {
-        ((*yyvalp)) = rb_str_new_cstr("i64");
-    }
-#line 1719 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1696 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 90:
-#line 612 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 614 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("u8");
+        ((*yyvalp)) = rb_str_new_cstr("i8");
     }
-#line 1727 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1704 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 91:
-#line 617 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 619 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("u16");
+        ((*yyvalp)) = rb_str_new_cstr("i16");
     }
-#line 1735 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1712 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 92:
-#line 622 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 624 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("u32");
+        ((*yyvalp)) = rb_str_new_cstr("i32");
     }
-#line 1743 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1720 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 93:
-#line 627 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 629 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("u64");
+        ((*yyvalp)) = rb_str_new_cstr("i64");
     }
-#line 1751 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1728 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 94:
-#line 632 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 634 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("f64");
+        ((*yyvalp)) = rb_str_new_cstr("u8");
     }
-#line 1759 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1736 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 95:
-#line 637 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 639 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("decimal");
+        ((*yyvalp)) = rb_str_new_cstr("u16");
     }
-#line 1767 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1744 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 96:
-#line 642 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 644 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("date");
+        ((*yyvalp)) = rb_str_new_cstr("u32");
     }
-#line 1775 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1752 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 97:
-#line 647 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 649 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("timeOfDayMilli");
+        ((*yyvalp)) = rb_str_new_cstr("u64");
     }
-#line 1783 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1760 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 98:
-#line 652 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 654 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("timeOfDayNano");
+        ((*yyvalp)) = rb_str_new_cstr("f64");
     }
-#line 1791 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1768 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 99:
-#line 657 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 659 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("nanoTime");
+        ((*yyvalp)) = rb_str_new_cstr("decimal");
     }
-#line 1799 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1776 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 100:
-#line 662 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 664 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("milliTime");
+        ((*yyvalp)) = rb_str_new_cstr("date");
     }
-#line 1807 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1784 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 101:
-#line 667 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 669 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("boolean");
+        ((*yyvalp)) = rb_str_new_cstr("timeOfDayMilli");
     }
-#line 1815 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1792 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 102:
-#line 672 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 674 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("string");
+        ((*yyvalp)) = rb_str_new_cstr("timeOfDayNano");
     }
-#line 1823 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1800 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 103:
-#line 677 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 679 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("binary");
+        ((*yyvalp)) = rb_str_new_cstr("nanoTime");
     }
-#line 1831 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1808 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 104:
-#line 682 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 684 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("fixed");
+        ((*yyvalp)) = rb_str_new_cstr("milliTime");
     }
-#line 1839 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1816 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 105:
-#line 687 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 689 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("object");
+        ((*yyvalp)) = rb_str_new_cstr("boolean");
     }
-#line 1847 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1824 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 106:
-#line 692 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 694 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("namespace");
+        ((*yyvalp)) = rb_str_new_cstr("string");
     }
-#line 1855 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1832 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 107:
-#line 697 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 699 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("type");
+        ((*yyvalp)) = rb_str_new_cstr("binary");
     }
-#line 1863 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1840 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 108:
-#line 702 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 704 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = rb_str_new_cstr("schema");
+        ((*yyvalp)) = rb_str_new_cstr("fixed");
     }
-#line 1871 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1848 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 109:
 #line 709 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cCName);
+        ((*yyvalp)) = rb_str_new_cstr("object");
+    }
+#line 1856 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 110:
+#line 714 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        ((*yyvalp)) = rb_str_new_cstr("namespace");
+    }
+#line 1864 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 111:
+#line 719 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        ((*yyvalp)) = rb_str_new_cstr("type");
+    }
+#line 1872 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+    break;
+
+  case 112:
+#line 724 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+    {
+        ((*yyvalp)) = rb_str_new_cstr("schema");
     }
 #line 1880 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
   case 113:
-#line 727 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+#line 731 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cCName);
     }
-#line 1888 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
+#line 1889 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 119:
-#line 750 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 117:
+#line 749 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cEnumeration);
+        ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
 #line 1897 "ext/slow_blink/parser/parser.c" /* glr.c:783  */
     break;
 
-  case 121:
-#line 760 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
+  case 124:
+#line 774 "ext/slow_blink/parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = Qnil;
     }
@@ -2003,7 +2003,7 @@ yylhsNonterm (yyRuleNum yyrule)
 }
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-106)))
+  (!!((Yystate) == (-93)))
 
 /** True iff LR state YYSTATE has only a default reduction (regardless
  *  of token).  */
@@ -3678,7 +3678,7 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 
-#line 765 "ext/slow_blink/parser/parser.y" /* glr.c:2551  */
+#line 779 "ext/slow_blink/parser/parser.y" /* glr.c:2551  */
 
 
 /* functions **********************************************************/

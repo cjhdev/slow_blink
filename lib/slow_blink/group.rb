@@ -30,6 +30,7 @@ module SlowBlink
                 @superGroup = superGroup.to_s
             end
             fields.each do |f|
+                @fields[field.name] = field
                 duplicateNames = fields.select{|other|f.name == other.name}
                 duplicateIDs = fields.select{|other|f.id and (f.id == other.id)}
             end
