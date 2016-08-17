@@ -335,7 +335,8 @@ binary:
 fixed:
     FIXED size
     {
-        $$ = rb_class_new_instance(1, &$size, cFIXED);
+        VALUE args[] = {$size};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFIXED);
     }
     ;
 
@@ -874,6 +875,7 @@ static VALUE parseFileBuffer(VALUE self, VALUE attr)
     yyscan_t scanner;    
 
     VALUE tree = Qnil;
+
 
     VALUE buffer = rb_hash_aref(attr, ID2SYM(rb_intern("buffer")));
     VALUE filename = rb_hash_aref(attr, ID2SYM(rb_intern("fileName")));
