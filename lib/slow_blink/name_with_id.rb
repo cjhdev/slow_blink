@@ -28,7 +28,7 @@ module SlowBlink
         # @param [Integer,nil]
         attr_reader :id
 
-        # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        # @param name [String]
         # @param id [nil,Integer]
         def initialize(name, id)
             @name = name

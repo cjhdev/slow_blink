@@ -40,7 +40,7 @@ module SlowBlink
 
         include Annotatable
 
-        # @param namespace [nil,String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        # @param namespace [nil,String]
         # @param defs [Array<Definition>]
         def initialize(namespace, defs)
             errors = 0
@@ -73,7 +73,7 @@ module SlowBlink
         def to_s
             out = ""
             if @namespace
-                out << "namespace #{@namespace}"
+                out << "namespace #{@namespace}\n"
             end
             @defs.each do |d|
                 out << d.to_s

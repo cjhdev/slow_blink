@@ -39,7 +39,7 @@ module SlowBlink
 
         # @!macro common_to_s
         def to_s
-            "#{@name} = #{@enumOrType}"
+            "#{@nameWithID} = #{@enumOrType}"
         end
     end
 end
