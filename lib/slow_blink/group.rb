@@ -37,9 +37,9 @@ module SlowBlink
         
         # @macro common_to_s
         def to_s
-            out = @name.to_s
+            out = @nameWithID.to_s
             if @superGroup
-                out << @superGroup.to_s
+                out << " : #{@superGroup}"
             end
             if @fields.size > 0            
                 out << " ->\n"

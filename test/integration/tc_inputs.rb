@@ -27,7 +27,8 @@ testClass = Class.new(Test::Unit::TestCase) do
 
                 output = SlowBlink::parseFileBuffer(inputs[__method__])
                 #puts output
-                puts output.inspect
+                #puts output.inspect
+                puts output
                 
             
             #end
