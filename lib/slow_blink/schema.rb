@@ -60,13 +60,12 @@ module SlowBlink
                 end
             end
             if errors > 0
-                STDERR.puts "#{errors} errors while linking schema"
-                raise
+                raise Error
             end
         end
 
         def symbol(symbol)
-            @def.detect{|d|d.name == symbol}
+            @defs.detect{|d|d.name == symbol}
         end
 
         def to_s
@@ -84,13 +83,13 @@ module SlowBlink
 
 end
 
+require 'slow_blink/error'
 require 'slow_blink/version'
 require 'slow_blink/location'
 require 'slow_blink/annotation'
 require 'slow_blink/incremental_annotation'
 require 'slow_blink/group'
 require 'slow_blink/field'
-require 'slow_blink/c_name'
 require 'slow_blink/component_reference'
 
 require 'slow_blink/definition'

@@ -26,7 +26,7 @@ module SlowBlink
     # qName
     #    
     class DefinitionRef < SchemaRef
-        # @param qName [String,CName] name of the definition to annotate
+        # @param qName [String] name of the definition to annotate
         def initialize(qName)
             @qName = qName
         end

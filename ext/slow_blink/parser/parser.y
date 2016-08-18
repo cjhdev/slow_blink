@@ -42,7 +42,6 @@ static VALUE cSlowBlink;
 static VALUE cLocation;
 
 static VALUE cNameWithID;
-static VALUE cCName;
 
 static VALUE cSchema;
 static VALUE cGroup;
@@ -127,8 +126,10 @@ static VALUE cFieldTypeRef;
     HEX                 "hexnum"
     UINT                "uint"
     INT                 "int"
-    NC_NAME             "cname"
-    ESCAPED_NC_NAME     "\\cname"
+    NAME                "name"
+    NC_NAME             "ncName"
+    ESCAPED_NC_NAME     "\\ncName"
+    C_NAME              "cName"
     LITERAL             "\"<annotation>\" or '<annotation>'"
     
     
@@ -344,10 +345,15 @@ fixed:
     ;
 
 size:
-    '(' UintOrHex ')'
+    '(' uInt ')'
     {
-        $$ = $UintOrHex;
-    }   
+        $$ = $uInt;
+    }
+    |
+    '(' hexNum ')'
+    {
+        $$ = $hexNum;
+    }
     ;
 
 ref:
@@ -478,9 +484,14 @@ sym:
 val:
     e
     |
-    '/' AnyInt
+    '/' int
     {
-        $$ = $AnyInt;
+        $$ = $int;
+    }
+    |
+    '/' hexNum
+    {
+        $$ = $hexNum;
     }
     ;
 
@@ -532,9 +543,14 @@ nameWithId:
 id:
     e
     |
-    '/' UintOrHex
+    '/' uInt
     {
-        $$ = $UintOrHex;
+        $$ = $uInt;
+    }
+    |
+    '/' hexNum
+    {
+        $$ = $hexNum;
     }
     ;
 
@@ -731,15 +747,7 @@ keyword:
     ;    
 
 cName:
-    ncName[namespace] ':' ncName[name]
-    {
-        VALUE args[] = {$namespace, $name};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cCName);
-    }
-    ;
-
-ncName:
-    NC_NAME
+    C_NAME
     ;
 
 name:
@@ -759,17 +767,17 @@ literalSegment:
     LITERAL
     ;
 
-AnyInt:
+int:
     INT
-    |
-    HEX
     |
     UINT
     ;
 
-UintOrHex:
+uInt:
     UINT
-    |
+    ;
+
+hexNum:
     HEX
     ;
 
@@ -792,7 +800,6 @@ void Init_parser(void)
     cLocation = rb_const_get(cSlowBlink, rb_intern("Location"));
 
     cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
-    cCName = rb_const_get(cSlowBlink, rb_intern("CName"));
     
     cSchema = rb_const_get(cSlowBlink, rb_intern("Schema"));
     cGroup = rb_const_get(cSlowBlink, rb_intern("Group"));

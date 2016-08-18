@@ -74,9 +74,11 @@ extern int yydebug;
     TOK_HEX = 284,
     TOK_UINT = 285,
     TOK_INT = 286,
-    TOK_NC_NAME = 287,
-    TOK_ESCAPED_NC_NAME = 288,
-    TOK_LITERAL = 289
+    TOK_NAME = 287,
+    TOK_NC_NAME = 288,
+    TOK_ESCAPED_NC_NAME = 289,
+    TOK_C_NAME = 290,
+    TOK_LITERAL = 291
   };
 #endif
 

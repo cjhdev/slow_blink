@@ -127,12 +127,20 @@ module SlowBlink
 
     # Blink Specification 3.12
     class SEQUENCE < Type
+
+        # @return [Type]
         attr_reader :type
 
         # @param type [Type] repeating type
         def initialize(type)
             @type = type
         end
+
+        # @macro common_to_s
+        def to_s
+            "#{@type} []"
+        end
+        
     end
 
     #
@@ -150,19 +158,19 @@ module SlowBlink
             @dynamic
         end
 
-        # @param reference [String,CName] 
-        # @param dynamic [true,false] reference may be reference or subclass
-        def initialize(reference, dynamic)
-            @reference = reference
+        # @param ref [String] 
+        # @param dynamic [true,false]
+        def initialize(ref, dynamic)
+            @ref = ref
             @dynamic = dynamic
         end
 
         # @macro common_to_s
         def to_s
             if @dynamic
-                "* #{reference}"
+                "#{ref} *"
             else
-                "#{reference}"
+                "#{ref}"
             end                
         end
 
@@ -177,11 +185,11 @@ module SlowBlink
         def link(schema, stack=[])
             if @schema != schema
                 @schema = nil
-                @object = schema.symbol(@reference.to_s)
+                @object = schema.symbol(@ref)
                 if @object
                     @schema = schema
                 else
-                    puts "reference #{@reference} is not defined"
+                    puts "ref '#{@ref}' is not defined"
                 end                
             end
             @schema

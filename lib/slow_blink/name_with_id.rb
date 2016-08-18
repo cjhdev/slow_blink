@@ -31,7 +31,7 @@ module SlowBlink
         # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
         # @param id [nil,Integer]
         def initialize(name, id)
-            @name = name.to_s
+            @name = name
             @id = id
         end
 

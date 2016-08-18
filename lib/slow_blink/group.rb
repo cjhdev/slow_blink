@@ -31,8 +31,8 @@ module SlowBlink
         def initialize(name, superGroup, fields)
             @schema = nil
             @name = name
-            @fields = fields
             @superGroup = superGroup
+            @fields = fields            
         end
         
         # @macro common_to_s
@@ -58,25 +58,27 @@ module SlowBlink
         # @macro common_link
         def link(schema,stack=[])
             if @schema != schema
-                @list = {}        
                 @schema = nil
-                if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))                    
-                    @fields.each do |s|
-                        if @superGroup and @superGroup.value.field(s.name.to_s)
-                            puts "duplicate field name in supergroup"
-                            return nil
-                        elsif @list[s.name.to_s]
-                            puts "duplicate field name"
-                            return nil
-                        else
-                            if s.link(schema, stack.dup << self)
-                                @list[s.name.to_s] = s
-                            else
+                @list = {}        
+                if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))
+                    if @superGroup.value == 
+                        @fields.each do |f|
+                            if @superGroup and @superGroup.value.field(f.name)
+                                puts "duplicate field name in supergroup"
                                 return nil
+                            elsif @list[f.name]
+                                puts "duplicate field name"
+                                return nil
+                            else
+                                if f.link(schema, stack.dup << self)
+                                    @list[f.name] = f
+                                else
+                                    return nil
+                                end
                             end
                         end
+                        @schema = schema
                     end
-                    @schema = schema
                 end
             end
             @schema            

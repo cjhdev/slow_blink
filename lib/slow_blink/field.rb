@@ -25,8 +25,10 @@ module SlowBlink
 
         # @return [String]
         attr_reader :name
+        
         # @return [Integer]
         attr_reader :id
+        
         # @return [Type]
         attr_reader :type
 
@@ -36,12 +38,12 @@ module SlowBlink
             @opt
         end
 
-        # @param name   [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        # @param nameWithID [String]
         # @param type   [Type]
         # @param opt    [true,false] field is optional?
-        def initialize(name, type, opt)
+        def initialize(nameWithID, type, opt)
             @schema = nil
-            @name = name.to_s
+            @nameWithID = nameWithID
             @type = type
             @opt = opt        
         end

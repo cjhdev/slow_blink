@@ -22,7 +22,6 @@ module SlowBlink
     class Enumeration
 
         include Annotatable
-        attr_reader :symbols
 
         # @param syms [Array<Sym>] symbol list
         def initialize(syms)

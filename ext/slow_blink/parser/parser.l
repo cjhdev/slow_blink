@@ -107,6 +107,7 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 [0-9]+                  { unsigned int tmp = 0; sscanf(yytext, "%u", &tmp); *yylval = UINT2NUM(tmp); return TOK_UINT; }
 [-][1-9][0-9]*          { int tmp = 0; sscanf(yytext, "%i", &tmp); *yylval = INT2NUM(tmp); return TOK_INT; }
 
+[_a-zA-Z][_a-zA-Z0-9]*[:][_a-zA-Z][_a-zA-Z0-9]* { *yylval = rb_str_new(yytext, yyleng); return TOK_C_NAME; }
 [_a-zA-Z][_a-zA-Z0-9]*      { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
 [\\][_a-zA-Z][_a-zA-Z0-9]*  { *yylval = rb_str_new(yytext, yyleng); return TOK_ESCAPED_NC_NAME; }
 
