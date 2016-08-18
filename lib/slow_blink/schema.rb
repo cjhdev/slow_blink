@@ -64,8 +64,10 @@ module SlowBlink
             end
         end
 
-        def symbol(symbol)
-            @defs.detect{|d|d.name == symbol}
+        def symbol(name)
+            @defs.detect do |d|
+                d.nameWithID.name == name                
+            end         
         end
 
         def to_s

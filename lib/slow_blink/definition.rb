@@ -22,11 +22,13 @@ module SlowBlink
 
         include Annotatable
 
-        # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        attr_reader :nameWithID
+
+        # @param nameWithID [NameWithID]
         # @param enumOrType [Enumeration, Type]
-        def initialize(name, enumOrType)
+        def initialize(nameWithID, enumOrType)
             @schema = nil
-            @name = name.to_s
+            @nameWithID = nameWithID
             @enumOrType = enumOrType
         end
 

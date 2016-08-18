@@ -23,12 +23,9 @@ module SlowBlink
 
         include Annotatable
 
-        # @return [String]
-        attr_reader :name
-        
-        # @return [Integer]
-        attr_reader :id
-        
+        # @return [NameWithID]
+        attr_reader :nameWithID
+
         # @return [Type]
         attr_reader :type
 
@@ -38,19 +35,19 @@ module SlowBlink
             @opt
         end
 
-        # @param nameWithID [String]
+        # @param nameWithID [NameWithID]
         # @param type   [Type]
         # @param opt    [true,false] field is optional?
         def initialize(nameWithID, type, opt)
             @schema = nil
             @nameWithID = nameWithID
             @type = type
-            @opt = opt        
+            @opt = opt
         end
 
         # @!macro common_to_s
         def to_s
-            "#{@type} #{@name}" + ((@opt) ? "?" : "")
+            "#{@type} #{@nameWithID}" + ((@opt) ? "?" : "")
         end
 
         # @!macro common_link

@@ -23,6 +23,10 @@ module SlowBlink
 
         include Annotatable
 
+        def initialize
+            @schema = nil
+        end
+
         # @macro common_to_s
         def to_s
             "#{self.class.name.split('::').last.downcase}"
@@ -41,6 +45,7 @@ module SlowBlink
         # @param size [Integer] maximum size
         def initialize(size)
             @size = size
+            super()
         end
 
         # @macro common_to_s
@@ -134,6 +139,7 @@ module SlowBlink
         # @param type [Type] repeating type
         def initialize(type)
             @type = type
+            super()
         end
 
         # @macro common_to_s
@@ -163,14 +169,15 @@ module SlowBlink
         def initialize(ref, dynamic)
             @ref = ref
             @dynamic = dynamic
+            super()
         end
 
         # @macro common_to_s
         def to_s
             if @dynamic
-                "#{ref} *"
+                "#{@ref} *"
             else
-                "#{ref}"
+                "#{@ref}"
             end                
         end
 
@@ -185,7 +192,7 @@ module SlowBlink
         def link(schema, stack=[])
             if @schema != schema
                 @schema = nil
-                @object = schema.symbol(@ref)
+                @object = schema.symbol(@ref)               
                 if @object
                     @schema = schema
                 else

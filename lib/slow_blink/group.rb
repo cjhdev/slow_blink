@@ -23,14 +23,14 @@ module SlowBlink
 
         include Annotatable
 
-        attr_reader :name
-        
-        # @param name [String] [\\]?[_a-zA-Z][_a-zA-Z0-9]*
+        attr_reader :nameWithID
+
+        # @param nameWithID [NameWithID]
         # @param superGroup [REF, nil]
         # @param fields [Array<Field>]
-        def initialize(name, superGroup, fields)
+        def initialize(nameWithID, superGroup, fields)
             @schema = nil
-            @name = name
+            @nameWithID = nameWithID
             @superGroup = superGroup
             @fields = fields            
         end
@@ -60,25 +60,29 @@ module SlowBlink
             if @schema != schema
                 @schema = nil
                 @list = {}        
-                if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))
-                    if @superGroup.value == 
+                if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))                    
+                    if !@superGroup or @superGroup.value.is_a?(Group)
                         @fields.each do |f|
-                            if @superGroup and @superGroup.value.field(f.name)
+                            if @superGroup and @superGroup.value.field(f.nameWithID.name)
                                 puts "duplicate field name in supergroup"
                                 return nil
-                            elsif @list[f.name]
+                            elsif @list[f.nameWithID.name]
                                 puts "duplicate field name"
                                 return nil
                             else
                                 if f.link(schema, stack.dup << self)
-                                    @list[f.name] = f
+                                    @list[f.nameWithID.name] = f
                                 else
                                     return nil
                                 end
                             end
                         end
                         @schema = schema
+                    else
+                        puts "superGroup must be a group"
                     end
+                else
+                    puts "couldn't link group"
                 end
             end
             @schema            
@@ -92,7 +96,10 @@ module SlowBlink
             if !@schema
                 raise Error.new "object must be linked"
             end
-            result = @superGroup.field(name)
+            result = nil
+            if @superGroup
+                result = @superGroup.value.field(name)
+            end
             if !result
                 result = @list[name]
             end
