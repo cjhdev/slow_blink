@@ -22,8 +22,8 @@ task :flexbison do
     system "bison -d #{DIR_SRC}/parser.y --output=#{DIR_SRC}/parser.c --report=all --report-file=#{DIR_SRC}/report.txt"    
 end
 
-task :default => :test
-
 task :local => [:flexbison, :compile, :test] do    
 end
+
+task :default => :test
 
