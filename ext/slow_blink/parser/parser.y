@@ -574,7 +574,7 @@ id:
 incrAnnot:
     compRef LEFT_ARROW incrAnnotList
     {
-        VALUE args[] = {$compRef, $incrAnnotList};
+        VALUE args[] = {$compRef, $incrAnnotList, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cIncrementalAnnotation);
     }
     ;

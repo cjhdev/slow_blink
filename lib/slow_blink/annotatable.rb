@@ -20,16 +20,20 @@
 module SlowBlink
     module Annotatable
 
+        attr_reader :annotes
+
         def annote(annotes)
             annotes.each do |a|
                 if a.is_a? Annotation
                     if @annotes[a.id]
-                        puts "#{a.location}: warning: overwriting previous annotation for id '#{a.id}'"
-                    else
-                        @annotes[a.id] = a
+                        puts "#{a.location}: warning: overriding previous annotation for id '#{a.id}'"
                     end
+                    @annotes[a.id] = a                    
                 else
-                    setValue(a)
+                    if @nameWithID.id
+                        puts "#{a.location}: warning: overriding previous id"
+                    end
+                    @nameWithID.id = a                    
                 end
             end
         end

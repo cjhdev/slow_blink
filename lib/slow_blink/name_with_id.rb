@@ -34,6 +34,10 @@ module SlowBlink
             @name = name
             @id = id
         end
+
+        def id=(value)
+            @id = id
+        end
         
     end
 end

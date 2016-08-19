@@ -30,6 +30,10 @@ module SlowBlink
         # @return [Integer]
         attr_reader :id
 
+        attr_reader :nameWithID
+
+        attr_reader :enumOrType
+
         # @param nameWithID [NameWithID]
         # @param enumOrType [Enumeration, Type]
         # @param location [String]
@@ -40,6 +44,7 @@ module SlowBlink
             @id = nameWithID.id
             @enumOrType = enumOrType
             @location = location
+            @nameWithID = nameWithID
         end
 
         # @!macro common_link

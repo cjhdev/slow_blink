@@ -34,6 +34,8 @@ module SlowBlink
         # @return [Integer]
         attr_reader :id
 
+        attr_reader :nameWithID
+
         # @return [true] field is optional
         # @return [false] field is mandatory
         def opt?
@@ -52,6 +54,7 @@ module SlowBlink
             @name = nameWithID.name
             @id = nameWithID.id
             @location = location
+            @nameWithID = nameWithID
         end
 
         # @!macro common_link

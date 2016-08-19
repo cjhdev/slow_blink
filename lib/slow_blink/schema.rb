@@ -47,10 +47,10 @@ module SlowBlink
         # @param namespace [nil,String]
         # @param defs [Array<Definition>]
         def initialize(namespace, defs)
-
+            @nameWithID = NameWithID.new(nil,nil)
             @annotes = []
             errors = 0
-
+            
             if namespace
                 @namespace = namespace
             else

@@ -35,6 +35,8 @@ module SlowBlink
         # @return [Integer]
         attr_reader :id
 
+        attr_reader :nameWithID
+
         def self.setValue(value)
             @id = value
         end
@@ -52,6 +54,7 @@ module SlowBlink
             @rawFields = fields
             @location = location
             @fields = {}
+            @nameWithID = nameWithID
         end
         
         # @macro common_link
