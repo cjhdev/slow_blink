@@ -20,14 +20,19 @@
 module SlowBlink
 
     class Field
-
+        
         include Annotatable
 
-        # @return [NameWithID]
-        attr_reader :nameWithID
+        attr_reader :location
 
         # @return [Type]
         attr_reader :type
+
+        # @return [String]
+        attr_reader :name
+
+        # @return [Integer]
+        attr_reader :id
 
         # @return [true] field is optional
         # @return [false] field is mandatory
@@ -38,16 +43,15 @@ module SlowBlink
         # @param nameWithID [NameWithID]
         # @param type   [Type]
         # @param opt    [true,false] field is optional?
-        def initialize(nameWithID, type, opt)
+        # @param location [String]
+        def initialize(nameWithID, type, opt, location)
+            @annotes = {}
             @schema = nil
-            @nameWithID = nameWithID
             @type = type
             @opt = opt
-        end
-
-        # @!macro common_to_s
-        def to_s
-            "#{@type} #{@nameWithID}" + ((@opt) ? "?" : "")
+            @name = nameWithID.name
+            @id = nameWithID.id
+            @location = location
         end
 
         # @!macro common_link

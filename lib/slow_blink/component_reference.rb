@@ -19,12 +19,11 @@
 
 module SlowBlink
 
-    # schema
+    # SCHEMA
     class SchemaRef
     end
 
     # qName
-    #    
     class DefinitionRef < SchemaRef
         # @param qName [String] name of the definition to annotate
         def initialize(qName)
@@ -32,7 +31,7 @@ module SlowBlink
         end
     end
 
-    # qName.type
+    # qName.TYPE
     class DefinitionTypeRef < DefinitionRef
     end
 
@@ -44,7 +43,7 @@ module SlowBlink
         end
     end
 
-    # qName.name.type
+    # qName.name.TYPE
     class FieldTypeRef < FieldRef
     end
 

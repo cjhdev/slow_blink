@@ -19,18 +19,8 @@
 
 module SlowBlink
     class Location
-        attr_reader :fileName, :firstLine, :lastLine, :firstCol, :lastCol
-        # @param fileName [String]
-        # @param firstLine [Integer]
-        # @param lastLine [Integer]
-        # @param firstCol [Integer]
-        # @param lastCol [Integer]
-        def initialize(fileName, firstLine, lastLine, firstCol, lastCol)
-            @fileName = fileName
-            @firstLine = firstLine
-            @lastLine = lastLine
-            @firstCol = firstCol
-            @lastCol = lastCol
+        def self.newLocation(fileName, firstLine, firstCol)
+            "#{fileName}:#{firstLine}:#{firstCol}"
         end
     end
 end

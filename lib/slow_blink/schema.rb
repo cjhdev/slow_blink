@@ -30,57 +30,74 @@ require 'slow_blink/annotatable'
 #   @return [nil] not linked
 #
 
-# @!macro [new] common_to_s
-#   
-#   @return [String] blink schema
-
 module SlowBlink
 
     class Schema
 
         include Annotatable
 
+        # @api Initialise a Schema object from Blink Schema input string 
+        #
+        # @param input [String] Blink schema (as string)
+        # @return [Schema]
+        def self.parse(input)
+            SlowBlink::parseFileBuffer(input)
+        end
+
         # @param namespace [nil,String]
         # @param defs [Array<Definition>]
         def initialize(namespace, defs)
+
+            @annotes = []
             errors = 0
 
             if namespace
-                @namespace = namespace.to_s
+                @namespace = namespace
             else
                 @namespace = nil
             end
-                    
-            @defs = []
+
+            @defs = {}
+
+            # populate table of definitions
             defs.each do |d|
-                if d.link(self)
-                    @defs << d
-                else
-                    errors = errors + 1
+                if !d.is_a? IncrementalAnnotation
+                    if @defs[d.name]
+                        puts "#{d.location}: error: duplicate definition name"
+                        errors += 1
+                    else
+                        @defs[d.name] = d
+                    end
                 end
             end
-            if errors > 0
-                raise Error
-            end
-        end
 
-        def symbol(name)
-            @defs.detect do |d|
-                d.nameWithID.name == name                
-            end         
-        end
+            # now apply incremental annotation
+            defs.each do |d|
+                if d === IncrementalAnnotation
+                    d.link(schema)
+                end
+            end
 
-        def to_s
-            out = ""
-            if @namespace
-                out << "namespace #{@namespace}\n"
+            # now link the definitions
+            @defs.each do |name, d|
+                if !d.link(self)
+                    errors += 1
+                end
             end
-            @defs.each do |d|
-                out << d.to_s
-            end
-            out
-        end
             
+            if errors > 0
+                raise Error.new "#{errors} errors"
+            end
+            
+        end
+
+        # @param name [String] name of definition
+        # @return [Definition]
+        # @return [Group]
+        def symbol(name)
+            @defs[name]            
+        end
+    
     end    
 
 end

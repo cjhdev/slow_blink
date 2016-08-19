@@ -19,70 +19,70 @@
 
 module SlowBlink
 
+    def self.putError(location, message)
+        "#{location} error: #{message}"
+    end
+
     class Group
 
         include Annotatable
 
-        attr_reader :nameWithID
+        attr_reader :location
+        
+        # @return [String]
+        attr_reader :name
+
+        # @return [Integer]
+        attr_reader :id
+
+        def self.setValue(value)
+            @id = value
+        end
 
         # @param nameWithID [NameWithID]
         # @param superGroup [REF, nil]
         # @param fields [Array<Field>]
-        def initialize(nameWithID, superGroup, fields)
+        # @param location [String]
+        def initialize(nameWithID, superGroup, fields, location)
+            @annotes = {}
             @schema = nil
-            @nameWithID = nameWithID
+            @name = nameWithID.name
+            @id = nameWithID.id
             @superGroup = superGroup
-            @fields = fields            
-        end
-        
-        # @macro common_to_s
-        def to_s
-            out = @nameWithID.to_s
-            if @superGroup
-                out << " : #{@superGroup}"
-            end
-            if @fields.size > 0            
-                out << " ->\n"
-                @fields.inject(out) do |acc, f|
-                    acc << "    #{f}"
-                    if @fields.last == f
-                        acc << "\n"
-                    else
-                        acc << ",\n"
-                    end
-                end
-            end
-            out
+            @rawFields = fields
+            @location = location
+            @fields = {}
         end
         
         # @macro common_link
         def link(schema,stack=[])
             if @schema != schema
+                errors = 0
                 @schema = nil
-                @list = {}        
+                @fields = {}
                 if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))                    
                     if !@superGroup or @superGroup.value.is_a?(Group)
-                        @fields.each do |f|
-                            if @superGroup and @superGroup.value.field(f.nameWithID.name)
-                                puts "duplicate field name in supergroup"
-                                return nil
-                            elsif @list[f.nameWithID.name]
-                                puts "duplicate field name"
-                                return nil
+                        @rawFields.each do |f|
+                            if @superGroup and @superGroup.value.field(f.name)
+                                puts "#{f.location}: error: field with duplicate name '#{f.name}'"
+                                errors += 1
+                            elsif @fields[f.name]
+                                puts "#{f.location}: error: field with duplicate name '#{f.name}'"
+                                errors += 1
                             else
                                 if f.link(schema, stack.dup << self)
-                                    @list[f.nameWithID.name] = f
+                                    @fields[f.name] = f
                                 else
-                                    return nil
+                                    errors += 1
                                 end
                             end
                         end
-                        @schema = schema
+                        if errors == 0
+                            @schema = schema
+                        end
                     else
-                        puts "superGroup must be a group"
+                        puts "#{@superGroup.location}: error: superGroup '#{@superGroup.name}' must be a group"
                     end
-                else
-                    puts "couldn't link group"
                 end
             end
             @schema            
@@ -93,17 +93,18 @@ module SlowBlink
         # @return [nil]
         # @raise [Error]
         def field(name)
-            if !@schema
+            if @schema
+                result = nil
+                if @superGroup
+                    result = @superGroup.value.field(name)
+                end
+                if !result
+                    result = @fields[name]
+                end
+                result
+            else
                 raise Error.new "object must be linked"
             end
-            result = nil
-            if @superGroup
-                result = @superGroup.value.field(name)
-            end
-            if !result
-                result = @list[name]
-            end
-            result
         end
     end
 end

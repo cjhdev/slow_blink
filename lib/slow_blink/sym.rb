@@ -22,6 +22,8 @@ module SlowBlink
 
         include Annotatable
 
+        attr_reader :location
+
         # @return [String]
         attr_reader :name
 
@@ -30,23 +32,17 @@ module SlowBlink
 
         # @param name [String]
         # @param val [nil,Integer] explicit value
-        def initialize(name, val)
-            @name = name.to_s
+        # @param location [String]
+        def initialize(name, val, location)
+            @name = name
             @val = val
+            @annotes = {}
+            @location = location
         end
 
         # @macro common_link
         def link(schema, stack=[])
             @schema = schema
-        end
-
-        # @macro common_to_s
-        def to_s
-            if @val
-                "#{@name}/#{@val}"
-            else
-                @name
-            end
         end
         
     end

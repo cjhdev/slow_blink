@@ -20,17 +20,19 @@
 module SlowBlink
     class Annotation
 
+        attr_reader :location
+        attr_reader :id
+        attr_reader :literal
+        
         # @param id [String] any string
         # @param literal [String] any string
-        def initialize(id,literal)
+        # @param location [String]
+        def initialize(id,literal,location)
             @id = id
             @literal = literal
+            @location = location
         end
 
-        # @macro common_to_s
-        def to_s
-            "@#{id}='#{@literal}'"
-        end
     end
 end
 

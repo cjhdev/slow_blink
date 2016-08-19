@@ -33,7 +33,7 @@ void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char 
 /* static function prototypes *****************************************/
 
 static VALUE parseFileBuffer(VALUE self, VALUE attr);
-static VALUE newLocation(VALUE filename, YYLTYPE *location);
+static VALUE newLocation(VALUE filename, const YYLTYPE *location);
 
 /* static variables ***************************************************/
 
@@ -181,13 +181,13 @@ def:
     annots define
     {
         $$ = $define;
-        rb_funcall($$, rb_intern("annotate"), 1, $annots);
+        rb_funcall($$, rb_intern("annote"), 1, $annots);
     }
     |
     annots groupDef
     {
         $$ = $groupDef;
-        rb_funcall($$, rb_intern("annotate"), 1, $annots);
+        rb_funcall($$, rb_intern("annote"), 1, $annots);
     }
     |
     incrAnnot    
@@ -197,13 +197,13 @@ define:
     nameWithId '=' enum
     {
         VALUE enumArgs[] = {$enum};        
-        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cEnumeration)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
+        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cEnumeration), newLocation(filename, &@$)};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinition);        
     }
     |
     nameWithId '=' type
     {
-        VALUE args[] = {$nameWithId, $type};        
+        VALUE args[] = {$nameWithId, $type, newLocation(filename, &@$)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
     }
     ;
@@ -211,27 +211,27 @@ define:
 groupDef:
     nameWithId
     {
-        VALUE args[] = {$nameWithId, Qnil, rb_ary_new()};        
+        VALUE args[] = {$nameWithId, Qnil, rb_ary_new(), newLocation(filename, &@$)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     |
     nameWithId ':' qName
     {
-        VALUE refArgs[] = {$qName, Qfalse};
-        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF), rb_ary_new()};        
+        VALUE refArgs[] = {$qName, Qfalse, newLocation(filename, &@qName)};
+        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF), rb_ary_new(), newLocation(filename, &@$)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     |
     nameWithId ':' qName RIGHT_ARROW fields
     {
-        VALUE refArgs[] = {$qName, Qfalse};
-        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF), $fields};        
+        VALUE refArgs[] = {$qName, Qfalse, newLocation(filename, &@qName)};
+        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF), $fields, newLocation(filename, &@$)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     |
     nameWithId RIGHT_ARROW fields
     {
-        VALUE args[] = {$nameWithId, Qnil, $fields};        
+        VALUE args[] = {$nameWithId, Qnil, $fields, newLocation(filename, &@$)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     ;
@@ -251,11 +251,11 @@ fields:
 field:
     annots[typeAnnot] type annots[nameAnnot] nameWithId opt
     {
-        VALUE args[] = {$nameWithId, $type, $opt};        
+        VALUE args[] = {$nameWithId, $type, $opt, rb_funcall($type, rb_intern("location"), 0)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
 
-        rb_funcall($$, rb_intern("annotate"), 1, $typeAnnot);
-        rb_funcall($nameWithId, rb_intern("annotate"), 1, $nameAnnot);
+        rb_funcall($$, rb_intern("annote"), 1, $typeAnnot);
+        rb_funcall($nameWithId, rb_intern("annote"), 1, $nameAnnot);
     }
     ;
 
@@ -292,32 +292,35 @@ single:
     |
     BOOLEAN
     {
-        $$ = rb_class_new_instance(0, NULL, cBOOLEAN);
+        VALUE args[] = {Qnil, newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBOOLEAN);
     }
     |
     OBJECT
     {
-        $$ = rb_class_new_instance(0, NULL, cOBJECT);
+        VALUE args[] = {Qnil, newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cOBJECT);
     }
     ;
 
 sequence:
     single '[' ']'
     {
-        $$ = rb_class_new_instance(1, &$single, cSEQUENCE);
+        VALUE args[] = {$single, rb_funcall($single, rb_intern("location"), 0)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSEQUENCE);
     }
     ;
 
 string:
     STRING
     {
-        VALUE args[] = {Qnil};
+        VALUE args[] = {Qnil, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
     }
     |
     STRING size
     {
-        VALUE args[] = {$size};
+        VALUE args[] = {$size, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
     }
     ;
@@ -325,13 +328,13 @@ string:
 binary:
     BINARY
     {
-        VALUE args[] = {Qnil};
+        VALUE args[] = {Qnil, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
     }
     |
     BINARY size
     {
-        VALUE args[] = {$size};
+        VALUE args[] = {$size, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
     }
     ;
@@ -339,7 +342,7 @@ binary:
 fixed:
     FIXED size
     {
-        VALUE args[] = {$size};
+        VALUE args[] = {$size, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFIXED);
     }
     ;
@@ -373,79 +376,94 @@ ref:
 number:
     I8
     {
-        $$ = rb_class_new_instance(0, NULL, cI8);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI8);
     }
     |
     I16
     {
-        $$ = rb_class_new_instance(0, NULL, cI16);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI16);
     }
     |
     I32
     {
-        $$ = rb_class_new_instance(0, NULL, cI32);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI32);
     }
     |
     I64
     {
-        $$ = rb_class_new_instance(0, NULL, cI64);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI64);
     }
     |
     U8
     {
-        $$ = rb_class_new_instance(0, NULL, cU8);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU8);
     }
     |
     U16
     {
-        $$ = rb_class_new_instance(0, NULL, cU16);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU16);
     }
     |
     U32
     {
-        $$ = rb_class_new_instance(0, NULL, cU32);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU32);
     }
     |
     U64
     {
-        $$ = rb_class_new_instance(0, NULL, cU64);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU64);
     }
     |
     F64
     {
-        $$ = rb_class_new_instance(0, NULL, cF64);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cF64);
     }
     |
     DECIMAL
     {
-        $$ = rb_class_new_instance(0, NULL, cDECIMAL);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDECIMAL);
     }
     ;
 
 time:
     DATE
     {
-        $$ = rb_class_new_instance(0, NULL, cDATE);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDATE);
     }
     |
     TIME_OF_DAY_MILLI
     {
-        $$ = rb_class_new_instance(0, NULL, cTIME_OF_DAY_MILLI);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cTIME_OF_DAY_MILLI);
     }
     |
     TIME_OF_DAY_NANO
     {
-        $$ = rb_class_new_instance(0, NULL, cTIME_OF_DAY_NANO);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cTIME_OF_DAY_NANO);
     }
     |
     NANO_TIME
     {
-        $$ = rb_class_new_instance(0, NULL, cNANO_TIME);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cNANO_TIME);
     }
     |
     MILLI_TIME
     {
-        $$ = rb_class_new_instance(0, NULL, cMILLI_TIME);
+        VALUE args[] = {newLocation(filename, &@$)};
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cMILLI_TIME);
     }
     ;
 
@@ -474,10 +492,9 @@ symList:
 sym:
     annots name val
     {
-        VALUE args[] = {$name, $val};
+        VALUE args[] = {$name, $val, newLocation(filename, &@name)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSym);
-        rb_funcall($$, rb_intern("annotate"), 1, $annots);
-        
+        rb_funcall($$, rb_intern("annote"), 1, $annots);        
     }
     ;
     
@@ -518,7 +535,7 @@ annotList:
 annot:
     '@' qNameOrKeyword '=' literal
     {
-        VALUE args[] = {$qNameOrKeyword, $literal};
+        VALUE args[] = {$qNameOrKeyword, $literal, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cAnnotation);
     }
     ;
@@ -903,13 +920,11 @@ static VALUE parseFileBuffer(VALUE self, VALUE attr)
     return tree;
 }
 
-static VALUE newLocation(VALUE filename, YYLTYPE *location)
+static VALUE newLocation(VALUE filename, const YYLTYPE *location)
 {
-    return rb_funcall(cLocation, rb_intern("new"), 5,
+    return rb_funcall(cLocation, rb_intern("newLocation"), 3,
         filename,
         INT2NUM(location->first_line),
-        INT2NUM(location->last_line),
-        INT2NUM(location->first_column),
-        INT2NUM(location->last_column)
+        INT2NUM(location->first_column)
     );    
 }

@@ -23,38 +23,34 @@ module SlowBlink
 
         include Annotatable
 
-        def initialize
-            @schema = nil
-        end
+        attr_reader :location
 
-        # @macro common_to_s
-        def to_s
-            "#{self.class.name.split('::').last.downcase}"
+        # @param location [String]
+        def initialize(location)
+            @schema = nil
+            @annotes = {}
+            @location = location
         end
 
         # @macro common_link
         def link(schema, stack=[])
             @schema = schema
         end
+
     end
 
     # Blink Specification 3.2
     class STRING < Type
+
+        # @return [Integer] maximum size
+        # @return [nil] no maximum size
         attr_reader :size
 
         # @param size [Integer] maximum size
-        def initialize(size)
+        # @param location [String]    
+        def initialize(size, location)
             @size = size
-            super()
-        end
-
-        # @macro common_to_s
-        def to_s
-            if @size
-                "#{super} (#{@size})"
-            else
-                super
-            end            
+            super(location)
         end
     end
 
@@ -137,25 +133,14 @@ module SlowBlink
         attr_reader :type
 
         # @param type [Type] repeating type
-        def initialize(type)
+        # @param location [String]    
+        def initialize(type, location)
             @type = type
-            super()
+            super(location)
         end
 
-        # @macro common_to_s
-        def to_s
-            "#{@type} []"
-        end
-        
     end
 
-    #
-    # may be a:
-    #
-    # - Enumeration
-    # - Group
-    # - Dynamic Group
-    # - Dynamic Object
     class REF < Type
 
         # @return [true] dynamic reference
@@ -166,37 +151,30 @@ module SlowBlink
 
         # @param ref [String] 
         # @param dynamic [true,false]
-        def initialize(ref, dynamic)
+        # @param location [String]    
+        def initialize(ref, dynamic, location)
             @ref = ref
             @dynamic = dynamic
-            super()
+            super(location)
         end
 
-        # @macro common_to_s
-        def to_s
-            if @dynamic
-                "#{@ref} *"
+        def value        
+            if @schema
+                @object
             else
-                "#{@ref}"
-            end                
-        end
-
-        def value
-            if @schema.nil?
                 raise "must be linked"
-            end
-            @object
+            end            
         end
 
         # @macro common_link
         def link(schema, stack=[])
             if @schema != schema
                 @schema = nil
-                @object = schema.symbol(@ref)               
-                if @object
+                @object = schema.symbol(@ref)
+                if @object and @object.link(schema, stack << self)                    
                     @schema = schema
                 else
-                    puts "ref '#{@ref}' is not defined"
+                    puts "#{@location}: error: '#{@ref}' is not defined in schema"
                 end                
             end
             @schema

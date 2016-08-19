@@ -25,49 +25,40 @@ module SlowBlink
 
         # @param syms [Array<Sym>] symbol list
         def initialize(syms)
-            @syms = syms
-            @list = {}            
-        end
-
-        # @macro common_to_s
-        def to_s
-            if @syms.size == 1
-                "| #{@syms.first}"
-            else
-                @syms.inject("") do |acc,s|
-                    if s != @syms.first
-                        acc << " | "
-                    end
-                    acc << s.to_s
-                end
-            end
+            @annotes = {}
+            @rawSyms = syms
+            @syms = {}
+            @schema = nil       
         end
 
         # @macro common_link
         def link(schema, stack=[])
             if @schema != schema
-                value = 0
-                @list = {}        
                 @schema = nil
-                @syms.each do |s|
-                    if @list[s.name]
-                        puts "duplicate name"
-                        return nil
+                value = 0
+                errors = 0
+                @syms = {}                        
+                @rawSyms.each do |s|
+                    if @syms[s.name]
+                        puts "#{s.location}: error: duplicate name"
+                        errors += 1
                     else
                         if s.val
-                            if @list.values.include? s.val
-                                puts "duplicate value"
-                                return nil
+                            if @syms.values.include? s.val
+                                puts "#{s.location}: error: duplicate value"
+                                errors += 1
                             else
                                 value = s.val + 1
                             end                        
                         else
-                            @list[s.name] = value
+                            @syms[s.name] = value
                             value += 1
                         end
                     end
                 end
-                @schema = schema
+                if errors == 0
+                    @schema = schema
+                end
             end
             @schema            
         end

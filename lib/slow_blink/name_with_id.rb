@@ -34,15 +34,6 @@ module SlowBlink
             @name = name
             @id = id
         end
-
-        # @macro common_to_s
-        def to_s
-            if @id
-                "#{@name}/#{@id}"
-            else
-                "#{@name}"
-            end
-        end
         
     end
 end

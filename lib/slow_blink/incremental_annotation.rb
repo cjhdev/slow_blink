@@ -21,29 +21,53 @@ module SlowBlink
 
     # Blink Specification 7.3
     class IncrementalAnnotation
+
+        attr_reader :ref
+        attr_reader :annotes
+        attr_reader :location
     
         # @param ref [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef] annotation target
         # @param annotations [Array<Integer,Annotation>]
-        def initialize(ref, annotations)
+        # @param location [String]    
+        def initialize(ref, annotes, location)
             @ref = ref
-            @annotations = annotations
+            @annotes = annotes
+            @location = location
+            @schema = nil
         end
 
-        # @macro common_to_s
-        def to_s
-            out = "#{@ref} <- "
-            @annotations.each do |a|
-                out << a.to_s
-            end
-            out
-        end
-
-        # @macro common_to_s
+        # Apply annotes to targets
+        #
+        # @macro common_link
         def link(schema, stack=[])
             if @schema != schema
+                @schema = nil
+                case @ref.class
+                when SchemaRef
+                    schema.annote(@annotes)
+                    
+                when DefinitionRef
+                    object = schema.symbol(ref.qName)
+                    if object
+                        object.annote(@annotes)
+                    end
+                when DefinitionTypeRef
+                when FieldRef
+                when FieldTypeRef
+                else
+                    raise "unknown component reference".freeze
+                end
+                    
                 
+                if object
+                    
+                
+                    object.annote(@annotes)
+                else
+                    puts "#{@location}: error: cannot incrAnnote undefined object '#{ref}'"
+                end
             end
-            @schema
+            @schema                
         end        
         
     end

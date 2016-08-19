@@ -19,17 +19,23 @@
 
 module SlowBlink
     module Annotatable
-        def annotate(annotation)
-            if @annotation.nil?
-                @annotation = []
+
+        def annote(annotes)
+            annotes.each do |a|
+                if a.is_a? Annotation
+                    if @annotes[a.id]
+                        puts "#{a.location}: warning: overwriting previous annotation for id '#{a.id}'"
+                    else
+                        @annotes[a.id] = a
+                    end
+                else
+                    setValue(a)
+                end
             end
-            @annotation << annotation
         end
-        def incrAnnotate(annotation)
-            if @incrAnnotation.nil?
-                @incrAnnotation = []
-            end
-            @incrAnnotation << incrAnnotation
+
+        def self.setValue(value)            
         end
+    
     end
 end

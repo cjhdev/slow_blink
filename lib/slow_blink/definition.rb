@@ -22,14 +22,24 @@ module SlowBlink
 
         include Annotatable
 
-        attr_reader :nameWithID
+        attr_reader :location
+
+        # @return [String]
+        attr_reader :name
+
+        # @return [Integer]
+        attr_reader :id
 
         # @param nameWithID [NameWithID]
         # @param enumOrType [Enumeration, Type]
-        def initialize(nameWithID, enumOrType)
+        # @param location [String]
+        def initialize(nameWithID, enumOrType, location)
+            @annotes = {}
             @schema = nil
-            @nameWithID = nameWithID
+            @name = nameWithID.name
+            @id = nameWithID.id
             @enumOrType = enumOrType
+            @location = location
         end
 
         # @!macro common_link
@@ -37,9 +47,5 @@ module SlowBlink
             @schema = @enumOrType.link(schema, stack << self)
         end
 
-        # @!macro common_to_s
-        def to_s
-            "#{@nameWithID} = #{@enumOrType}"
-        end
     end
 end
