@@ -31,6 +31,10 @@ module SlowBlink
             @schema = nil       
         end
 
+        def ===(other)
+            self.class == other.class            
+        end
+
         # @macro common_link
         def link(schema, stack=[])
             if @schema != schema
@@ -62,6 +66,14 @@ module SlowBlink
             end
             @schema            
         end
+
+        def sym(key)
+            if key.kind_of? String
+                @syms[key.to_s]
+            else
+                @syms.detect{|s|s.val == s.to_i}
+            end
+        end 
 
     end
 end

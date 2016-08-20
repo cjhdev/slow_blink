@@ -3,28 +3,52 @@ SlowBlink
 
 SlowBlink is a Ruby implementation of the [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
 
-This project exists for the following reasons:
+This project is currently under development and not useful.
 
-1. As an exercise to evaluate the Blink Protocol
-2. To be an extensible Blink Protocol code generator
-3. To be a dynamic serialiser suitable for integrating with Ruby apps and frameworks
+## Installation
 
-## Status
+~~~
+gem install slow_blink
+~~~
 
-Under development.
+## Documentation
+
+Compiled documentation for all releases can be viewed [online](http://www.rubydoc.info/gems/slow_blink "slow_blink").
+
+## Repository Structure
+
+Typical rubygems pattern.
+
+### /lib
+
+SlowBlink Ruby implementation; typically one class per file.
+
+### /ext
+
+C/C++ native extensions:
+
+- /ext/ext_schema_parser
+
+    Flex/Bison configuration files and the generated parser code.
+
+- /ext/ext_compact_encoder
+
+    Since we already have the burden of native extensions for the schema parser
+    the decision was made to implement the compact format encode/decoder primitives
+    as native extensions.
+
+### /specification
+
+The Blink Specification documents that SlowBlink implements.
+
+### /test
+
+`Rake::TestTask` test cases and support files.
 
 ## License
 
-MIT
+SlowBlink has an MIT license.
+
+
 Cameron Harper 2016
-
-
-
-
-    
-
-
-
-
-
 
