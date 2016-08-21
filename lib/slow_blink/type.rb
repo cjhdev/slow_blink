@@ -72,7 +72,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value)
-            putVLC(value.size) + value
+            putString(value)            
         end
         
     end
@@ -90,7 +90,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value)
-            value
+            putFixed(value)
         end
     end
 

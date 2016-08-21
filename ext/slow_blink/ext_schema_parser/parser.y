@@ -155,7 +155,8 @@ defs:
 defList:
     def
     {
-        $$ = rb_ary_new_from_args(1, $def);
+        $$ = rb_ary_new();
+        rb_ary_push($$, $def);
     }
     |
     defList def
@@ -226,7 +227,8 @@ groupDef:
 fields:
     field
     {
-        $$ = rb_ary_new_from_args(1, $field);
+        $$ = rb_ary_new();
+        rb_ary_push($$, $field);
     }
     |
     fields ',' field
@@ -458,7 +460,8 @@ time:
 enum:
     '|' sym
     {
-        $$ = rb_ary_new_from_args(1, $sym);
+        $$ = rb_ary_new();
+        rb_ary_push($$, $sym);
     }
     |
     symList
@@ -467,7 +470,8 @@ enum:
 symList:
     sym
     {
-        $$ = rb_ary_new_from_args(1, $sym);
+        $$ = rb_ary_new();
+        rb_ary_push($$, $sym);
     }
     |
     symList '|' sym
@@ -511,7 +515,8 @@ annots:
 annotList:
     annot
     {
-        $$ = rb_ary_new_from_args(1, $annot);
+        $$ = rb_ary_new();
+        rb_ary_push($$, $annot);        
     }
     |
     annotList annot
@@ -601,7 +606,8 @@ compRef:
 incrAnnotList:
     incrAnnotItem
     {
-        $$ = rb_ary_new_from_args(1, $incrAnnotItem);
+        $$ = rb_ary_new();
+        rb_ary_push($$, $incrAnnotItem);
     }
     |
     incrAnnotItem LEFT_ARROW incrAnnotList[list]
