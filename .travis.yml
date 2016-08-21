@@ -1,0 +1,9 @@
+notifications:
+    email: false
+language: Ruby
+rvm:
+  - 2.0
+script:
+    - rake compile
+    - rake
+
