@@ -1,12 +1,12 @@
-#line 2 "ext/slow_blink/parser/lexer.c"
-#line 36 "ext/slow_blink/parser/parser.l"
+#line 2 "ext/slow_blink/ext_schema_parser/lexer.c"
+#line 36 "ext/slow_blink/ext_schema_parser/parser.l"
 
     #include "common.h"
 
 
 
 
-#line 10 "ext/slow_blink/parser/lexer.c"
+#line 10 "ext/slow_blink/ext_schema_parser/lexer.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -688,13 +688,13 @@ static yyconst flex_int16_t yy_rule_linenum[54] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "ext/slow_blink/parser/parser.l"
+#line 1 "ext/slow_blink/ext_schema_parser/parser.l"
 /* Blink Protocol Flex Configuration
  *
  * Cameron Harper 2016
  *
  * */
-#line 7 "ext/slow_blink/parser/parser.l"
+#line 7 "ext/slow_blink/ext_schema_parser/parser.l"
 
 /* includes ***********************************************************/
 
@@ -725,7 +725,7 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 #define YY_NO_INPUT 1
 
 
-#line 729 "ext/slow_blink/parser/lexer.c"
+#line 729 "ext/slow_blink/ext_schema_parser/lexer.c"
 
 #define INITIAL 0
 #define LITERAL_C 1
@@ -1036,10 +1036,10 @@ YY_DECL
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
 /* %% [7.0] user's declarations go here */
-#line 52 "ext/slow_blink/parser/parser.l"
+#line 52 "ext/slow_blink/ext_schema_parser/parser.l"
 
 
-#line 1043 "ext/slow_blink/parser/lexer.c"
+#line 1043 "ext/slow_blink/ext_schema_parser/lexer.c"
 
     yylval = yylval_param;
 
@@ -1159,242 +1159,242 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 54 "ext/slow_blink/parser/parser.l"
+#line 54 "ext/slow_blink/ext_schema_parser/parser.l"
 { /* skip comments */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 56 "ext/slow_blink/parser/parser.l"
+#line 56 "ext/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(LITERAL_C); }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 57 "ext/slow_blink/parser/parser.l"
+#line 57 "ext/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 58 "ext/slow_blink/parser/parser.l"
+#line 58 "ext/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 60 "ext/slow_blink/parser/parser.l"
+#line 60 "ext/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(LITERAL_A); }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 61 "ext/slow_blink/parser/parser.l"
+#line 61 "ext/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 62 "ext/slow_blink/parser/parser.l"
+#line 62 "ext/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 8:
-#line 65 "ext/slow_blink/parser/parser.l"
+#line 65 "ext/slow_blink/ext_schema_parser/parser.l"
 case 9:
-#line 66 "ext/slow_blink/parser/parser.l"
+#line 66 "ext/slow_blink/ext_schema_parser/parser.l"
 case 10:
-#line 67 "ext/slow_blink/parser/parser.l"
+#line 67 "ext/slow_blink/ext_schema_parser/parser.l"
 case 11:
-#line 68 "ext/slow_blink/parser/parser.l"
+#line 68 "ext/slow_blink/ext_schema_parser/parser.l"
 case 12:
-#line 69 "ext/slow_blink/parser/parser.l"
+#line 69 "ext/slow_blink/ext_schema_parser/parser.l"
 case 13:
-#line 70 "ext/slow_blink/parser/parser.l"
+#line 70 "ext/slow_blink/ext_schema_parser/parser.l"
 case 14:
-#line 71 "ext/slow_blink/parser/parser.l"
+#line 71 "ext/slow_blink/ext_schema_parser/parser.l"
 case 15:
-#line 72 "ext/slow_blink/parser/parser.l"
+#line 72 "ext/slow_blink/ext_schema_parser/parser.l"
 case 16:
-#line 73 "ext/slow_blink/parser/parser.l"
+#line 73 "ext/slow_blink/ext_schema_parser/parser.l"
 case 17:
-#line 74 "ext/slow_blink/parser/parser.l"
+#line 74 "ext/slow_blink/ext_schema_parser/parser.l"
 case 18:
-#line 75 "ext/slow_blink/parser/parser.l"
+#line 75 "ext/slow_blink/ext_schema_parser/parser.l"
 case 19:
-#line 76 "ext/slow_blink/parser/parser.l"
+#line 76 "ext/slow_blink/ext_schema_parser/parser.l"
 case 20:
 YY_RULE_SETUP
-#line 76 "ext/slow_blink/parser/parser.l"
+#line 76 "ext/slow_blink/ext_schema_parser/parser.l"
 { return *yytext; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 78 "ext/slow_blink/parser/parser.l"
+#line 78 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I8; }  
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 79 "ext/slow_blink/parser/parser.l"
+#line 79 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I16; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 80 "ext/slow_blink/parser/parser.l"
+#line 80 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I32; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 81 "ext/slow_blink/parser/parser.l"
+#line 81 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I64; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 82 "ext/slow_blink/parser/parser.l"
+#line 82 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U8; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 83 "ext/slow_blink/parser/parser.l"
+#line 83 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U16; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 84 "ext/slow_blink/parser/parser.l"
+#line 84 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U32; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 85 "ext/slow_blink/parser/parser.l"
+#line 85 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U64; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 86 "ext/slow_blink/parser/parser.l"
+#line 86 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_F64; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 87 "ext/slow_blink/parser/parser.l"
+#line 87 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_DECIMAL; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 88 "ext/slow_blink/parser/parser.l"
+#line 88 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_DATE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 89 "ext/slow_blink/parser/parser.l"
+#line 89 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TIME_OF_DAY_MILLI; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 90 "ext/slow_blink/parser/parser.l"
+#line 90 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TIME_OF_DAY_NANO; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 91 "ext/slow_blink/parser/parser.l"
+#line 91 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_NANO_TIME; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 92 "ext/slow_blink/parser/parser.l"
+#line 92 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_MILLI_TIME; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 93 "ext/slow_blink/parser/parser.l"
+#line 93 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_BOOLEAN; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 94 "ext/slow_blink/parser/parser.l"
+#line 94 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_STRING; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 95 "ext/slow_blink/parser/parser.l"
+#line 95 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_OBJECT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 96 "ext/slow_blink/parser/parser.l"
+#line 96 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_NAMESPACE; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 97 "ext/slow_blink/parser/parser.l"
+#line 97 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TYPE; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 98 "ext/slow_blink/parser/parser.l"
+#line 98 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_SCHEMA; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 99 "ext/slow_blink/parser/parser.l"
+#line 99 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_NUMBER; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 100 "ext/slow_blink/parser/parser.l"
+#line 100 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_FIXED; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 101 "ext/slow_blink/parser/parser.l"
+#line 101 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_BINARY; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 103 "ext/slow_blink/parser/parser.l"
+#line 103 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_RIGHT_ARROW; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 104 "ext/slow_blink/parser/parser.l"
+#line 104 "ext/slow_blink/ext_schema_parser/parser.l"
 { return TOK_LEFT_ARROW; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 106 "ext/slow_blink/parser/parser.l"
+#line 106 "ext/slow_blink/ext_schema_parser/parser.l"
 { unsigned int tmp = 0; sscanf(yytext, "%x", &tmp); *yylval = UINT2NUM(tmp); return TOK_HEX; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 107 "ext/slow_blink/parser/parser.l"
+#line 107 "ext/slow_blink/ext_schema_parser/parser.l"
 { unsigned int tmp = 0; sscanf(yytext, "%u", &tmp); *yylval = UINT2NUM(tmp); return TOK_UINT; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 108 "ext/slow_blink/parser/parser.l"
+#line 108 "ext/slow_blink/ext_schema_parser/parser.l"
 { int tmp = 0; sscanf(yytext, "%i", &tmp); *yylval = INT2NUM(tmp); return TOK_INT; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 110 "ext/slow_blink/parser/parser.l"
+#line 110 "ext/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_C_NAME; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 111 "ext/slow_blink/parser/parser.l"
+#line 111 "ext/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 112 "ext/slow_blink/parser/parser.l"
+#line 112 "ext/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_ESCAPED_NC_NAME; }
 	YY_BREAK
 case 53:
 /* rule 53 can match eol */
 YY_RULE_SETUP
-#line 114 "ext/slow_blink/parser/parser.l"
+#line 114 "ext/slow_blink/ext_schema_parser/parser.l"
 {}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 116 "ext/slow_blink/parser/parser.l"
+#line 116 "ext/slow_blink/ext_schema_parser/parser.l"
 ECHO;
 	YY_BREAK
-#line 1398 "ext/slow_blink/parser/lexer.c"
+#line 1398 "ext/slow_blink/ext_schema_parser/lexer.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(LITERAL_C):
 case YY_STATE_EOF(LITERAL_A):
@@ -2672,7 +2672,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 /* %ok-for-header */
 
-#line 116 "ext/slow_blink/parser/parser.l"
+#line 116 "ext/slow_blink/ext_schema_parser/parser.l"
 
 
 

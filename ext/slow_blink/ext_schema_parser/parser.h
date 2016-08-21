@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_EXT_SLOW_BLINK_PARSER_PARSER_H_INCLUDED
-# define YY_YY_EXT_SLOW_BLINK_PARSER_PARSER_H_INCLUDED
+#ifndef YY_YY_EXT_SLOW_BLINK_EXT_SCHEMA_PARSER_PARSER_H_INCLUDED
+# define YY_YY_EXT_SLOW_BLINK_EXT_SCHEMA_PARSER_PARSER_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -107,4 +107,4 @@ struct YYLTYPE
 
 int yyparse (yyscan_t scanner, VALUE filename, VALUE *tree);
 
-#endif /* !YY_YY_EXT_SLOW_BLINK_PARSER_PARSER_H_INCLUDED  */
+#endif /* !YY_YY_EXT_SLOW_BLINK_EXT_SCHEMA_PARSER_PARSER_H_INCLUDED  */

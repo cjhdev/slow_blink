@@ -2,15 +2,15 @@
 #define yyHEADER_H 1
 #define yyIN_HEADER 1
 
-#line 6 "ext/slow_blink/parser/lexer.h"
-#line 36 "ext/slow_blink/parser/parser.l"
+#line 6 "ext/slow_blink/ext_schema_parser/lexer.h"
+#line 36 "ext/slow_blink/ext_schema_parser/parser.l"
 
     #include "common.h"
 
 
 
 
-#line 14 "ext/slow_blink/parser/lexer.h"
+#line 14 "ext/slow_blink/ext_schema_parser/lexer.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -478,9 +478,9 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 116 "ext/slow_blink/parser/parser.l"
+#line 116 "ext/slow_blink/ext_schema_parser/parser.l"
 
 
-#line 485 "ext/slow_blink/parser/lexer.h"
+#line 485 "ext/slow_blink/ext_schema_parser/lexer.h"
 #undef yyIN_HEADER
 #endif /* yyHEADER_H */

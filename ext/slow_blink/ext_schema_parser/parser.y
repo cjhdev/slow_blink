@@ -17,29 +17,16 @@
 
 /* function prototypes ************************************************/
 
-/**
- * - Mandatory yyerror function called by Flex/Bison
- * - variadic like printf
- *
- * @param[in] locp pointer to Bison location record
- * @param[in] scanner pointer to scanner instance (this is a pure parser)
- * @param[in] filename filename corresponding to location record
- * @param[out] tree the return structure
- * @param[in] msg printf format string
- *
- * */
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... );
 
 /* static function prototypes *****************************************/
 
-static VALUE parseFileBuffer(VALUE self, VALUE attr);
+static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self);
 static VALUE newLocation(VALUE filename, const YYLTYPE *location);
 
 /* static variables ***************************************************/
 
 static VALUE cSlowBlink;
-
-static VALUE cLocation;
 
 static VALUE cNameWithID;
 
@@ -810,11 +797,9 @@ e:
 /* functions **********************************************************/
 
 
-void Init_parser(void)
+void Init_ext_schema_parser(void)
 {
     cSlowBlink = rb_define_module("SlowBlink");
-
-    cLocation = rb_const_get(cSlowBlink, rb_intern("Location"));
 
     cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
     
@@ -858,8 +843,8 @@ void Init_parser(void)
     cDefinitionTypeRef = rb_const_get(cSlowBlink, rb_intern("DefinitionTypeRef"));
     cFieldRef = rb_const_get(cSlowBlink, rb_intern("FieldRef"));
     cFieldTypeRef = rb_const_get(cSlowBlink, rb_intern("FieldTypeRef"));
-    
-    rb_define_module_function(cSlowBlink, "parseFileBuffer", parseFileBuffer, 1);
+
+    rb_define_singleton_method(cSchema, "parse", parseFileBuffer, -1);
 }
 
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... )
@@ -897,15 +882,20 @@ void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char 
 
 /* static functions ***************************************************/
 
-static VALUE parseFileBuffer(VALUE self, VALUE attr)
+static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
 {
     yyscan_t scanner;    
-
     VALUE tree = Qnil;
+    VALUE buffer;
+    VALUE opts;
 
+    rb_scan_args(argc, argv, "10:", &buffer, &opts);
 
-    VALUE buffer = rb_hash_aref(attr, ID2SYM(rb_intern("buffer")));
-    VALUE filename = rb_hash_aref(attr, ID2SYM(rb_intern("fileName")));
+    if(opts == Qnil){
+        opts = rb_hash_new();
+    }
+
+    VALUE filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
 
     if(yylex_init(&scanner) == 0){
 
@@ -922,9 +912,21 @@ static VALUE parseFileBuffer(VALUE self, VALUE attr)
 
 static VALUE newLocation(VALUE filename, const YYLTYPE *location)
 {
-    return rb_funcall(cLocation, rb_intern("newLocation"), 3,
-        filename,
-        INT2NUM(location->first_line),
-        INT2NUM(location->first_column)
-    );    
+    char msg[500];
+    int pos = 0;
+
+    if(filename != Qnil){
+
+        if(RSTRING_LEN(filename) < sizeof(msg)){
+            memcpy(msg, RSTRING_PTR(filename), RSTRING_LEN(filename));
+            pos = RSTRING_LEN(filename);
+        }
+        else{
+            return rb_str_new("...", strlen("..."));
+        }
+    }
+    
+    int len = snprintf(&msg[pos], sizeof(msg) - pos, ":%i:%i:", location->first_line, location->first_column);
+
+    return rb_str_new(msg, len);
 }
