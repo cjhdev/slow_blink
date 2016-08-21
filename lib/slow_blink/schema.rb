@@ -36,13 +36,14 @@ module SlowBlink
 
         include Annotatable
 
-        # @api Initialise a Schema object from Blink Schema input string 
+        # @!method self.parse(input, **opts)
         #
-        # @param input [String] Blink schema (as string)
-        # @return [Schema]
-        def self.parse(input)
-            SlowBlink::parseFileBuffer(input)
-        end
+        #   Initialise a Schema object from Blink Schema input string
+        #
+        #   @param input [String] Blink Schema
+        #   @param opts [Hash] options
+        #   @option opts [String] :fileName file input originated from (for error messages)
+        #   @return [Schema]
 
         # @param namespace [nil,String]
         # @param defs [Array<Definition>]
@@ -97,14 +98,16 @@ module SlowBlink
         def symbol(name)
             @defs[name]            
         end
-    
+
+        def groups
+        end
+
     end    
 
 end
 
 require 'slow_blink/error'
 require 'slow_blink/version'
-require 'slow_blink/location'
 require 'slow_blink/annotation'
 require 'slow_blink/incremental_annotation'
 require 'slow_blink/group'
@@ -120,7 +123,7 @@ require 'slow_blink/sym'
 
 require 'slow_blink/name_with_id'
 
-require 'slow_blink/parser'
+require 'slow_blink/ext_schema_parser'
 
 
 

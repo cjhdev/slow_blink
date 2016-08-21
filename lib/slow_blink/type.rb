@@ -37,6 +37,10 @@ module SlowBlink
             @schema = schema
         end
 
+        def ===(other)
+            self.class == other.class            
+        end
+
     end
 
     # Blink Specification 3.2
@@ -64,38 +68,46 @@ module SlowBlink
 
     # Blink Specification 3.1
     class I8 < Type
+        RANGE = Range.new(-128, 127)
     end
 
     # Blink Specification 3.1
     class I16 < Type
+        RANGE = Range.new(-32768, 32767)
     end
 
     # Blink Specification 3.1
     class I32 < Type
+        RANGE = Range.new(-2147483648, 2147483647)
     end
 
     # Blink Specification 3.1
     class I64 < Type
+        RANGE = Range.new(-9223372036854775808, 9223372036854775807)
     end
 
     # Blink Specification 3.1
     class U8 < Type
+        RANGE = Range.new(0, 0xff)
     end
 
     # Blink Specification 3.1
     class U16 < Type
+        RANGE = Range.new(0, 0xffff)
     end
 
     # Blink Specification 3.1
     class U32 < Type
+        RANGE = Range.new(0, 0xffffffff)
     end
 
     # Blink Specification 3.1
     class U64 < Type
+        RANGE = Range.new(0, 0xffffffffffffffff)
     end
 
     # Blink Specification 3.1
-    class F64 < Type
+    class F64 < Type        
     end
 
     # Blink Specification 3.6
@@ -135,8 +147,26 @@ module SlowBlink
         # @param type [Type] repeating type
         # @param location [String]    
         def initialize(type, location)
-            @type = type
+            @type = nil
+            @rawType = type
             super(location)
+        end
+
+        # @macro common_link
+        def link(schema, stack=[])
+            if @schema != schema
+                @schema = nil
+                case @rawType.class
+                when REF
+                    schema.symbol(@rawType)
+                when SEQUENCE
+                    puts "error: sequence of sequence is not permitted"
+                else
+                    @type = @rawType
+                    @schema = schema
+                end
+            end
+            @schema
         end
 
     end
@@ -155,6 +185,7 @@ module SlowBlink
         def initialize(ref, dynamic, location)
             @ref = ref
             @dynamic = dynamic
+            @object = nil
             super(location)
         end
 
@@ -170,10 +201,25 @@ module SlowBlink
         def link(schema, stack=[])
             if @schema != schema
                 @schema = nil
-                @object = schema.symbol(@ref)
-                if @object and @object.link(schema, stack << self)                    
-                    @schema = schema
-                else
+                ref = @ref
+                object = schema.symbol(ref)
+                if object and object.link(schema, stack << self)
+                    # walk through all references until object
+                    # refers to an actual type
+                    loop do
+                        if object.is_a? REF
+                            object = object.object
+                        else
+                            break
+                        end
+                    end
+                    if @dynamic and @object.class != Group
+                        puts "#{@location}: error: '#{@ref} *' must resolve to a Group"
+                    else                    
+                        @object = object
+                        @schema = schema
+                    end
+                else                    
                     puts "#{@location}: error: '#{@ref}' is not defined in schema"
                 end                
             end
@@ -181,6 +227,9 @@ module SlowBlink
         end
     end
 
+    # any group
+    #
+    # Blink Specification 3.9
     class OBJECT < Type        
     end
 
