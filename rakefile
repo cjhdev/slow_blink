@@ -1,11 +1,11 @@
 require 'rake/testtask'
 require 'rake/extensiontask'
 
-DIR_SRC = "ext/slow_blink/parser"
+DIR_SRC = "ext/slow_blink/ext_schema_parser"
 
 Rake::ExtensionTask.new  do |ext|
-    ext.name = "parser"
-    ext.ext_dir = "ext/slow_blink/parser"
+    ext.name = "ext_schema_parser"
+    ext.ext_dir = DIR_SRC
     ext.lib_dir = "lib/slow_blink"
 end
 
