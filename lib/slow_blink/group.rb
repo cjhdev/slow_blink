@@ -19,28 +19,19 @@
 
 module SlowBlink
 
-    def self.putError(location, message)
-        "#{location} error: #{message}"
-    end
-
     class Group
 
         include Annotatable
+        extend CompactEncoder
 
-        attr_reader :location
-        
         # @return [String]
-        attr_reader :name
+        attr_reader :location
 
-        # @return [Integer]
-        attr_reader :id
-
+        # @return [NameWithID]
         attr_reader :nameWithID
 
-        def self.setValue(value)
-            @id = value
-        end
-
+        # @private
+        #
         # @param nameWithID [NameWithID]
         # @param superGroup [REF, nil]
         # @param fields [Array<Field>]
@@ -48,15 +39,15 @@ module SlowBlink
         def initialize(nameWithID, superGroup, fields, location)
             @annotes = {}
             @schema = nil
-            @name = nameWithID.name
-            @id = nameWithID.id
             @superGroup = superGroup
             @rawFields = fields
             @location = location
-            @fields = {}
+            @fields = []
             @nameWithID = nameWithID
         end
         
+        # @private
+        #
         # @macro common_link
         def link(schema,stack=[])
             if @schema != schema
@@ -65,16 +56,16 @@ module SlowBlink
                 @fields = {}
                 if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))                    
                     if !@superGroup or @superGroup.value.is_a?(Group)
+                        if @superGroup
+                            @fields.merge(@superGroup.value.fields)
+                        end
                         @rawFields.each do |f|
-                            if @superGroup and @superGroup.value.field(f.name)
-                                puts "#{f.location}: error: field with duplicate name '#{f.name}'"
-                                errors += 1
-                            elsif @fields[f.name]
-                                puts "#{f.location}: error: field with duplicate name '#{f.name}'"
+                            if @fields[f.nameWithID.name]
+                                puts "#{f.location}: error: field with duplicate name '#{f.nameWithID.name}'"
                                 errors += 1
                             else
                                 if f.link(schema, stack.dup << self)
-                                    @fields[f.name] = f
+                                    @fields[f.nameWithID.name] = f
                                 else
                                     errors += 1
                                 end
@@ -84,30 +75,55 @@ module SlowBlink
                             @schema = schema
                         end
                     else
-                        puts "#{@superGroup.location}: error: superGroup '#{@superGroup.name}' must be a group"
+                        puts "#{@superGroup.location}: error: superGroup must be a group"
                     end
                 end
             end
             @schema            
         end
-        
-        # @param name [String]
-        # @return [Field]
-        # @return [nil]
-        # @raise [Error]
+
+        # @param name [String] name of field
+        # @return [Field] field exists
+        # @return [nil] field does not exist
         def field(name)
-            if @schema
-                result = nil
-                if @superGroup
-                    result = @superGroup.value.field(name)
+            @fields[name]
+        end
+
+        def fields
+            @fields
+        end
+
+        # @private
+        def validate(value)
+            if value.kind_of? Hash
+                if value["$type"] == @nameWithID.name
+                    @fields.each do |name,f|
+                        f.validate(value[name])
+                    end
+                    true
+                else
+                    raise
                 end
-                if !result
-                    result = @fields[name]
-                end
-                result
-            else
-                raise Error.new "object must be linked"
             end
         end
+
+        # @private
+        #
+        # @param value [Hash] Blink JSON format
+        # @param opts [Hash] options
+        # @option opts [Symbol] :dynamic encode as dynamic group
+        # @return [String] compact format
+        def encode_compact(value, **opts)
+            out = ""
+            @fields.each do |name, f|
+                out << f.encode_compact(value)
+            end
+            if opts[:dynamic]
+                putVLC(@nameWithID.id) + putVLC(out.size) + out
+            else
+                out
+            end
+        end
+        
     end
 end

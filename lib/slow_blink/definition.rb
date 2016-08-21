@@ -21,32 +21,33 @@ module SlowBlink
     class Definition
 
         include Annotatable
+        extend CompactEncoder
 
+        # @return [String]
         attr_reader :location
 
         # @return [String]
-        attr_reader :name
-
-        # @return [Integer]
-        attr_reader :id
-
         attr_reader :nameWithID
 
+        # @return [Enumeration]
+        # @return [Type]
         attr_reader :enumOrType
 
+        # @private
+        #
         # @param nameWithID [NameWithID]
         # @param enumOrType [Enumeration, Type]
         # @param location [String]
         def initialize(nameWithID, enumOrType, location)
             @annotes = {}
             @schema = nil
-            @name = nameWithID.name
-            @id = nameWithID.id
             @enumOrType = enumOrType
             @location = location
             @nameWithID = nameWithID
         end
 
+        # @private
+        #
         # @!macro common_link
         def link(schema, stack=[])
             @schema = @enumOrType.link(schema, stack << self)

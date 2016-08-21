@@ -23,8 +23,8 @@ require 'slow_blink/annotatable'
 #   
 #   Resolve symbols to definitions in schema
 #
-#   @param mod [Schema] module this type belongs to
-#   @param stack [Array] call stack
+#   @param schema [Schema] schema to link
+#   @param stack [Array]
 #
 #   @return [Schema] linked
 #   @return [nil] not linked
@@ -50,6 +50,7 @@ module SlowBlink
         def initialize(namespace, defs)
             @nameWithID = NameWithID.new(nil,nil)
             @annotes = []
+            @groups = {}
             errors = 0
             
             if namespace
@@ -63,11 +64,11 @@ module SlowBlink
             # populate table of definitions
             defs.each do |d|
                 if !d.is_a? IncrementalAnnotation
-                    if @defs[d.name]
+                    if @defs[d.nameWithID.name]
                         puts "#{d.location}: error: duplicate definition name"
                         errors += 1
                     else
-                        @defs[d.name] = d
+                        @defs[d.nameWithID.name] = d
                     end
                 end
             end
@@ -92,20 +93,29 @@ module SlowBlink
             
         end
 
-        # @param name [String] name of definition
+        # @param name [String] definition or group name
         # @return [Definition]
         # @return [Group]
         def symbol(name)
             @defs[name]            
         end
 
-        def groups
+        # @param nameOrID [String,Integer] group name or id
+        # @return [Group] group exists
+        # @return [nil] group does not exist
+        def group(nameOrID)
+            if nameOrID.kind_of? String
+                @groups[nameOrID]
+            else
+                @groups.values.detect{|g|g.nameWithID.id == nameOrID}
+            end
         end
 
     end    
 
 end
 
+require 'slow_blink/compact_encoder'
 require 'slow_blink/error'
 require 'slow_blink/version'
 require 'slow_blink/annotation'
@@ -113,17 +123,13 @@ require 'slow_blink/incremental_annotation'
 require 'slow_blink/group'
 require 'slow_blink/field'
 require 'slow_blink/component_reference'
-
 require 'slow_blink/definition'
-
 require 'slow_blink/type'
-
 require 'slow_blink/enumeration'
 require 'slow_blink/sym'
-
 require 'slow_blink/name_with_id'
-
 require 'slow_blink/ext_schema_parser'
+require 'slow_blink/message'
 
 
 

@@ -21,10 +21,14 @@ module SlowBlink
 
     class Type
 
+        extend CompactEncoder
         include Annotatable
 
+        # @param [String]
         attr_reader :location
 
+        # @private
+        #
         # @param location [String]
         def initialize(location)
             @schema = nil
@@ -32,6 +36,8 @@ module SlowBlink
             @location = location
         end
 
+        # @private
+        #
         # @macro common_link
         def link(schema, stack=[])
             @schema = schema
@@ -50,68 +56,169 @@ module SlowBlink
         # @return [nil] no maximum size
         attr_reader :size
 
+        # @private
+        #
         # @param size [Integer] maximum size
         # @param location [String]    
         def initialize(size, location)
             @size = size
             super(location)
         end
+
+        # @private
+        def validate(value)
+            if @schema and value.kind_of? String and value.size < @size
+                true
+            else
+                raise
+            end
+        end
+
+        # @private
+        def encode_compact(value)
+            putVLC(value.size) + value
+        end
+        
     end
 
     # Blink Specification 3.4
     class FIXED < STRING
+        # @private
+        def validate(value)
+            if @schema and value.kind_of? String and value.size == @size
+                true
+            else
+                raise
+            end
+        end
+
+        # @private
+        def encode_compact(value)
+            value
+        end
     end
 
     # Blink Specification 3.3
-    class BINARY < STRING
+    class BINARY < STRING        
+    end
+
+    class INTEGER < Type
+
+        # @private
+        def validate(value)
+            if @schema and value.kind_of? Integer and self.class::RANGE.include? value
+                true
+            else
+                raise
+            end
+        end
+        
     end
 
     # Blink Specification 3.1
-    class I8 < Type
+    class I8 < INTEGER
+
         RANGE = Range.new(-128, 127)
+
+        # @private
+        def encode_compact(value)
+            putVLC(value, signed: true)
+        end
     end
 
     # Blink Specification 3.1
-    class I16 < Type
+    class I16 < INTEGER
+
         RANGE = Range.new(-32768, 32767)
+
+        # @private
+        def encode_compact(value)
+            putVLC(value, signed: true)
+        end
     end
 
     # Blink Specification 3.1
-    class I32 < Type
+    class I32 < INTEGER
+
         RANGE = Range.new(-2147483648, 2147483647)
+
+        # @private
+        def encode_compact(value)
+            putVLC(value, signed: true)
+        end
     end
 
     # Blink Specification 3.1
-    class I64 < Type
+    class I64 < INTEGER
+
         RANGE = Range.new(-9223372036854775808, 9223372036854775807)
+
+        # @private
+        def encode_compact(value)
+            putVLC(value, signed: true)
+        end
     end
 
     # Blink Specification 3.1
-    class U8 < Type
+    class U8 < INTEGER
+
         RANGE = Range.new(0, 0xff)
+
+        # @private
+        def encode_compact(value)
+            putVLC(value)
+        end
     end
 
     # Blink Specification 3.1
-    class U16 < Type
+    class U16 < INTEGER
+
         RANGE = Range.new(0, 0xffff)
+
+        # @private
+        def encode_compact(value)
+            putVLC(value)
+        end
     end
 
     # Blink Specification 3.1
-    class U32 < Type
+    class U32 < INTEGER
+
         RANGE = Range.new(0, 0xffffffff)
+
+        # @private
+        def encode_compact(value)
+            putVLC(value)
+        end
     end
 
     # Blink Specification 3.1
-    class U64 < Type
+    class U64 < INTEGER
+
         RANGE = Range.new(0, 0xffffffffffffffff)
+
+        # @private
+        def encode_compact(value)
+            putVLC(value)
+        end
     end
 
     # Blink Specification 3.1
-    class F64 < Type        
+    class F64 < INTEGER
+
+        # @private
+        def encode_compact(value)
+            putF64(value)
+        end
     end
 
     # Blink Specification 3.6
     class BOOLEAN < Type
+
+        # @private
+        def encode_compact(value)
+            putBool(value)            
+        end
     end
 
     # Blink Specification 3.7
@@ -124,18 +231,62 @@ module SlowBlink
 
     # Blink Specification 3.9
     class NANO_TIME < Type
+
+        # @private
+        def validate(value)
+            if value.kind_of? Time or value.kind_of? Integer
+                true
+            else
+                raise
+            end
+        end
+        
     end
 
     # Blink Specification 3.9
     class MILLI_TIME < Type
+
+        # @private
+        def validate(value)
+            if value.kind_of? Time or value.kind_of? Integer
+                true
+            else
+                raise
+            end
+        end
+        
     end
 
     # Blink Specification 3.11
     class TIME_OF_DAY_NANO < Type
+
+        # @private
+        def validate(value)
+            if value.kind_of? Time
+                true
+            elsif value.kind_of? Integer and value <= 86400000000000
+                true
+            else
+                raise
+            end                            
+        end
+        
     end
 
     # Blink Specification 3.11
     class TIME_OF_DAY_MILLI < Type
+
+        # @private
+        def validate(value)
+            if value.kind_of? Time
+                true
+            elsif value.kind_of? Integer and value <= 86400000
+                true
+            else
+                raise
+            end                            
+        end
+        
     end
 
     # Blink Specification 3.12
@@ -144,6 +295,8 @@ module SlowBlink
         # @return [Type]
         attr_reader :type
 
+        # @private
+        #
         # @param type [Type] repeating type
         # @param location [String]    
         def initialize(type, location)
@@ -152,6 +305,8 @@ module SlowBlink
             super(location)
         end
 
+        # @private
+        #
         # @macro common_link
         def link(schema, stack=[])
             if @schema != schema
@@ -169,6 +324,26 @@ module SlowBlink
             @schema
         end
 
+        # @private
+        def validate(value)
+            if @schema and value.kind_of? Array                
+                value.each do |v|
+                    @type.validate(v)
+                end
+            else
+                raise
+            end
+        end
+
+        # @private
+        def encode_compact(value)
+            out = putVLC(value.size)
+            value.each do |v|
+                out << @type.encode_compact(v)
+            end
+            out    
+        end
+
     end
 
     class REF < Type
@@ -179,6 +354,8 @@ module SlowBlink
             @dynamic
         end
 
+        # @private
+        #
         # @param ref [String] 
         # @param dynamic [true,false]
         # @param location [String]    
@@ -197,6 +374,8 @@ module SlowBlink
             end            
         end
 
+        # @private
+        # 
         # @macro common_link
         def link(schema, stack=[])
             if @schema != schema
@@ -225,12 +404,43 @@ module SlowBlink
             end
             @schema
         end
+
+        # @private
+        def validate(value)
+            @object.validate(input)
+        end
+
+        # @private
+        def encode_compact(value)
+            @object.encode_compact(value, dynamic: @dynamic)            
+        end
     end
 
     # any group
     #
     # Blink Specification 3.9
-    class OBJECT < Type        
+    class OBJECT < Type
+
+        # @private
+        def validate(value)
+            if value.kind_of? Hash and value["$type"]
+
+                group = @schema.group(value["$type"])
+                if group
+                    group.validate(value)
+                else
+                    raise
+                end
+            
+            else
+                raise
+            end
+        end
+
+        # @private
+        def encode_compact(value, **opts)
+            @object.encode_compact(value, dynamic: true)            
+        end
     end
 
 end

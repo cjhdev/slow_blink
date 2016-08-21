@@ -25,7 +25,9 @@ module SlowBlink
         attr_reader :ref
         attr_reader :annotes
         attr_reader :location
-    
+
+        # @private
+        #
         # @param ref [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef] annotation target
         # @param annotations [Array<Integer,Annotation>]
         # @param location [String]    
@@ -36,6 +38,8 @@ module SlowBlink
             @schema = nil
         end
 
+        # @private
+        #
         # Apply annotes to targets
         #
         # @macro common_link

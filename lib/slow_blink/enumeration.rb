@@ -22,7 +22,10 @@ module SlowBlink
     class Enumeration
 
         include Annotatable
+        extend CompactEncoder
 
+        # @private
+        #
         # @param syms [Array<Sym>] symbol list
         def initialize(syms)
             @annotes = {}
@@ -35,6 +38,8 @@ module SlowBlink
             self.class == other.class            
         end
 
+        # @private
+        #
         # @macro common_link
         def link(schema, stack=[])
             if @schema != schema
@@ -67,13 +72,34 @@ module SlowBlink
             @schema            
         end
 
-        def sym(key)
+        # @param nameOrVal [String,Integer]
+        # @return [Sym]
+        # @return [nil]
+        def sym(nameOrVal)
             if key.kind_of? String
                 @syms[key.to_s]
             else
                 @syms.detect{|s|s.val == s.to_i}
             end
-        end 
+        end
+
+        # @private
+        def validate(input)
+            if sym(input)
+               true
+            else
+                raise
+            end
+        end
+
+        # @private
+        def encode_compact(value, **opts)
+            if opts[:opt]
+                putPresent + putVLC(value)
+            else
+                putVLC(value)
+            end
+        end
 
     end
 end

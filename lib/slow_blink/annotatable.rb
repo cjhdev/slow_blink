@@ -20,8 +20,12 @@
 module SlowBlink
     module Annotatable
 
+        # @return [Array<Annotation>]
         attr_reader :annotes
 
+        # @private
+        #
+        # @param annotes [Array<Annotation,Integer>]
         def annote(annotes)
             annotes.each do |a|
                 if a.is_a? Annotation
@@ -38,8 +42,5 @@ module SlowBlink
             end
         end
 
-        def self.setValue(value)            
-        end
-    
     end
 end

@@ -31,11 +31,6 @@ C/C++ native extensions:
 
     Flex/Bison configuration files and the generated parser code.
 
-- /ext/ext_compact_encoder
-
-    Since we already have the burden of native extensions for the schema parser
-    the decision was made to implement the compact format encode/decoder primitives
-    as native extensions.
 
 ### /specification
 

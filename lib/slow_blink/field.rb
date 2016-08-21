@@ -22,18 +22,15 @@ module SlowBlink
     class Field
         
         include Annotatable
+        extend CompactEncoder
 
+        # @return [String]
         attr_reader :location
 
         # @return [Type]
         attr_reader :type
 
-        # @return [String]
-        attr_reader :name
-
-        # @return [Integer]
-        attr_reader :id
-
+        # @return [NameWithID]
         attr_reader :nameWithID
 
         # @return [true] field is optional
@@ -42,6 +39,8 @@ module SlowBlink
             @opt
         end
 
+        # @private
+        #
         # @param nameWithID [NameWithID]
         # @param type   [Type]
         # @param opt    [true,false] field is optional?
@@ -51,12 +50,12 @@ module SlowBlink
             @schema = nil
             @type = type
             @opt = opt
-            @name = nameWithID.name
-            @id = nameWithID.id
             @location = location
             @nameWithID = nameWithID
         end
 
+        # @private
+        #
         # @!macro common_link
         def link(schema,stack=[])
             if @schema != schema
@@ -67,5 +66,17 @@ module SlowBlink
             end
             @schema
         end
+
+        # @private
+        def encode_compact(value, **opts)
+            if value[name]
+                @type.encode_compact(value[:name], opt: @opt)
+            elsif @opt
+                putNull
+            else
+                raise
+            end
+        end
+        
     end
 end

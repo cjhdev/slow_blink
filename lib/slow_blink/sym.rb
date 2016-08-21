@@ -22,6 +22,7 @@ module SlowBlink
 
         include Annotatable
 
+        # @return [String]
         attr_reader :location
 
         # @return [String]
@@ -30,6 +31,8 @@ module SlowBlink
         # @return [Integer]
         attr_reader :val
 
+        # @private
+        #
         # @param name [String]
         # @param val [nil,Integer] explicit value
         # @param location [String]
@@ -40,6 +43,8 @@ module SlowBlink
             @location = location
         end
 
+        # @private
+        #
         # @macro common_link
         def link(schema, stack=[])
             @schema = schema

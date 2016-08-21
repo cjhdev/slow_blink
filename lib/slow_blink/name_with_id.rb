@@ -25,9 +25,12 @@ module SlowBlink
         # @return [String]
         attr_reader :name
 
-        # @param [Integer,nil]
+        # @return [Integer]
+        # @return [nil]
         attr_reader :id
 
+        # @private
+        #
         # @param name [String]
         # @param id [nil,Integer]
         def initialize(name, id)
@@ -35,6 +38,9 @@ module SlowBlink
             @id = id
         end
 
+        # @private
+        #
+        # @param value [Integer]        
         def id=(value)
             @id = id
         end
