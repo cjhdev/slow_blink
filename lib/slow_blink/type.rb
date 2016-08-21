@@ -43,10 +43,6 @@ module SlowBlink
             @schema = schema
         end
 
-        def ===(other)
-            self.class == other.class            
-        end
-
     end
 
     # Blink Specification 3.2

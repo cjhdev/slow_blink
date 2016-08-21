@@ -1,6 +1,9 @@
 SlowBlink
 ==========
 
+[![Gem Version](https://badge.fury.io/rb/slow_blink.svg)](https://badge.fury.io/rb/slow_blink)
+
+
 SlowBlink is a Ruby implementation of the [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
 
 This project is currently under development and not useful.

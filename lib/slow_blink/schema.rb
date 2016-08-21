@@ -45,6 +45,8 @@ module SlowBlink
         #   @option opts [String] :fileName file input originated from (for error messages)
         #   @return [Schema]
 
+        # @private
+        #
         # @param namespace [nil,String]
         # @param defs [Array<Definition>]
         def initialize(namespace, defs)
@@ -107,7 +109,7 @@ module SlowBlink
             if nameOrID.kind_of? String
                 @groups[nameOrID]
             else
-                @groups.values.detect{|g|g.nameWithID.id == nameOrID}
+                @groups.values.detect{|g|g.nameWithID.id == nameOrID.to_i}
             end
         end
 
