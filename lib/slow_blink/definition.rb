@@ -21,7 +21,6 @@ module SlowBlink
     class Definition
 
         include Annotatable
-        extend CompactEncoder
 
         # @return [String]
         attr_reader :location

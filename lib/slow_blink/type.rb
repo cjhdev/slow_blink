@@ -157,8 +157,6 @@ module SlowBlink
     # Blink Specification 3.1
     class U8 < INTEGER
 
-        #extend CompactEncoder
-
         RANGE = Range.new(0, 0xff)
 
         # @private

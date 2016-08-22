@@ -22,7 +22,6 @@ module SlowBlink
     class Enumeration
 
         include Annotatable
-        extend CompactEncoder
 
         # @private
         #
