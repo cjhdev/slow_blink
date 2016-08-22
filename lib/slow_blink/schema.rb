@@ -67,11 +67,14 @@ module SlowBlink
             defs.each do |d|
                 if !d.is_a? IncrementalAnnotation
                     if @defs[d.nameWithID.name]
-                        puts "#{d.location}: error: duplicate definition name"
+                        puts "#{d.location} error: duplicate definition name"
                         errors += 1
                     else
                         @defs[d.nameWithID.name] = d
-                    end
+                        if d.is_a? Group
+                            @groups[d.nameWithID.name] = d
+                        end
+                    end                    
                 end
             end
 
@@ -86,9 +89,13 @@ module SlowBlink
             @defs.each do |name, d|
                 if !d.link(self)
                     errors += 1
+                else
+                    if d.class == Group and d.nameWithID.id.nil?
+                        puts "#{d.location} warning: a group without an ID cannot be serialised"
+                    end
                 end
             end
-            
+
             if errors > 0
                 raise Error.new "#{errors} errors"
             end

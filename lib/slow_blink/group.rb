@@ -30,6 +30,9 @@ module SlowBlink
         # @return [NameWithID]
         attr_reader :nameWithID
 
+        # @return [Hash]
+        attr_reader :fields
+
         # @private
         #
         # @param nameWithID [NameWithID]
@@ -55,13 +58,13 @@ module SlowBlink
                 @schema = nil
                 @fields = {}
                 if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))                    
-                    if !@superGroup or @superGroup.value.is_a?(Group)
+                    if !@superGroup or @superGroup.object.is_a?(Group)
                         if @superGroup
-                            @fields.merge(@superGroup.value.fields)
+                            @fields = @superGroup.object.fields.dup                            
                         end
                         @rawFields.each do |f|
                             if @fields[f.nameWithID.name]
-                                puts "#{f.location}: error: field with duplicate name '#{f.nameWithID.name}'"
+                                puts "#{f.location} error: field with duplicate name '#{f.nameWithID.name}'"
                                 errors += 1
                             else
                                 if f.link(schema, stack.dup << self)
@@ -75,7 +78,7 @@ module SlowBlink
                             @schema = schema
                         end
                     else
-                        puts "#{@superGroup.location}: error: superGroup must be a group"
+                        puts "#{@superGroup.location} error: superGroup must be a group"
                     end
                 end
             end
@@ -87,10 +90,6 @@ module SlowBlink
         # @return [nil] field does not exist
         def field(name)
             @fields[name]
-        end
-
-        def fields
-            @fields
         end
 
         # @private

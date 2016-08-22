@@ -344,6 +344,9 @@ module SlowBlink
 
     class REF < Type
 
+        # @return referenced object
+        attr_reader :object
+
         # @return [true] dynamic reference
         # @return [false] static reference
         def dynamic?
@@ -360,14 +363,6 @@ module SlowBlink
             @dynamic = dynamic
             @object = nil
             super(location)
-        end
-
-        def value        
-            if @schema
-                @object
-            else
-                raise "must be linked"
-            end            
         end
 
         # @private

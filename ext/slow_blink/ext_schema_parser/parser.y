@@ -281,7 +281,7 @@ single:
     |
     BOOLEAN
     {
-        VALUE args[] = {Qnil, newLocation(filename, &@$)};
+        VALUE args[] = {newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBOOLEAN);
     }
     |
@@ -860,8 +860,15 @@ void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char 
     char error[500];
 
     int hdrLen;
+
+    if(filename != Qnil){
     
-    hdrLen = snprintf(error, sizeof(error), "%s:%i:%i: error: ", (const char *)RSTRING_PTR(filename), locp->first_line, locp->first_column);
+        hdrLen = snprintf(error, sizeof(error), "%s:%i:%i: error: ", (const char *)RSTRING_PTR(filename), locp->first_line, locp->first_column);
+    }
+    else{
+
+        hdrLen = snprintf(error, sizeof(error), "%i:%i: error: ", locp->first_line, locp->first_column);
+    }
 
     if((hdrLen > 0) && (hdrLen <= sizeof(error))){
 
@@ -918,21 +925,17 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
 
 static VALUE newLocation(VALUE filename, const YYLTYPE *location)
 {
-    char msg[500];
-    int pos = 0;
+    char msg[500];    
+    int len = 0;
 
     if(filename != Qnil){
 
-        if(RSTRING_LEN(filename) < sizeof(msg)){
-            memcpy(msg, RSTRING_PTR(filename), RSTRING_LEN(filename));
-            pos = RSTRING_LEN(filename);
-        }
-        else{
-            return rb_str_new("...", strlen("..."));
-        }
+        len = snprintf(msg, sizeof(msg), "%s:%i:%i:", (const char *)RSTRING_PTR(filename), location->first_line, location->first_column);
+    }
+    else{
+
+        len = snprintf(msg, sizeof(msg), "%i:%i:", location->first_line, location->first_column);
     }
     
-    int len = snprintf(&msg[pos], sizeof(msg) - pos, ":%i:%i:", location->first_line, location->first_column);
-
     return rb_str_new(msg, len);
 }

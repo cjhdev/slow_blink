@@ -26,7 +26,7 @@ testClass = Class.new(Test::Unit::TestCase) do
             #err = capture_stderr do
 
                 output = SlowBlink::Schema.parse(inputs[__method__][:buffer], filename: inputs[__method__][:fileName])
-                puts output
+                
                 
             
             #end
