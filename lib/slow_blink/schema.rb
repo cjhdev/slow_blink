@@ -91,7 +91,7 @@ module SlowBlink
                     errors += 1
                 else
                     if d.class == Group and d.nameWithID.id.nil?
-                        puts "#{d.location} warning: a group without an ID cannot be serialised"
+                        puts "#{d.location} warning: a group without an ID cannot be serialised as dynamic group"
                     end
                 end
             end
