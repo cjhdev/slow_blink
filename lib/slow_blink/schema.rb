@@ -80,8 +80,8 @@ module SlowBlink
 
             # now apply incremental annotation
             defs.each do |d|
-                if d === IncrementalAnnotation
-                    d.link(schema)
+                if d.is_a? IncrementalAnnotation
+                    d.link(self)
                 end
             end
 

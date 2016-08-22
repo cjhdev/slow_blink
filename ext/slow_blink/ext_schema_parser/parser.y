@@ -564,7 +564,7 @@ id:
     ;
 
 incrAnnot:
-    compRef LEFT_ARROW incrAnnotList
+    compRef incrAnnotList
     {
         VALUE args[] = {$compRef, $incrAnnotList, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cIncrementalAnnotation);
@@ -574,8 +574,7 @@ incrAnnot:
 compRef:
     SCHEMA
     {
-        VALUE args[] = {cSchema};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSchemaRef);        
+        $$ = rb_class_new_instance(0, NULL, cSchemaRef);        
     }
     |
     qName
@@ -604,16 +603,15 @@ compRef:
     ;
 
 incrAnnotList:
-    incrAnnotItem
+    LEFT_ARROW incrAnnotItem
     {
         $$ = rb_ary_new();
         rb_ary_push($$, $incrAnnotItem);
     }
     |
-    incrAnnotItem LEFT_ARROW incrAnnotList[list]
+    incrAnnotList LEFT_ARROW incrAnnotItem 
     {
-        $$ = $list;
-        rb_ary_unshift($$, $incrAnnotItem);
+        rb_ary_push($$, $incrAnnotItem);
     }
     ;
 

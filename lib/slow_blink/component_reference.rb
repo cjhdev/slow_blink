@@ -21,10 +21,14 @@ module SlowBlink
 
     # SCHEMA
     class SchemaRef
+        def self.===(other)
+            self == other
+        end
     end
 
     # qName
     class DefinitionRef < SchemaRef
+        attr_reader :qName
         # @param qName [String] name of the definition to annotate
         def initialize(qName)
             @qName = qName
@@ -37,6 +41,8 @@ module SlowBlink
 
     # qName.name
     class FieldRef < SchemaRef
+        attr_reader :qName
+        attr_reader :name
         def initialize(qName, name)
             @qName = qName
             @name = name

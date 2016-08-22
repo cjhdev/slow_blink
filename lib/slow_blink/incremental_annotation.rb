@@ -51,37 +51,37 @@ module SlowBlink
                     schema.annote(@annotes)
                     @schema = schema
                 when DefinitionRef
-                    object = schema.symbol(ref.qName)
+                    object = schema.symbol(@ref.qName)
                     if object
-                        object.nameWithID.annote(@annotes)
+                        object.annote(@annotes)
                         @schema = schema
                     end
                 when DefinitionTypeRef
-                    object = schema.symbol(ref.qName)
+                    object = schema.symbol(@ref.qName)
                     if object
                         object.enumOrType.annote(@annotes)
                         @schema = schema
                     end
                 when FieldRef
-                    object = schema.symbol(ref.qName)
+                    object = schema.symbol(@ref.qName)
                     if object
-                        field = object.field(ref.name)
+                        field = object.field(@ref.name)
                         if field
-                            field.nameWithID.annote(@annotes)
+                            field.annote(@annotes)
                             @schema = schema
                         end                    
                     end                
                 when FieldTypeRef
-                    object = schema.symbol(ref.qName)
+                    object = schema.symbol(@ref.qName)
                     if object
-                        field = object.field(ref.name)
+                        field = object.field(@ref.name)
                         if field
                             field.type.annote(@annotes)
                             @schema = schema
                         end                    
                     end                
                 else
-                    raise "unknown component reference".freeze
+                    raise "unknown component reference #{@ref.class}".freeze
                 end                    
             end
             @schema                

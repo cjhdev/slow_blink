@@ -248,10 +248,7 @@ class TestTypes < Test::Unit::TestCase
         schema = Schema.parse(input)
 
         assert_equal("one", schema.group("test").field("one").nameWithID.name)
-        assert_equal(OBJECT, schema.group("test").field("one").type.class)
-        
-
+        assert_equal(OBJECT, schema.group("test").field("one").type.class)        
     end
-
 
 end

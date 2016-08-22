@@ -34,6 +34,7 @@ module SlowBlink
         # @param name [String]
         # @param id [nil,Integer]
         def initialize(name, id)
+            @annotes = {}
             @name = name
             @id = id
         end
