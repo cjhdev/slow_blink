@@ -71,7 +71,7 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putString(value)            
         end
         
@@ -89,7 +89,7 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putFixed(value)
         end
     end
@@ -114,10 +114,12 @@ module SlowBlink
     # Blink Specification 3.1
     class I8 < INTEGER
 
+        
+
         RANGE = Range.new(-128, 127)
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putVLC(value, signed: true)
         end
     end
@@ -128,7 +130,7 @@ module SlowBlink
         RANGE = Range.new(-32768, 32767)
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putVLC(value, signed: true)
         end
     end
@@ -139,7 +141,7 @@ module SlowBlink
         RANGE = Range.new(-2147483648, 2147483647)
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putVLC(value, signed: true)
         end
     end
@@ -150,7 +152,7 @@ module SlowBlink
         RANGE = Range.new(-9223372036854775808, 9223372036854775807)
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putVLC(value, signed: true)
         end
     end
@@ -158,11 +160,13 @@ module SlowBlink
     # Blink Specification 3.1
     class U8 < INTEGER
 
+        #extend CompactEncoder
+
         RANGE = Range.new(0, 0xff)
 
         # @private
-        def encode_compact(value)
-            putVLC(value)
+        def encode_compact(value, **opts)
+            CompactEncoder::putVLC(value)
         end
     end
 
@@ -172,7 +176,7 @@ module SlowBlink
         RANGE = Range.new(0, 0xffff)
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putVLC(value)
         end
     end
@@ -183,7 +187,7 @@ module SlowBlink
         RANGE = Range.new(0, 0xffffffff)
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putVLC(value)
         end
     end
@@ -194,7 +198,7 @@ module SlowBlink
         RANGE = Range.new(0, 0xffffffffffffffff)
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putVLC(value)
         end
     end
@@ -203,7 +207,7 @@ module SlowBlink
     class F64 < INTEGER
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putF64(value)
         end
     end
@@ -212,7 +216,7 @@ module SlowBlink
     class BOOLEAN < Type
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             putBool(value)            
         end
     end
@@ -332,7 +336,7 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             out = putVLC(value.size)
             value.each do |v|
                 out << @type.encode_compact(v)
@@ -404,7 +408,7 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value)
+        def encode_compact(value, **opts)
             @object.encode_compact(value, dynamic: @dynamic)            
         end
     end

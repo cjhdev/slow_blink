@@ -82,6 +82,7 @@ static VALUE cFieldTypeRef;
 %define parse.error verbose
 %define api.token.prefix {TOK_}
 %glr-parser
+%debug
 
 %token
     I8                  "i8"
@@ -464,7 +465,10 @@ enum:
         rb_ary_push($$, $sym);
     }
     |
-    symList
+    symList '|' sym
+    {
+        rb_ary_push($$, $sym);
+    }
     ;
 
 symList:

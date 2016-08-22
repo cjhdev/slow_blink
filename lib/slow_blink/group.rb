@@ -118,7 +118,7 @@ module SlowBlink
                 out << f.encode_compact(value)
             end
             if opts[:dynamic]
-                putVLC(@nameWithID.id) + putVLC(out.size) + out
+                CompactEncoder::putVLC(@nameWithID.id) + CompactEncoder::putVLC(out.size) + out
             else
                 out
             end

@@ -91,7 +91,7 @@ Grammar
    56     | "millitime"
 
    57 enum: '|' sym
-   58     | symList
+   58     | symList '|' sym
 
    59 symList: sym
    60        | symList '|' sym
@@ -199,7 +199,7 @@ $end (0) 0
 '@' (64) 69
 '[' (91) 32
 ']' (93) 32
-'|' (124) 57 60
+'|' (124) 57 58 60
 error (256)
 "i8" (258) 42 92
 "i16" (259) 43 93
@@ -286,7 +286,7 @@ enum (71)
 symList (72)
     on left: 59 60, on right: 58 60
 sym (73)
-    on left: 61, on right: 57 59 60
+    on left: 61, on right: 57 58 59 60
 val (74)
     on left: 62 63 64, on right: 61
 annots (75)
@@ -1114,7 +1114,7 @@ State 63
    55     | . "nanotime"
    56     | . "millitime"
    57 enum: . '|' sym
-   58     | . symList
+   58     | . symList '|' sym
    59 symList: . sym
    60        | . symList '|' sym
    61 sym: . annots name val
@@ -1676,12 +1676,10 @@ State 112
 
 State 113
 
-   58 enum: symList .  [$end, "schema", "ncName", "\\ncName", "cName", '@']
+   58 enum: symList . '|' sym
    60 symList: symList . '|' sym
 
     '|'  shift, and go to state 133
-
-    $default  reduce using rule 58 (enum)
 
 
 State 114
@@ -1865,6 +1863,7 @@ State 132
 
 State 133
 
+   58 enum: symList '|' . sym
    60 symList: symList '|' . sym
    61 sym: . annots name val
    65 annots: . e
@@ -1984,9 +1983,11 @@ State 142
 
 State 143
 
-   60 symList: symList '|' sym .
+   58 enum: symList '|' sym .  [$end, "schema", "ncName", "\\ncName", "cName", '@']
+   60 symList: symList '|' sym .  ['|']
 
-    $default  reduce using rule 60 (symList)
+    '|'       reduce using rule 60 (symList)
+    $default  reduce using rule 58 (enum)
 
 
 State 144

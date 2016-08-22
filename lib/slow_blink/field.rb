@@ -69,8 +69,8 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            if value[name]
-                @type.encode_compact(value[:name], opt: @opt)
+            if value[@nameWithID.name]
+                @type.encode_compact(value[@nameWithID.name], opt: @opt)
             elsif @opt
                 putNull
             else

@@ -34,7 +34,7 @@
 # define YY_YY_EXT_SLOW_BLINK_EXT_SCHEMA_PARSER_PARSER_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
