@@ -89,10 +89,6 @@ module SlowBlink
             @defs.each do |name, d|
                 if !d.link(self)
                     errors += 1
-                else
-                    if d.class == Group and d.nameWithID.id.nil?
-                        puts "#{d.location} warning: a group without an ID cannot be serialised as dynamic group"
-                    end
                 end
             end
 
