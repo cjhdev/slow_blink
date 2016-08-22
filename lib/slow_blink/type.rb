@@ -379,6 +379,8 @@ module SlowBlink
                     loop do
                         if object.is_a? REF
                             object = object.object
+                        elsif object.is_a? Definition
+                            object = object.enumOrType
                         else
                             break
                         end

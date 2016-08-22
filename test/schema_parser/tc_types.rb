@@ -155,5 +155,56 @@ class TestTypes < Test::Unit::TestCase
         assert_equal(42, schema.group("test").field("test").type.size)
     end
 
+    def test_ref_string_size
+        input = "ref = string (1) test -> ref test "
+        schema = Schema.parse(input)
+
+        assert_equal("test", schema.group("test").field("test").nameWithID.name)
+        assert_equal(nil, schema.group("test").field("test").nameWithID.id)
+        assert_equal(REF, schema.group("test").field("test").type.class)
+        assert_equal(STRING, schema.group("test").field("test").type.object.class)
+        assert_equal(1, schema.group("test").field("test").type.object.size)        
+    end
+
+    def test_refref_string_size
+        input = "refref = string (1) ref = refref  test -> refref test "
+        schema = Schema.parse(input)
+
+        assert_equal("test", schema.group("test").field("test").nameWithID.name)
+        assert_equal(nil, schema.group("test").field("test").nameWithID.id)
+        assert_equal(REF, schema.group("test").field("test").type.class)
+        assert_equal(STRING, schema.group("test").field("test").type.object.class)
+        assert_equal(1, schema.group("test").field("test").type.object.size)        
+    end
+
+    def test_enum
+        input = "colour = | blue test -> colour test "
+        schema = Schema.parse(input)
+
+        assert_equal("test", schema.group("test").field("test").nameWithID.name)
+        assert_equal(nil, schema.group("test").field("test").nameWithID.id)
+        assert_equal(REF, schema.group("test").field("test").type.class)
+        assert_equal(Enumeration, schema.group("test").field("test").type.object.class)
+        assert_equal("blue", schema.group("test").field("test").type.object.symbol("blue").name)
+        assert_equal(0, schema.group("test").field("test").type.object.symbol("blue").val)
+        
+    end
+
+    def test_enum_many
+        input = "colour = blue | white | red/5 test -> colour test "
+        schema = Schema.parse(input)
+
+        assert_equal("test", schema.group("test").field("test").nameWithID.name)
+        assert_equal(nil, schema.group("test").field("test").nameWithID.id)
+        assert_equal(REF, schema.group("test").field("test").type.class)
+        assert_equal(Enumeration, schema.group("test").field("test").type.object.class)
+        assert_equal("blue", schema.group("test").field("test").type.object.symbol("blue").name)
+        assert_equal(0, schema.group("test").field("test").type.object.symbol("blue").val)
+        assert_equal("white", schema.group("test").field("test").type.object.symbol("white").name)
+        assert_equal(1, schema.group("test").field("test").type.object.symbol("white").val)
+        assert_equal("red", schema.group("test").field("test").type.object.symbol("red").name)
+        assert_equal(5, schema.group("test").field("test").type.object.symbol("red").val)
+    end
+
 
 end

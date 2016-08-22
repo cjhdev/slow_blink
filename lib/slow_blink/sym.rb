@@ -31,6 +31,14 @@ module SlowBlink
         # @return [Integer]
         attr_reader :val
 
+        def val
+            @val
+        end
+
+        def val=(value)
+            @val = value.to_i
+        end
+
         # @private
         #
         # @param name [String]

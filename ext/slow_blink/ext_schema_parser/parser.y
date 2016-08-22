@@ -351,13 +351,13 @@ size:
 ref:
     qName
     {
-        VALUE args[] = {$qName, Qfalse};
+        VALUE args[] = {$qName, Qfalse, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
     |
     qName '*'
     {
-        VALUE args[] = {$qName, Qtrue};
+        VALUE args[] = {$qName, Qtrue, newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
     ;

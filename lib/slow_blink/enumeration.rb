@@ -34,9 +34,6 @@ module SlowBlink
             @schema = nil       
         end
 
-        def ===(other)
-            self.class == other.class            
-        end
 
         # @private
         #
@@ -49,20 +46,21 @@ module SlowBlink
                 @syms = {}                        
                 @rawSyms.each do |s|
                     if @syms[s.name]
-                        puts "#{s.location}: error: duplicate name"
+                        puts "#{s.location} error: duplicate name"
                         errors += 1
                     else
                         if s.val
                             if @syms.values.include? s.val
-                                puts "#{s.location}: error: duplicate value"
+                                puts "#{s.location} error: duplicate value"
                                 errors += 1
                             else
                                 value = s.val + 1
                             end                        
                         else
-                            @syms[s.name] = value
+                            s.val = value                            
                             value += 1
                         end
+                        @syms[s.name] = s
                     end
                 end
                 if errors == 0
@@ -75,11 +73,11 @@ module SlowBlink
         # @param nameOrVal [String,Integer]
         # @return [Sym]
         # @return [nil]
-        def sym(nameOrVal)
-            if key.kind_of? String
-                @syms[key.to_s]
+        def symbol(nameOrVal)
+            if nameOrVal.kind_of? String
+                @syms[nameOrVal]
             else
-                @syms.detect{|s|s.val == s.to_i}
+                @syms.detect{|s|s.val == nameOrVal.to_i}
             end
         end
 
