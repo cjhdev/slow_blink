@@ -1319,7 +1319,7 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
   case 32:
 #line 289 "ext/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {Qnil, newLocation(filename, &(*yylocp))};
+        VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cOBJECT);
     }
 #line 1326 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */

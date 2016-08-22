@@ -206,5 +206,52 @@ class TestTypes < Test::Unit::TestCase
         assert_equal(5, schema.group("test").field("test").type.object.symbol("red").val)
     end
 
+    def test_static_group
+        input = "static -> u8 one, u16 two test -> static one, string two"
+        schema = Schema.parse(input)
+
+        assert_equal("one", schema.group("test").field("one").nameWithID.name)
+        assert_equal(REF, schema.group("test").field("one").type.class)
+        assert_equal(false, schema.group("test").field("one").type.dynamic?)
+
+
+        assert_equal("two", schema.group("test").field("two").nameWithID.name)
+        assert_equal(STRING, schema.group("test").field("two").type.class)
+
+        assert_equal("one", schema.group("test").field("one").type.object.field("one").nameWithID.name)
+        assert_equal(U8, schema.group("test").field("one").type.object.field("one").type.class)
+        assert_equal("two", schema.group("test").field("one").type.object.field("two").nameWithID.name)
+        assert_equal(U16, schema.group("test").field("one").type.object.field("two").type.class)        
+
+    end
+
+    def test_dynamic_group
+        input = "dynamic -> u8 one, u16 two test -> dynamic * one, string two"
+        schema = Schema.parse(input)
+
+        assert_equal("one", schema.group("test").field("one").nameWithID.name)
+        assert_equal(REF, schema.group("test").field("one").type.class)
+        assert_equal(true, schema.group("test").field("one").type.dynamic?)
+
+        assert_equal("two", schema.group("test").field("two").nameWithID.name)
+        assert_equal(STRING, schema.group("test").field("two").type.class)
+
+        assert_equal("one", schema.group("test").field("one").type.object.field("one").nameWithID.name)
+        assert_equal(U8, schema.group("test").field("one").type.object.field("one").type.class)
+        assert_equal("two", schema.group("test").field("one").type.object.field("two").nameWithID.name)
+        assert_equal(U16, schema.group("test").field("one").type.object.field("two").type.class)        
+
+    end
+
+    def test_any_group
+        input = "dynamic -> u8 one, u16 two test -> object one, string two"
+        schema = Schema.parse(input)
+
+        assert_equal("one", schema.group("test").field("one").nameWithID.name)
+        assert_equal(OBJECT, schema.group("test").field("one").type.class)
+        
+
+    end
+
 
 end

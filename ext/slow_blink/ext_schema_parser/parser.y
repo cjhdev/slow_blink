@@ -287,7 +287,7 @@ single:
     |
     OBJECT
     {
-        VALUE args[] = {Qnil, newLocation(filename, &@$)};
+        VALUE args[] = {newLocation(filename, &@$)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cOBJECT);
     }
     ;

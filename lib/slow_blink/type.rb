@@ -385,7 +385,7 @@ module SlowBlink
                             break
                         end
                     end
-                    if @dynamic and @object.class != Group
+                    if @dynamic and object.class != Group
                         puts "#{@location}: error: '#{@ref} *' must resolve to a Group"
                     else                    
                         @object = object
