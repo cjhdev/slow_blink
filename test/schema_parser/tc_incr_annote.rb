@@ -37,5 +37,4 @@ class TestIncrAnnote < Test::Unit::TestCase
         schema = Schema.parse(input)
     end
 
-
 end

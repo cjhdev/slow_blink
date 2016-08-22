@@ -21,7 +21,6 @@ module SlowBlink
 
     class Type
 
-        extend CompactEncoder
         include Annotatable
 
         # @param [String]
@@ -72,7 +71,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            putString(value)            
+            CompactEncoder::putString(value)            
         end
         
     end
@@ -114,13 +113,11 @@ module SlowBlink
     # Blink Specification 3.1
     class I8 < INTEGER
 
-        
-
         RANGE = Range.new(-128, 127)
 
         # @private
         def encode_compact(value, **opts)
-            putVLC(value, signed: true)
+            CompactEncoder::putVLC(value, signed: true)
         end
     end
 
@@ -131,7 +128,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            putVLC(value, signed: true)
+            CompactEncoder::putVLC(value, signed: true)
         end
     end
 
@@ -142,7 +139,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            putVLC(value, signed: true)
+            CompactEncoder::putVLC(value, signed: true)
         end
     end
 
@@ -153,7 +150,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            putVLC(value, signed: true)
+            CompactEncoder::putVLC(value, signed: true)
         end
     end
 
@@ -177,7 +174,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            putVLC(value)
+            CompactEncoder::putVLC(value)
         end
     end
 
@@ -188,7 +185,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            putVLC(value)
+            CompactEncoder::putVLC(value)
         end
     end
 
@@ -199,7 +196,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            putVLC(value)
+            CompactEncoder::putVLC(value)
         end
     end
 
@@ -337,7 +334,7 @@ module SlowBlink
 
         # @private
         def encode_compact(value, **opts)
-            out = putVLC(value.size)
+            out = CompactEncoder::putVLC(value.size)
             value.each do |v|
                 out << @type.encode_compact(v)
             end

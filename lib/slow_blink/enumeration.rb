@@ -83,7 +83,7 @@ module SlowBlink
 
         # @private
         def validate(input)
-            if sym(input)
+            if symbol(input)
                true
             else
                 raise
@@ -93,9 +93,9 @@ module SlowBlink
         # @private
         def encode_compact(value, **opts)
             if opts[:opt]
-                putPresent + putVLC(value)
+                putPresent + CompactEncoder::putVLC(self.symbol(value).val)
             else
-                putVLC(value)
+                CompactEncoder::putVLC(self.symbol(value).val)
             end
         end
 
