@@ -120,8 +120,9 @@ module SlowBlink
 
 end
 
-require 'slow_blink/compact_encoder'
 require 'slow_blink/error'
+require 'slow_blink/compact_encoder'
+require 'slow_blink/ext_compact_encoder'
 require 'slow_blink/version'
 require 'slow_blink/annotation'
 require 'slow_blink/incremental_annotation'

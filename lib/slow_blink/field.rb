@@ -66,15 +66,23 @@ module SlowBlink
             @schema
         end
 
+        def validate(value)
+            @type.validate(value)
+        end
+
         # @private
-        def encode_compact(value, **opts)
+        def to_compact(value, **opts)
             if value[@nameWithID.name]
-                @type.encode_compact(value[@nameWithID.name], opt: @opt)
+                @type.to_compact(value[@nameWithID.name], opt: @opt)
             elsif @opt
                 putNull
             else
                 raise
             end
+        end
+
+        def from_compact!(value)
+            @type.from_compact!(value[@nameWithID.name], opt: @opt)                
         end
         
     end

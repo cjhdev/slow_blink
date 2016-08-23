@@ -25,6 +25,7 @@
 #include <ruby.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <assert.h>
 
 #include "compact_encoder.h"
 
@@ -58,6 +59,12 @@ static VALUE putI16(VALUE self, VALUE val);
 static VALUE putI32(VALUE self, VALUE val);
 static VALUE putI64(VALUE self, VALUE val);
 static VALUE putF64(VALUE self, VALUE val);
+static VALUE putBool(VALUE self, VALUE val);
+
+static VALUE putBinary(VALUE self, VALUE val);
+static VALUE putString(VALUE self, VALUE val);
+static VALUE putFixed(VALUE self, VALUE val);
+static VALUE putFixedOptional(VALUE self, VALUE val);
 
 static VALUE getU8(VALUE self, VALUE input);
 static VALUE getU16(VALUE self, VALUE input);
@@ -67,6 +74,13 @@ static VALUE getI8(VALUE self, VALUE input);
 static VALUE getI16(VALUE self, VALUE input);
 static VALUE getI32(VALUE self, VALUE input);
 static VALUE getI64(VALUE self, VALUE input);
+static VALUE getF64(VALUE self, VALUE input);
+static VALUE getBool(VALUE self, VALUE input);
+
+static VALUE getBinary(VALUE self, VALUE input);
+static VALUE getString(VALUE self, VALUE input);
+static VALUE getFixed(VALUE self, VALUE input, VALUE size);
+static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size);
 
 static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned);
 static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned);
@@ -87,11 +101,6 @@ void Init_ext_compact_encoder(void)
     
     cCompactEncoder = rb_define_module_under(cSlowBlink, "CompactEncoder");
 
-    
-    //rb_define_module_function(cCompactEncoder, "putNull", putNull, 0);
-    //rb_define_module_function(cCompactEncoder, "putNull", putPresent, 0);
-    //rb_define_module_function(cCompactEncoder, "putNull", putPresent, 0);
-    
     rb_define_module_function(cCompactEncoder, "putU8", putU8, 1);
     rb_define_module_function(cCompactEncoder, "putU16", putU16, 1);
     rb_define_module_function(cCompactEncoder, "putU32", putU32, 1);
@@ -103,28 +112,30 @@ void Init_ext_compact_encoder(void)
 
     rb_define_module_function(cCompactEncoder, "putF64", putF64, 1);
 
+    rb_define_module_function(cCompactEncoder, "putBool", putBool, 1);
+
+    rb_define_module_function(cCompactEncoder, "putString", putString, 1);
+    rb_define_module_function(cCompactEncoder, "putBinary", putBinary, 1);
+    rb_define_module_function(cCompactEncoder, "putFixed", putFixed, 1);
+    rb_define_module_function(cCompactEncoder, "putFixedOptional", putFixedOptional, 1);
+
     rb_define_module_function(cCompactEncoder, "getU8", getU8, 1);
     rb_define_module_function(cCompactEncoder, "getU16", getU16, 1);
     rb_define_module_function(cCompactEncoder, "getU32", getU32, 1);
     rb_define_module_function(cCompactEncoder, "getU64", getU64, 1);
-    rb_define_module_function(cCompactEncoder, "geti8", getI8, 1);
-    rb_define_module_function(cCompactEncoder, "geti16", getI16, 1);
-    rb_define_module_function(cCompactEncoder, "geti32", getI32, 1);
-    rb_define_module_function(cCompactEncoder, "geti64", getI64, 1);
+    rb_define_module_function(cCompactEncoder, "getI8", getI8, 1);
+    rb_define_module_function(cCompactEncoder, "getI16", getI16, 1);
+    rb_define_module_function(cCompactEncoder, "getI32", getI32, 1);
+    rb_define_module_function(cCompactEncoder, "getI64", getI64, 1);
 
-    //rb_define_module_function(cCompactEncoder, "getF64", getF64, 1);
+    rb_define_module_function(cCompactEncoder, "getF64", getF64, 1);
 
-    //rb_define_module_function(cCompactEncoder, "getF64", putF64, -1);
+    rb_define_module_function(cCompactEncoder, "getBool", getBool, 1);
 
-    //rb_define_module_function(cCompactEncoder, "putString", putString, 1);
-    //rb_define_module_function(cCompactEncoder, "getString", getString, -1);
-
-    //rb_define_module_function(cCompactEncoder, "putBinary", putString, 1);
-    //rb_define_module_function(cCompactEncoder, "getBinary", getString, -1);
-
-    //rb_define_module_function(cCompactEncoder, "putFixed", putString, 1);
-    //rb_define_module_function(cCompactEncoder, "getFixed", getString, -1);
-    
+    rb_define_module_function(cCompactEncoder, "getString", getString, 1);    
+    rb_define_module_function(cCompactEncoder, "getBinary", getBinary, 1);    
+    rb_define_module_function(cCompactEncoder, "getFixed", getFixed, 2);    
+    rb_define_module_function(cCompactEncoder, "getFixedOptional", getFixedOptional, 2);    
 }
 
 /* static functions ***************************************************/
@@ -180,17 +191,110 @@ static VALUE putF64(VALUE self, VALUE val)
     return retval;
 }
 
-static VALUE putBool(VALUE self, VALUE val, VALUE optional)
-{   
-    if((val == Qnil) || (val == Qfalse)){
+static VALUE putBool(VALUE self, VALUE val)
+{
+    VALUE retval;
+    
+    if(val == Qnil){
 
-        return Qnil;
+        retval = putNull();
     }
+    else{
+        
+        retval = putU8(self, (val == Qfalse) ? INT2FIX(0) : INT2FIX(1));
+    }
+
+    return retval;        
 }
 
 static VALUE putNull(void)
 {
-    return Qnil;
+    uint8_t str[] = {0xc0};
+    return rb_str_new((const char *)str, sizeof(str));
+}
+
+static VALUE putBinary(VALUE self, VALUE val)
+{
+    VALUE retval;
+
+    if(val == Qnil){
+
+        retval = putNull();
+    }
+    else{
+
+        retval = putU32(self, UINT2NUM(RSTRING_LEN(val)));
+        rb_str_concat(retval, val);        
+    }
+
+    return retval;
+}
+
+static VALUE putString(VALUE self, VALUE val)
+{
+    //todo: enforce utf8 encoding
+    return putBinary(self, val);
+}
+
+static VALUE putFixedOptional(VALUE self, VALUE val)
+{
+    VALUE retval;
+
+    if(val == Qnil){
+
+        retval = putNull();    
+    }
+    else{
+
+        uint8_t str[] = {0x01};
+        retval = rb_str_new((const char *)str, sizeof(str));
+        rb_str_concat(retval, val);        
+    }
+
+    return retval;
+}
+
+static VALUE putFixed(VALUE self, VALUE val)
+{
+    return rb_str_dup(val);
+}
+
+static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned)
+{
+    uint8_t out[10U];
+    VALUE retval;
+
+    if(val == Qnil){
+
+        retval = putNull();
+    }
+    else{
+
+        if(isSigned){
+
+            int64_t value = NUM2LL(val);
+
+            if((value < min) || (value > max)){
+
+                rb_raise(cError, "out of range");
+            }
+
+            retval = rb_str_new((const char *)out, BLINK_putVLC((uint64_t)value, false, out, sizeof(out)));
+        }
+        else{
+
+            uint64_t value = NUM2ULL(val);
+
+            if(value > (uint64_t)max){
+
+                rb_raise(cError, "out of range");
+            }
+
+            retval = rb_str_new((const char *)out, BLINK_putVLC(value, false, out, sizeof(out)));
+        }
+    }
+
+    return retval;
 }
 
 static VALUE getU8(VALUE self, VALUE input)
@@ -233,40 +337,99 @@ static VALUE getI64(VALUE self, VALUE input)
     return getInt(input, MIN64, MAX64, true);
 }
 
-static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned)
+static VALUE getF64(VALUE self, VALUE input)
 {
-    uint8_t out[10U];
+    bool isNull;
+    double out;
+    uint32_t ret;
+    VALUE retval = Qnil;
+
+    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(input), RSTRING_LEN(input), false, (uint64_t *)&out, &isNull);
+
+    if(ret > 0){
+
+        rb_str_drop_bytes(input, ret);
+        if(!isNull){
+
+            retval = rb_float_new(out);
+        }        
+    }
+
+    return retval;
+}
+
+static VALUE getBool(VALUE self, VALUE input)
+{
     VALUE retval;
+    VALUE value = getInt(input, 0, MAXU8, false);
 
-    if(val == Qnil){
+    if(value == UINT2NUM(0)){
 
-        retval = putNull();
+        retval = Qfalse;
+    }
+    else if(value == UINT2NUM(1)){
+
+        retval = Qtrue;
     }
     else{
 
-        if(isSigned){
-
-            int64_t value = NUM2LL(val);
-
-            if((value < min) || (value > max)){
-
-                rb_raise(cError, "out of range");
-            }
-
-            retval = rb_str_new((const char *)out, BLINK_putVLC((uint64_t)value, false, out, sizeof(out)));
-        }
-        else{
-
-            uint64_t value = NUM2ULL(val);
-
-            if(value > (uint64_t)max){
-
-                rb_raise(cError, "out of range");
-            }
-
-            retval = rb_str_new((const char *)out, BLINK_putVLC(value, false, out, sizeof(out)));
-        }
+        rb_raise(cError, "W11");
     }
+
+    return retval;
+}
+
+static VALUE getBinary(VALUE self, VALUE input)
+{
+    VALUE retval = Qnil;
+    VALUE size = getInt(input, 0, MAXU32, false);
+
+    if(size != Qnil){
+
+        retval = rb_str_substr(input, 0, NUM2UINT(size));
+        rb_str_drop_bytes(input, NUM2UINT(size));
+
+        //todo: not sure how substr works if input is short
+        assert(RSTRING_LEN(retval) == NUM2UINT(size));
+    }
+
+    return retval;
+}
+
+static VALUE getString(VALUE self, VALUE input)
+{
+    VALUE retval = getBinary(self, input);
+
+    if(retval != Qnil){
+
+        //todo: test UTF8 encoding here
+    }
+
+    return retval;
+}
+
+static VALUE getFixed(VALUE self, VALUE input, VALUE size)
+{
+    VALUE retval;
+
+    retval = rb_str_substr(input, 0, NUM2UINT(size));
+
+    assert(RSTRING_LEN(retval) == NUM2UINT(size));
+
+    rb_str_drop_bytes(input, NUM2UINT(size));
+
+    return retval;
+}
+
+static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size)
+{
+    VALUE retval;
+
+    retval = rb_str_substr(input, 0, NUM2UINT(size));
+
+    assert(RSTRING_LEN(retval) == NUM2UINT(size));
+
+    rb_str_drop_bytes(input, NUM2UINT(size));
 
     return retval;
 }

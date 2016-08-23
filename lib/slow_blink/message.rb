@@ -13,11 +13,10 @@ module SlowBlink
                 @input = [input]
             else
                 @input = input
-            end
-        
-            #@input.each do |i|
-                #@schema.group(type).validate(i)
-            #end            
+            end        
+            @input.each do |i|
+                @schema.group(i["$type"]).validate(i)
+            end            
         end
 
         # Convert compact form encoding to a message according to schema
@@ -26,7 +25,7 @@ module SlowBlink
         # @param input [String] compact form encoding
         # @return [Message]
         def self.from_compact(schema, input)
-            raise
+
         end
 
         # Convert message to compact form encoding
@@ -35,7 +34,7 @@ module SlowBlink
         def to_compact
             out = ""
             @input.each do |i|
-                out << @schema.group(i["$type"]).encode_compact(i, dynamic: true)
+                out << @schema.group(i["$type"]).to_compact(i, dynamic: true)
             end
             out
         end

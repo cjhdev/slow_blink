@@ -90,12 +90,16 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value, **opts)
+        def to_compact(value, **opts)
             if opts[:opt]
                 putPresent + CompactEncoder::putVLC(self.symbol(value).val)
             else
                 CompactEncoder::putVLC(self.symbol(value).val)
             end
+        end
+
+        def from_compact!(value)
+            
         end
 
     end

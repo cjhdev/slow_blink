@@ -30,7 +30,12 @@ module SlowBlink
         attr_reader :nameWithID
 
         # @return [Hash]
-        attr_reader :fields
+        #attr_reader :fields
+
+        # @return [Array<Field>]
+        def fields
+            @fields.values
+        end
 
         # @private
         #
@@ -105,22 +110,34 @@ module SlowBlink
             end
         end
 
+        def group_kind_of?(superGroup)
+            (self == superGroup) or (@superGroup and @superGroup.group_kind_of?(superGroup))            
+        end
+
         # @private
         #
         # @param value [Hash] Blink JSON format
         # @param opts [Hash] options
         # @option opts [Symbol] :dynamic encode as dynamic group
         # @return [String] compact format
-        def encode_compact(value, **opts)
-            out = ""
+        def to_compact(value, **opts)
+            out = CompactEncoder::putU64(@nameWithID.id)
             @fields.each do |name, f|
-                out << f.encode_compact(value)
+                out << f.to_compact(value)
             end
             if opts[:dynamic]
-                CompactEncoder::putVLC(@nameWithID.id) + CompactEncoder::putVLC(out.size) + out
+                CompactEncoder::putU32(out.size) + out
             else
                 out
             end
+        end
+
+        def from_compact!(input, **opts)
+            out["$type"] = @nameWithID.name
+            @fields.each do |name, f|
+                out[name] = f.from_compact!(value)
+            end
+            out
         end
         
     end

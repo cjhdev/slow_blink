@@ -62,7 +62,7 @@ module SlowBlink
 
         # @private
         def validate(value)
-            if @schema and value.kind_of? String and value.size < @size
+            if @schema and (value.kind_of?(String)) and (@size.nil? or value.size <= @size)
                 true
             else
                 raise
@@ -70,8 +70,17 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putString(value)            
+        def to_compact(value)
+            CompactEncoder::putVLC(value) + value                   
+        end
+
+        def from_compact!(input, **opts)
+            size = CompactEncoder::getU32!(input)
+            if size and size > 0
+                input.slice(0, size)
+            else
+                nil
+            end            
         end
         
     end
@@ -88,7 +97,7 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value, **opts)
+        def to_compact(value, **opts)
             putFixed(value)
         end
     end
@@ -101,7 +110,9 @@ module SlowBlink
 
         # @private
         def validate(value)
-            if @schema and value.kind_of? Integer and self.class::RANGE.include? value
+            puts self.class::RANGE.include?(value)
+            puts @schema
+            if @schema and value.kind_of?(Integer) and self.class::RANGE.include?(value)
                 true
             else
                 raise
@@ -116,8 +127,18 @@ module SlowBlink
         RANGE = Range.new(-128, 127)
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putVLC(value, signed: true)
+        def to_compact(value)
+            CompactEncoder::putI8(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Integer]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getI8!(input)
         end
     end
 
@@ -127,8 +148,18 @@ module SlowBlink
         RANGE = Range.new(-32768, 32767)
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putVLC(value, signed: true)
+        def to_compact(value)
+            CompactEncoder::putI16(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Integer]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getI16!(input)
         end
     end
 
@@ -138,8 +169,18 @@ module SlowBlink
         RANGE = Range.new(-2147483648, 2147483647)
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putVLC(value, signed: true)
+        def to_compact(value)
+            CompactEncoder::putI32(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Integer]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getI32!(input)
         end
     end
 
@@ -149,8 +190,18 @@ module SlowBlink
         RANGE = Range.new(-9223372036854775808, 9223372036854775807)
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putVLC(value, signed: true)
+        def to_compact(value, **opts)
+            CompactEncoder::putI64(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Integer]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getI32!(input)
         end
     end
 
@@ -160,8 +211,18 @@ module SlowBlink
         RANGE = Range.new(0, 0xff)
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putVLC(value)
+        def to_compact(value)
+            CompactEncoder::putU8(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Integer]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getU8!(input)
         end
     end
 
@@ -171,8 +232,18 @@ module SlowBlink
         RANGE = Range.new(0, 0xffff)
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putVLC(value)
+        def to_compact(value)
+            CompactEncoder::putU16(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Integer]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getU16!(input)
         end
     end
 
@@ -182,8 +253,18 @@ module SlowBlink
         RANGE = Range.new(0, 0xffffffff)
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putVLC(value)
+        def to_compact(value)
+            CompactEncoder::putU32(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Integer]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getU32!(input)
         end
     end
 
@@ -193,8 +274,18 @@ module SlowBlink
         RANGE = Range.new(0, 0xffffffffffffffff)
 
         # @private
-        def encode_compact(value, **opts)
-            CompactEncoder::putVLC(value)
+        def to_compact(value)
+            CompactEncoder::putU64(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Integer]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getU64!(input)
         end
     end
 
@@ -202,8 +293,18 @@ module SlowBlink
     class F64 < INTEGER
 
         # @private
-        def encode_compact(value, **opts)
-            putF64(value)
+        def to_compact(value)
+            CompactEncoder::putF64(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [Float]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getF64!(input)
         end
     end
 
@@ -211,8 +312,18 @@ module SlowBlink
     class BOOLEAN < Type
 
         # @private
-        def encode_compact(value, **opts)
-            putBool(value)            
+        def to_compact(value)
+            CompactEncoder::putBool(value)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded value
+        # @return [true,false]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getBool!(input)
         end
     end
 
@@ -331,10 +442,10 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value, **opts)
-            out = CompactEncoder::putVLC(value.size)
+        def to_compact(value)
+            out = CompactEncoder::putU32(value.size)
             value.each do |v|
-                out << @type.encode_compact(v)
+                out << @type.to_compact(v)
             end
             out    
         end
@@ -403,8 +514,15 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value, **opts)
-            @object.encode_compact(value, dynamic: @dynamic)            
+        def to_compact(value)
+            group = @schema.group(value["$type"])
+            if group == @object or (@dynamic and group.group_kind_of?(@object))
+                @object.to_compact(value, dynamic: @dynamic)
+            end
+        end
+
+        def from_compact!(input)
+            @object.from_compact!(input, dynamic: @dynamic)
         end
     end
 
@@ -430,9 +548,14 @@ module SlowBlink
         end
 
         # @private
-        def encode_compact(value, **opts)
-            @object.encode_compact(value, dynamic: true)            
+        def to_compact(value, **opts)
+            raise
         end
+
+        def from_compact!(input)
+            raise
+        end
+        
     end
 
 end
