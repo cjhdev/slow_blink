@@ -18,6 +18,24 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Error < Exception
+
+    # Blink Specification 3.6
+    class BOOLEAN < Type
+
+        # @private
+        def to_compact(input, **opts)
+            CompactEncoder::putBool(input)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded input
+        # @return [true,false]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getBool!(input)
+        end
     end
+
 end

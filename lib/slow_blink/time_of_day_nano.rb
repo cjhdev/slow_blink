@@ -18,6 +18,21 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Error < Exception
+
+    # Blink Specification 3.11
+    class TIME_OF_DAY_NANO < Type
+
+        # @private
+        def validate(input)
+            if input.kind_of? Time
+                true
+            elsif input.kind_of? Integer and input <= 86400000000000
+                true
+            else
+                raise
+            end                            
+        end
+        
     end
+
 end

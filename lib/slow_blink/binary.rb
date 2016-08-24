@@ -18,6 +18,9 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Error < Exception
+
+    # Blink Specification 3.3
+    class BINARY < STRING        
     end
+
 end

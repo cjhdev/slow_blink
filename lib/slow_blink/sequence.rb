@@ -19,31 +19,61 @@
 
 module SlowBlink
 
-    class Type
+    # Blink Specification 3.12
+    class SEQUENCE < Type
 
-        include Annotatable
-
-        # @param [String]
-        attr_reader :location
+        # @return [Type]
+        attr_reader :type
 
         # @private
         #
-        # @param location [String]
-        def initialize(location)
-            @schema = nil
-            @annotes = {}
-            @location = location
+        # @param type [Type] repeating type
+        # @param location [String]    
+        def initialize(type, location)
+            @type = nil
+            @rawType = type
+            super(location)
         end
 
         # @private
         #
         # @macro common_link
         def link(schema, stack=[])
-            @schema = schema
+            if @schema != schema
+                @schema = nil
+                case @rawType.class
+                when REF
+                    schema.symbol(@rawType)
+                when SEQUENCE
+                    puts "error: sequence of sequence is not permitted"
+                else
+                    @type = @rawType
+                    @schema = schema
+                end
+            end
+            @schema
+        end
+
+        # @private
+        def validate(input)
+            if @schema and input.kind_of? Array                
+                input.each do |v|
+                    @type.validate(v)
+                end
+            else
+                raise
+            end
+        end
+
+        # @private
+        def to_compact(input, **opts)
+            out = CompactEncoder::putU32(input.size)
+            input.each do |v|
+                out << @type.to_compact(v)
+            end
+            out    
         end
 
     end
-    
+
 end
-
-

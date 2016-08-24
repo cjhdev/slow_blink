@@ -17,7 +17,26 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 module SlowBlink
-    class Error < Exception
+
+    # Blink Specification 3.1
+    class F64 < INTEGER
+
+        # @private
+        def to_compact(input, **opts)
+            CompactEncoder::putF64(input)        
+        end
+
+        # @private
+        #
+        # @param input [String] binary string to consume
+        # @return [nil] NULL encoded input
+        # @return [Float]
+        # @raise [Error] soft or hard error encountered        
+        def from_compact!(input, **opts)
+            CompactEncoder::getF64!(input)
+        end
     end
+
 end

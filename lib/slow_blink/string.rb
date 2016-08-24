@@ -18,6 +18,46 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Error < Exception
+
+    # Blink Specification 3.2
+    class STRING < Type
+
+        # @return [Integer] maximum size
+        # @return [nil] no maximum size
+        attr_reader :size
+
+        # @private
+        #
+        # @param size [Integer] maximum size
+        # @param location [String]    
+        def initialize(size, location)
+            @size = size
+            super(location)
+        end
+
+        # @private
+        def validate(input)
+            if @schema and (input.kind_of?(String)) and (@size.nil? or input.size <= @size)
+                true
+            else
+                raise
+            end
+        end
+
+        # @private
+        def to_compact(input, **opts)
+            CompactEncoder::putString(input)
+        end
+
+        def from_compact!(input, **opts)
+            size = CompactEncoder::getU32!(input)
+            if size and size > 0
+                input.slice(0, size)
+            else
+                nil
+            end            
+        end
+        
     end
+
 end

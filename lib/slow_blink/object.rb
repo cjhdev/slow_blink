@@ -17,7 +17,39 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 module SlowBlink
-    class Error < Exception
+
+    # any group
+    #
+    # Blink Specification 3.9
+    class OBJECT < Type
+
+        # @private
+        def validate(input)
+            if input.kind_of? Hash and input["$type"]
+
+                group = @schema.group(input["$type"])
+                if group
+                    group.validate(input)
+                else
+                    raise
+                end
+            
+            else
+                raise
+            end
+        end
+
+        # @private
+        def to_compact(input, **opts)
+            raise
+        end
+
+        def from_compact!(input)
+            raise
+        end
+        
     end
+
 end

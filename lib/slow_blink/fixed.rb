@@ -18,6 +18,22 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Error < Exception
+
+    # Blink Specification 3.4
+    class FIXED < STRING
+        # @private
+        def validate(input)
+            if @schema and input.kind_of? String and input.size == @size
+                true
+            else
+                raise
+            end
+        end
+
+        # @private
+        def to_compact(input, **opts)
+            putFixed(input)
+        end
     end
+
 end
