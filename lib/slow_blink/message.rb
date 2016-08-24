@@ -24,8 +24,8 @@ module SlowBlink
         # @param schema [Schema]
         # @param input [String] compact form encoding
         # @return [Message]
-        def self.from_compact(schema, input)
-
+        def self.from_compact!(schema, input)
+            
         end
 
         # Convert message to compact form encoding

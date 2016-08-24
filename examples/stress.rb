@@ -25,7 +25,7 @@ m = Message.new(schema, data)
 
 count = 0
 time = Time.now
-while count < 100000 do
+while count < 1000000 do
     m.to_compact
     count += 1
 end

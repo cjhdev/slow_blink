@@ -2,6 +2,7 @@ require 'rake/testtask'
 require 'rake/extensiontask'
 
 DIR_SRC = "ext/slow_blink/ext_schema_parser"
+DIR_ETC = "etc/slow_blink/ext_schema_parser"
 
 Rake::ExtensionTask.new  do |ext|
     ext.name = "ext_schema_parser"
@@ -24,8 +25,8 @@ end
 
 desc "run flex-bison"
 task :flexbison do    
-    system "flex --outfile=#{DIR_SRC}/lexer.c --header-file=#{DIR_SRC}/lexer.h #{DIR_SRC}/parser.l"
-    system "bison -d #{DIR_SRC}/parser.y --output=#{DIR_SRC}/parser.c --report=all --report-file=#{DIR_SRC}/report.txt"    
+    system "flex --outfile=#{DIR_SRC}/lexer.c --header-file=#{DIR_SRC}/lexer.h #{DIR_ETC}/parser.l"
+    system "bison -d #{DIR_ETC}/parser.y --output=#{DIR_SRC}/parser.c --report=all --report-file=#{DIR_SRC}/report.txt"    
 end
 
 task :local => [:flexbison, :compile, :test] do    

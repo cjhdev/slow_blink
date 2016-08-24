@@ -34,7 +34,7 @@ module SlowBlink
 
         # @return [Array<Field>]
         def fields
-            @fields.values
+            @fields
         end
 
         # @private

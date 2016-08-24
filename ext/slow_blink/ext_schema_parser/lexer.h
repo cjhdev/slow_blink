@@ -3,7 +3,7 @@
 #define yyIN_HEADER 1
 
 #line 6 "ext/slow_blink/ext_schema_parser/lexer.h"
-#line 36 "ext/slow_blink/ext_schema_parser/parser.l"
+#line 36 "etc/slow_blink/ext_schema_parser/parser.l"
 
     #include "common.h"
 
@@ -478,7 +478,7 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 116 "ext/slow_blink/ext_schema_parser/parser.l"
+#line 116 "etc/slow_blink/ext_schema_parser/parser.l"
 
 
 #line 485 "ext/slow_blink/ext_schema_parser/lexer.h"

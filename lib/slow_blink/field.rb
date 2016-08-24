@@ -72,10 +72,8 @@ module SlowBlink
 
         # @private
         def to_compact(value, **opts)
-            if value[@nameWithID.name]
-                @type.to_compact(value[@nameWithID.name], opt: @opt)
-            elsif @opt
-                putNull
+            if value[@nameWithID.name] or @opt
+                @type.to_compact(value[@nameWithID.name])
             else
                 raise
             end

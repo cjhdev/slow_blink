@@ -61,8 +61,8 @@ module SlowBlink
         end
 
         # @private
-        def validate(value)
-            if @schema and (value.kind_of?(String)) and (@size.nil? or value.size <= @size)
+        def validate(input)
+            if @schema and (input.kind_of?(String)) and (@size.nil? or input.size <= @size)
                 true
             else
                 raise
@@ -70,8 +70,8 @@ module SlowBlink
         end
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putVLC(value) + value                   
+        def to_compact(input, **opts)
+            CompactEncoder::putString(input)
         end
 
         def from_compact!(input, **opts)
@@ -88,8 +88,8 @@ module SlowBlink
     # Blink Specification 3.4
     class FIXED < STRING
         # @private
-        def validate(value)
-            if @schema and value.kind_of? String and value.size == @size
+        def validate(input)
+            if @schema and input.kind_of? String and input.size == @size
                 true
             else
                 raise
@@ -97,8 +97,8 @@ module SlowBlink
         end
 
         # @private
-        def to_compact(value, **opts)
-            putFixed(value)
+        def to_compact(input, **opts)
+            putFixed(input)
         end
     end
 
@@ -109,10 +109,10 @@ module SlowBlink
     class INTEGER < Type
 
         # @private
-        def validate(value)
-            puts self.class::RANGE.include?(value)
+        def validate(input)
+            puts self.class::RANGE.include?(input)
             puts @schema
-            if @schema and value.kind_of?(Integer) and self.class::RANGE.include?(value)
+            if @schema and input.kind_of?(Integer) and self.class::RANGE.include?(input)
                 true
             else
                 raise
@@ -127,14 +127,14 @@ module SlowBlink
         RANGE = Range.new(-128, 127)
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putI8(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putI8(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Integer]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -148,14 +148,14 @@ module SlowBlink
         RANGE = Range.new(-32768, 32767)
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putI16(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putI16(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Integer]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -169,14 +169,14 @@ module SlowBlink
         RANGE = Range.new(-2147483648, 2147483647)
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putI32(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putI32(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Integer]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -190,14 +190,14 @@ module SlowBlink
         RANGE = Range.new(-9223372036854775808, 9223372036854775807)
 
         # @private
-        def to_compact(value, **opts)
-            CompactEncoder::putI64(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putI64(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Integer]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -211,14 +211,14 @@ module SlowBlink
         RANGE = Range.new(0, 0xff)
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putU8(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putU8(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Integer]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -232,14 +232,14 @@ module SlowBlink
         RANGE = Range.new(0, 0xffff)
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putU16(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putU16(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Integer]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -253,14 +253,14 @@ module SlowBlink
         RANGE = Range.new(0, 0xffffffff)
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putU32(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putU32(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Integer]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -274,14 +274,14 @@ module SlowBlink
         RANGE = Range.new(0, 0xffffffffffffffff)
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putU64(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putU64(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Integer]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -293,14 +293,14 @@ module SlowBlink
     class F64 < INTEGER
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putF64(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putF64(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [Float]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -312,14 +312,14 @@ module SlowBlink
     class BOOLEAN < Type
 
         # @private
-        def to_compact(value)
-            CompactEncoder::putBool(value)        
+        def to_compact(input, **opts)
+            CompactEncoder::putBool(input)        
         end
 
         # @private
         #
         # @param input [String] binary string to consume
-        # @return [nil] NULL encoded value
+        # @return [nil] NULL encoded input
         # @return [true,false]
         # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
@@ -339,8 +339,8 @@ module SlowBlink
     class NANO_TIME < Type
 
         # @private
-        def validate(value)
-            if value.kind_of? Time or value.kind_of? Integer
+        def validate(input)
+            if input.kind_of? Time or input.kind_of? Integer
                 true
             else
                 raise
@@ -353,8 +353,8 @@ module SlowBlink
     class MILLI_TIME < Type
 
         # @private
-        def validate(value)
-            if value.kind_of? Time or value.kind_of? Integer
+        def validate(input)
+            if input.kind_of? Time or input.kind_of? Integer
                 true
             else
                 raise
@@ -367,10 +367,10 @@ module SlowBlink
     class TIME_OF_DAY_NANO < Type
 
         # @private
-        def validate(value)
-            if value.kind_of? Time
+        def validate(input)
+            if input.kind_of? Time
                 true
-            elsif value.kind_of? Integer and value <= 86400000000000
+            elsif input.kind_of? Integer and input <= 86400000000000
                 true
             else
                 raise
@@ -383,10 +383,10 @@ module SlowBlink
     class TIME_OF_DAY_MILLI < Type
 
         # @private
-        def validate(value)
-            if value.kind_of? Time
+        def validate(input)
+            if input.kind_of? Time
                 true
-            elsif value.kind_of? Integer and value <= 86400000
+            elsif input.kind_of? Integer and input <= 86400000
                 true
             else
                 raise
@@ -431,9 +431,9 @@ module SlowBlink
         end
 
         # @private
-        def validate(value)
-            if @schema and value.kind_of? Array                
-                value.each do |v|
+        def validate(input)
+            if @schema and input.kind_of? Array                
+                input.each do |v|
                     @type.validate(v)
                 end
             else
@@ -442,9 +442,9 @@ module SlowBlink
         end
 
         # @private
-        def to_compact(value)
-            out = CompactEncoder::putU32(value.size)
-            value.each do |v|
+        def to_compact(input, **opts)
+            out = CompactEncoder::putU32(input.size)
+            input.each do |v|
                 out << @type.to_compact(v)
             end
             out    
@@ -509,15 +509,15 @@ module SlowBlink
         end
 
         # @private
-        def validate(value)
+        def validate(input)
             @object.validate(input)
         end
 
         # @private
-        def to_compact(value)
-            group = @schema.group(value["$type"])
+        def to_compact(input, **opts)
+            group = @schema.group(input[@nameWithID.name])
             if group == @object or (@dynamic and group.group_kind_of?(@object))
-                @object.to_compact(value, dynamic: @dynamic)
+                @object.to_compact(input, dynamic: @dynamic)
             end
         end
 
@@ -532,12 +532,12 @@ module SlowBlink
     class OBJECT < Type
 
         # @private
-        def validate(value)
-            if value.kind_of? Hash and value["$type"]
+        def validate(input)
+            if input.kind_of? Hash and input["$type"]
 
-                group = @schema.group(value["$type"])
+                group = @schema.group(input["$type"])
                 if group
-                    group.validate(value)
+                    group.validate(input)
                 else
                     raise
                 end
@@ -548,7 +548,7 @@ module SlowBlink
         end
 
         # @private
-        def to_compact(value, **opts)
+        def to_compact(input, **opts)
             raise
         end
 
