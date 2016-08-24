@@ -23,7 +23,7 @@ module SlowBlink
     class TIME_OF_DAY_MILLI < Type
 
         # @private
-        def validate(input)
+        def validate_json(input)
             if input.kind_of? Time
                 true
             elsif input.kind_of? Integer and input <= 86400000

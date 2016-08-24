@@ -46,10 +46,9 @@ module SlowBlink
         # 
         # @macro common_link
         def link(schema, stack=[])
-            if @schema != schema
-                @schema = nil
+            if @schema.nil?
                 ref = @ref
-                object = schema.symbol(ref)
+                object = schema.definition(ref)
                 if object and object.link(schema, stack << self)
                     # walk through all references until object
                     # refers to an actual type
@@ -76,16 +75,13 @@ module SlowBlink
         end
 
         # @private
-        def validate(input)
-            @object.validate(input)
+        def validate_json(input)
+            @object.validate_json(input)
         end
 
         # @private
         def to_compact(input, **opts)
-            group = @schema.group(input[@nameWithID.name])
-            if group == @object or (@dynamic and group.group_kind_of?(@object))
-                @object.to_compact(input, dynamic: @dynamic)
-            end
+            @object.to_compact(input, dynamic: @dynamic)                
         end
 
         def from_compact!(input)

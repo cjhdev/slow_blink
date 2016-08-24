@@ -44,26 +44,25 @@ module SlowBlink
         #
         # @macro common_link
         def link(schema, stack=[])
-            if @schema != schema
-                @schema = nil
+            if @schema.nil?
                 case @ref.class
                 when SchemaRef
                     schema.annote(@annotes)
                     @schema = schema
                 when DefinitionRef
-                    object = schema.symbol(@ref.qName)
+                    object = schema.definition(@ref.qName)
                     if object
                         object.annote(@annotes)
                         @schema = schema
                     end
                 when DefinitionTypeRef
-                    object = schema.symbol(@ref.qName)
+                    object = schema.definition(@ref.qName)
                     if object
                         object.enumOrType.annote(@annotes)
                         @schema = schema
                     end
                 when FieldRef
-                    object = schema.symbol(@ref.qName)
+                    object = schema.definition(@ref.qName)
                     if object
                         field = object.field(@ref.name)
                         if field
@@ -72,7 +71,7 @@ module SlowBlink
                         end                    
                     end                
                 when FieldTypeRef
-                    object = schema.symbol(@ref.qName)
+                    object = schema.definition(@ref.qName)
                     if object
                         field = object.field(@ref.name)
                         if field

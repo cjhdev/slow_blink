@@ -21,7 +21,7 @@ require 'slow_blink/annotatable'
 
 # @!macro [new] common_link
 #   
-#   Resolve symbols to definitions in schema
+#   Resolve references within schema
 #
 #   @param schema [Schema] schema to link
 #   @param stack [Array]
@@ -42,7 +42,7 @@ module SlowBlink
         #
         #   @param input [String] Blink Schema
         #   @param opts [Hash] options
-        #   @option opts [String] :fileName file input originated from (for error messages)
+        #   @option opts [String] :fileName filename to append to error message strings
         #   @return [Schema]
 
         # @private
@@ -51,8 +51,10 @@ module SlowBlink
         # @param defs [Array<Definition>]
         def initialize(namespace, defs)
             @nameWithID = NameWithID.new(nil,nil)
-            @annotes = []
+            @annotes = {}
             @groups = {}
+            @defs = {}
+            
             errors = 0
             
             if namespace
@@ -61,9 +63,8 @@ module SlowBlink
                 @namespace = nil
             end
 
-            @defs = {}
-
             # populate table of definitions
+            # keep a separate table for groups
             defs.each do |d|
                 if !d.is_a? IncrementalAnnotation
                     if @defs[d.nameWithID.name]
@@ -79,7 +80,7 @@ module SlowBlink
             end
 
             # now apply incremental annotation
-            defs.each do |d|
+            @defs.each do |d|
                 if d.is_a? IncrementalAnnotation
                     d.link(self)
                 end
@@ -101,7 +102,7 @@ module SlowBlink
         # @param name [String] definition or group name
         # @return [Definition]
         # @return [Group]
-        def symbol(name)
+        def definition(name)
             @defs[name]            
         end
 
@@ -114,6 +115,29 @@ module SlowBlink
             else
                 @groups.values.detect{|g|g.nameWithID.id == nameOrID.to_i}
             end
+        end
+
+        # @param input [Hash] Blink JSON format
+        # @return [true]
+        # @raise [Error]
+        def validate_json(input)
+            type = input["$type"]
+            if type.nil?
+                raise Error.new "$type field missing"
+            end
+            @groups[type].validate_json(input)            
+        end
+
+        # @param input [Hash] Blink JSON format input to serialise
+        # @return [String] compact binary format
+        # @raise [Error] type not found
+        def to_compact(input)
+            type = input["$type"]
+            begin
+                @groups[type].to_compact(input, dynamic: true)
+            rescue NoMethodError
+                raise Error.new "type not found"
+            end                
         end
 
     end    

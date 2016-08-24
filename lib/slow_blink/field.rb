@@ -57,8 +57,7 @@ module SlowBlink
         #
         # @!macro common_link
         def link(schema,stack=[])
-            if @schema != schema
-                @schema = nil
+            if @schema.nil?
                 if @type.link(schema, stack << self)
                     @schema = schema
                 end
@@ -66,14 +65,25 @@ module SlowBlink
             @schema
         end
 
-        def validate(value)
-            @type.validate(value)
+        # @private
+        #
+        #
+        def validate_json(value)
+            if value.nil?
+                if @opt
+                    true
+                else
+                    raise "expecting a field named #{@nameWithID.name}"
+                end
+            else
+                @type.validate_json(value)
+            end
         end
 
         # @private
         def to_compact(value, **opts)
             if value[@nameWithID.name] or @opt
-                @type.to_compact(value[@nameWithID.name])
+                @type.to_compact(value[@nameWithID.name], optional: @opt)
             else
                 raise
             end

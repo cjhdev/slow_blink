@@ -36,11 +36,15 @@ module SlowBlink
         end
 
         # @private
-        def validate(input)
-            if @schema and (input.kind_of?(String)) and (@size.nil? or input.size <= @size)
-                true
+        def validate_json(input)
+            if input.kind_of? String
+                if @size.nil? or input.size <= @size
+                    true
+                else
+                    raise Error.new "String value must be no more than #{@size} bytes long"
+                end                   
             else
-                raise
+                raise Error.new "input must be kind_of String"
             end
         end
 

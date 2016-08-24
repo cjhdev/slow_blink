@@ -38,8 +38,7 @@ module SlowBlink
         #
         # @macro common_link
         def link(schema, stack=[])
-            if @schema != schema
-                @schema = nil
+            if @schema.nil?
                 value = 0
                 errors = 0
                 @syms = {}                        
@@ -81,7 +80,7 @@ module SlowBlink
         end
 
         # @private
-        def validate(input)
+        def validate_json(input)
             if symbol(input)
                true
             else
@@ -90,11 +89,11 @@ module SlowBlink
         end
 
         # @private
-        def to_compact(value, **opts)
-            if opts[:opt]
-                putPresent + CompactEncoder::putVLC(self.symbol(value).val)
+        def to_compact(input, **opts)
+            if input.nil?
+                CompactEncoder::putI32(input)
             else
-                CompactEncoder::putVLC(self.symbol(value).val)
+                CompactEncoder::putI32(self.symbol(input).val)
             end
         end
 

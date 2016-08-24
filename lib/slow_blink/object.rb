@@ -26,19 +26,8 @@ module SlowBlink
     class OBJECT < Type
 
         # @private
-        def validate(input)
-            if input.kind_of? Hash and input["$type"]
-
-                group = @schema.group(input["$type"])
-                if group
-                    group.validate(input)
-                else
-                    raise
-                end
-            
-            else
-                raise
-            end
+        def validate_json(input)
+            true
         end
 
         # @private

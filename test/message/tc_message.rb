@@ -66,7 +66,7 @@ class TestMessage < Test::Unit::TestCase
         schema = Schema.parse("colour = red | green | blue test/0 -> u8 [] f1")
         m = Message.new(schema, {"$type" => "test", "f1" => [1,2,3,4,5]})
 
-        assert_equal("\x06\x00\x05\x01\x02\x03\x04\x05", m.to_compact)
+        assert_equal("\x07\x00\x05\x01\x02\x03\x04\x05", m.to_compact)
     end
     
 end

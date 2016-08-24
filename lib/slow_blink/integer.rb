@@ -22,13 +22,15 @@ module SlowBlink
     class INTEGER < Type
 
         # @private
-        def validate(input)
-            puts self.class::RANGE.include?(input)
-            puts @schema
-            if @schema and input.kind_of?(Integer) and self.class::RANGE.include?(input)
-                true
+        def validate_json(input)
+            if input.kind_of?(Integer)
+                if self.class::RANGE.include?(input)
+                    true
+                else
+                    raise Error.new "Integer value #{input} is out of Range  #{self.class::RANGE}"
+                end                   
             else
-                raise
+                raise Error.new "expecting Integer"
             end
         end
         

@@ -32,7 +32,7 @@ class TestGroup < Test::Unit::TestCase
 
         assert_equal("Test", schema.group("Test").nameWithID.name)
         assert_equal(nil, schema.group("Test").nameWithID.id)
-        assert_equal({}, schema.group("Test").fields)
+        assert_equal([], schema.group("Test").fields)
         
     end
 
@@ -44,7 +44,7 @@ class TestGroup < Test::Unit::TestCase
 
         assert_equal("Test", schema.group("Test").nameWithID.name)
         assert_equal(0, schema.group("Test").nameWithID.id)
-        assert_equal({}, schema.group("Test").fields)        
+        assert_equal([], schema.group("Test").fields)        
     end
 
     def test_group_of_one_field

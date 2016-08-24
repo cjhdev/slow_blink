@@ -23,11 +23,11 @@ module SlowBlink
     class NANO_TIME < Type
 
         # @private
-        def validate(input)
+        def validate_json(input)
             if input.kind_of? Time or input.kind_of? Integer
                 true
             else
-                raise
+                raise Error.new "expecting Time or Integer"
             end
         end
         

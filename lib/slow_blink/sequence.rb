@@ -39,11 +39,10 @@ module SlowBlink
         #
         # @macro common_link
         def link(schema, stack=[])
-            if @schema != schema
-                @schema = nil
+            if @schema.nil?
                 case @rawType.class
                 when REF
-                    schema.symbol(@rawType)
+                    schema.definition(@rawType)
                 when SEQUENCE
                     puts "error: sequence of sequence is not permitted"
                 else
@@ -55,13 +54,13 @@ module SlowBlink
         end
 
         # @private
-        def validate(input)
-            if @schema and input.kind_of? Array                
+        def validate_json(input)
+            if input.kind_of? Array                
                 input.each do |v|
-                    @type.validate(v)
+                    @type.validate_json(v)
                 end
             else
-                raise
+                raise "expecting an Array"
             end
         end
 

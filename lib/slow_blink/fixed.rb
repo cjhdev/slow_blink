@@ -22,8 +22,8 @@ module SlowBlink
     # Blink Specification 3.4
     class FIXED < STRING
         # @private
-        def validate(input)
-            if @schema and input.kind_of? String and input.size == @size
+        def validate_json(input)
+            if input.kind_of? String and input.size == @size
                 true
             else
                 raise
@@ -32,7 +32,11 @@ module SlowBlink
 
         # @private
         def to_compact(input, **opts)
-            putFixed(input)
+            if opts[:optional]
+                CompactEncoder::putFixedOptional(input)
+            else
+                CompactEncoder::putFixed(input)
+            end
         end
     end
 

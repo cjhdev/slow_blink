@@ -2,48 +2,52 @@ module SlowBlink
 
     class Message
 
-        # Create Message
+        # Create a message instance from Blink JSON form data and a schema
+        #
         #
         # @param schema [Schema]
-        # @param input [Hash, Array<Hash>] Blink JSON Format
+        # @param data [Hash, Array<Hash>] Blink JSON Format
         # @param **opts [Hash] options
-        def initialize(schema, input, **opts)
+        # @raise [Error]        
+        def initialize(schema, data, **opts)
             @schema = schema
-            if input.kind_of? Hash
-                @input = [input]
+            if data.kind_of? Hash
+                @data = [data]
             else
-                @input = input
+                @data = data
             end        
-            @input.each do |i|
-                @schema.group(i["$type"]).validate(i)
+            @data.each do |d|
+                @schema.validate_json(d)        
             end            
         end
 
-        # Convert compact form encoding to a message according to schema
+        # Create a message instance from Blink compact form data and a schema
         #
         # @param schema [Schema]
-        # @param input [String] compact form encoding
+        # @param data [String] compact form encoding
         # @return [Message]
-        def self.from_compact!(schema, input)
-            
+        # @raise [Error]
+        def self.from_compact!(schema, data)
+            # data = schema.from_compact!(data)
+            # self.new(schema, data)
         end
 
-        # Convert message to compact form encoding
+        # Create a Blink compact form data string from a message instance
         #
         # @return [String] compact form encoding
         def to_compact
             out = ""
-            @input.each do |i|
-                out << @schema.group(i["$type"]).to_compact(i, dynamic: true)
+            @data.each do |i|
+                out << @schema.to_compact(i)
             end
             out
         end
 
-        # Convert message to Blink JSON format
+        # Create a Blink JSON form data structure from message instance
         #
-        # @return [String] Blink JSON format
+        # @return [Array<Hash>] Blink JSON format
         def to_json
-            @input
+            @data
         end
             
     end

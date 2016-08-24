@@ -29,12 +29,9 @@ module SlowBlink
         # @return [NameWithID]
         attr_reader :nameWithID
 
-        # @return [Hash]
-        #attr_reader :fields
-
         # @return [Array<Field>]
         def fields
-            @fields
+            @fields.values
         end
 
         # @private
@@ -57,14 +54,15 @@ module SlowBlink
         #
         # @macro common_link
         def link(schema,stack=[])
-            if @schema != schema
+            if @schema.nil?
                 errors = 0
-                @schema = nil
                 @fields = {}
                 if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))                    
                     if !@superGroup or @superGroup.object.is_a?(Group)
                         if @superGroup
-                            @fields = @superGroup.object.fields.dup                            
+                            @superGroup.object.fields.each do |f|
+                                 @fields[f.nameWithID.name] = f
+                            end
                         end
                         @rawFields.each do |f|
                             if @fields[f.nameWithID.name]
@@ -97,17 +95,14 @@ module SlowBlink
         end
 
         # @private
-        def validate(value)
-            if value.kind_of? Hash
-                if value["$type"] == @nameWithID.name
-                    @fields.each do |name,f|
-                        f.validate(value[name])
-                    end
-                    true
-                else
-                    raise
+        def validate_json(value)            
+            if value["$type"] == @nameWithID.name
+                @fields.each do |name,f|
+                    f.validate_json(value[name])                    
                 end
-            end
+            else
+                raise
+            end            
         end
 
         def group_kind_of?(superGroup)
@@ -121,7 +116,11 @@ module SlowBlink
         # @option opts [Symbol] :dynamic encode as dynamic group
         # @return [String] compact format
         def to_compact(value, **opts)
-            out = CompactEncoder::putU64(@nameWithID.id)
+            if opts[:dynamic]
+                out = CompactEncoder::putU64(@nameWithID.id)
+            else
+                out = ""
+            end
             @fields.each do |name, f|
                 out << f.to_compact(value)
             end
