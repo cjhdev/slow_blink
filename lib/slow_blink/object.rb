@@ -26,11 +26,6 @@ module SlowBlink
     class OBJECT < Type
 
         # @private
-        def validate_json(input)
-            true
-        end
-
-        # @private
         def to_compact(input, **opts)
             raise
         end

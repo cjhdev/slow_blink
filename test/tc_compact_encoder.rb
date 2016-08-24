@@ -61,49 +61,120 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal("\xC2\xff\xff".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_spec_64unsigned
+    # Blink Specification 3.1
+    def test_putU8_64unsigned
         input = 64
         output = CompactEncoder::putU8(input)
         assert_equal("\x40".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_spec_64signed
+    # Blink Specification 3.1
+    def test_putI8_64signed
         input = 64
         output = CompactEncoder::putI8(input)
         assert_equal("\x80\x01".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_spec_4711unsigned
+    # Blink Specification 3.1
+    def test_putU16_4711unsigned
         input = 4711
         output = CompactEncoder::putU16(input)
         assert_equal("\xa7\x49".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_spec_4294967295unsigned
+    # Blink Specification 3.1
+    def test_putU32_4294967295unsigned
         input = 4294967295
         output = CompactEncoder::putU32(input)
         assert_equal("\xc4\xff\xff\xff\xff".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_spec_minus64
+    # Blink Specification 3.1
+    def test_putI8_minus64
         input = -64
         output = CompactEncoder::putI8(input)
         assert_equal("\x40".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_spec_minus4711
+    # Blink Specification 3.1
+    def test_putI16_minus4711
         input = -4711
         output = CompactEncoder::putI16(input)
         assert_equal("\x99\xb6".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_spec_minus2147483648
+    # Blink Specification 3.1
+    def test_putI32_minus2147483648
         input = -2147483648
         output = CompactEncoder::putI32(input)
         assert_equal("\xc4\x00\x00\x00\x80".force_encoding("ASCII-8BIT"), output)
     end
 
-    
-    
+    def test_putFixed
+        input = "hello world"
+        output = CompactEncoder::putFixed(input)
+        assert_equal("hello world".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putFixedOptional
+        input = "hello world"
+        output = CompactEncoder::putFixedOptional(input)
+        assert_equal("\x01hello world".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putFixedOptional_null
+        input = nil
+        output = CompactEncoder::putFixedOptional(input)
+        assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putString
+        input = "hello world"
+        output = CompactEncoder::putString(input)
+        assert_equal("\x0bhello world".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putString_null
+        input = nil
+        output = CompactEncoder::putString(input)
+        assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putBinary
+        input = "hello world"
+        output = CompactEncoder::putBinary(input)
+        assert_equal("\x0bhello world".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putBinary_null
+        input = nil
+        output = CompactEncoder::putBinary(input)
+        assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putBool_true
+        input = true
+        output = CompactEncoder::putBool(input)
+        assert_equal("\x01".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putBool_false
+        input = false
+        output = CompactEncoder::putBool(input)
+        assert_equal("\x00".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putBool_nil
+        input = nil
+        output = CompactEncoder::putBool(input)
+        assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putF64
+        input = nil
+        output = CompactEncoder::putF64(input)
+        assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
+    end
+
 
 end

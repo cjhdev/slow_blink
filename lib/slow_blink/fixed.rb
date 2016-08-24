@@ -21,22 +21,24 @@ module SlowBlink
 
     # Blink Specification 3.4
     class FIXED < STRING
-        # @private
-        def validate_json(input)
-            if input.kind_of? String and input.size == @size
-                true
-            else
-                raise
-            end
-        end
-
+        
         # @private
         def to_compact(input, **opts)
-            if opts[:optional]
+            if input.kind_of? String
+                if input.size == @size
+                    if opts[:optional]
+                        CompactEncoder::putFixedOptional(input)
+                    else
+                        CompactEncoder::putFixed(input)
+                    end
+                else
+                    raise Error.new "fixed field not correct size"
+                end
+            elsif opts[:optional] and input.nil?
                 CompactEncoder::putFixedOptional(input)
             else
-                CompactEncoder::putFixed(input)
-            end
+                raise Error.new "expecting string of #{@size} bytes, got #{input.class}"
+            end             
         end
     end
 

@@ -23,15 +23,21 @@ module SlowBlink
     class TIME_OF_DAY_NANO < Type
 
         # @private
-        def validate_json(input)
-            if input.kind_of? Time
-                true
-            elsif input.kind_of? Integer and input <= 86400000000000
-                true
+        def to_compact(input, **opts)
+            if input.kind_of? Integer
+                if input < 86400000000000
+                    CompactEncoder::putU64(input)
+                else
+                    raise Error.new "input out of range"
+                end
+            elsif input.kind_of? Time
+                CompactEncoder::putU64(input.to_i)
+            elsif opts[:optional] and input.nil?
+                CompactEncoder::putU64(nil)
             else
-                raise
-            end                            
-        end
+                raise Error.new "expecting time of day in nanoseconds, got #{input}"
+            end                
+        end        
         
     end
 

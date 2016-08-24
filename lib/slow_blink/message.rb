@@ -15,10 +15,7 @@ module SlowBlink
                 @data = [data]
             else
                 @data = data
-            end        
-            @data.each do |d|
-                @schema.validate_json(d)        
-            end            
+            end                    
         end
 
         # Create a message instance from Blink compact form data and a schema

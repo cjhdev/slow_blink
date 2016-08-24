@@ -36,21 +36,18 @@ module SlowBlink
         end
 
         # @private
-        def validate_json(input)
+        def to_compact(input, **opts)            
             if input.kind_of? String
                 if @size.nil? or input.size <= @size
-                    true
+                    CompactEncoder::putString(input)
                 else
-                    raise Error.new "String value must be no more than #{@size} bytes long"
-                end                   
+                    raise Error.new "string is '#{input.size}' bytes long but the constraint is '{@size}' bytes long"
+                end
+            elsif opts[:optional] and input.nil?
+                CompactEncoder::putString(input)
             else
-                raise Error.new "input must be kind_of String"
+                raise Error.new "expecting a string, got a '#{input.class}'"
             end
-        end
-
-        # @private
-        def to_compact(input, **opts)
-            CompactEncoder::putString(input)
         end
 
         def from_compact!(input, **opts)

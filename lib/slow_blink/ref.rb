@@ -73,15 +73,10 @@ module SlowBlink
             end
             @schema
         end
-
-        # @private
-        def validate_json(input)
-            @object.validate_json(input)
-        end
-
+        
         # @private
         def to_compact(input, **opts)
-            @object.to_compact(input, dynamic: @dynamic)                
+            @object.to_compact(input, dynamic: @dynamic)        
         end
 
         def from_compact!(input)

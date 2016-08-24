@@ -80,21 +80,19 @@ module SlowBlink
         end
 
         # @private
-        def validate_json(input)
-            if symbol(input)
-               true
-            else
-                raise
-            end
-        end
-
-        # @private
         def to_compact(input, **opts)
-            if input.nil?
-                CompactEncoder::putI32(input)
+            if input.kind_of? String
+                sym = self.symbol(input)
+                if sym
+                    CompactEncoder::putI32(sym.val)
+                else
+                    raise Error.new "symbol #{input} does not exist in enum"
+                end
+            elsif opts[:optional] and input.nil?
+                CompactEncoder::putI32(nil)
             else
-                CompactEncoder::putI32(self.symbol(input).val)
-            end
+                raise Error.new "expecting symbol"
+            end               
         end
 
         def from_compact!(value)

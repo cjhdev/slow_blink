@@ -23,15 +23,21 @@ module SlowBlink
     class TIME_OF_DAY_MILLI < Type
 
         # @private
-        def validate_json(input)
-            if input.kind_of? Time
-                true
-            elsif input.kind_of? Integer and input <= 86400000
-                true
+        def to_compact(input, **opts)
+            if input.kind_of? Integer
+                if input < 86400000
+                    CompactEncoder::putU32(input)
+                else
+                    raise Error.new "input out of range"
+                end
+            elsif input.kind_of? Time
+                CompactEncoder::putU32(input.to_i)
+            elsif opts[:optional] and input.nil?
+                CompactEncoder::putU32(nil)
             else
-                raise
-            end                            
-        end
+                raise Error.new "expecting time of day in milliseconds, got #{input}"
+            end                
+        end        
         
     end
 

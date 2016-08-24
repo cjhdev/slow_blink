@@ -25,7 +25,13 @@ module SlowBlink
 
         # @private
         def to_compact(input, **opts)
-            CompactEncoder::putF64(input)        
+            if input.kind_of? Numeric
+                CompactEncoder::putF64(input.to_f)
+            elsif opts[:optional] and input.nil?
+                CompactEncoder::putF64(nil)
+            else
+                raise "expecting float, got #{input}"
+            end
         end
 
         # @private

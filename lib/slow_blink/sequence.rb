@@ -54,23 +54,16 @@ module SlowBlink
         end
 
         # @private
-        def validate_json(input)
-            if input.kind_of? Array                
-                input.each do |v|
-                    @type.validate_json(v)
-                end
-            else
-                raise "expecting an Array"
-            end
-        end
-
-        # @private
         def to_compact(input, **opts)
-            out = CompactEncoder::putU32(input.size)
-            input.each do |v|
-                out << @type.to_compact(v)
-            end
-            out    
+            if input.kind_of? Array
+                input.inject(CompactEncoder::putU32(input.size)) do |out, v|
+                    out << @type.to_compact(v)
+                end
+            elsif opts[:optional] and input.nil?
+                out = CompactEncoder::putU32(input)
+            else
+                raise Error.new "expecting an Array, got a '#{input.class}'"
+            end                
         end
 
     end

@@ -23,13 +23,17 @@ module SlowBlink
     class MILLI_TIME < Type
 
         # @private
-        def validate_json(input)
-            if input.kind_of? Time or input.kind_of? Integer
-                true
+        def to_compact(input, **opts)
+            if input.kind_of? String
+                CompactEncoder::putI64(Time.new(input).to_i)
+            elsif input.kind_of? Integer or input.kind_of? Time
+                CompactEncoder::putI64(input.to_i)
+            elsif opts[:optional] and input.nil?
+                CompactEncoder::putI64(nil)
             else
-                raise Error.new "expecting Time or Integer"
+                raise Error.new "expecting time in milliseconds, got #{input}"            
             end
-        end
+        end        
         
     end
 

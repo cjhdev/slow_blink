@@ -66,26 +66,15 @@ module SlowBlink
         end
 
         # @private
-        #
-        #
-        def validate_json(value)
-            if value.nil?
-                if @opt
-                    true
-                else
-                    raise "expecting a field named #{@nameWithID.name}"
-                end
-            else
-                @type.validate_json(value)
-            end
-        end
-
-        # @private
         def to_compact(value, **opts)
             if value[@nameWithID.name] or @opt
-                @type.to_compact(value[@nameWithID.name], optional: @opt)
+                begin
+                    @type.to_compact(value[@nameWithID.name], optional: @opt)
+                rescue Error => ex
+                    raise Error.new "[#{@nameWithID.name}]: #{ex}"
+                end
             else
-                raise
+                raise Error.new "expecting a field named #{@nameWithID.name}"
             end
         end
 

@@ -17,23 +17,12 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+require 'bigdecimal'
+
 module SlowBlink
 
     class INTEGER < Type
-
-        # @private
-        def validate_json(input)
-            if input.kind_of?(Integer)
-                if self.class::RANGE.include?(input)
-                    true
-                else
-                    raise Error.new "Integer value #{input} is out of Range  #{self.class::RANGE}"
-                end                   
-            else
-                raise Error.new "expecting Integer"
-            end
-        end
-        
+ 
     end
 
         # Blink Specification 3.1
@@ -43,7 +32,17 @@ module SlowBlink
 
         # @private
         def to_compact(input, **opts)
-            CompactEncoder::putI8(input)        
+            if input.kind_of? Integer
+                if self.class::RANGE.include?(value)
+                    CompactEncoder::putI8(input)
+                else
+                    raise Error.new "value '#{input}' is outside of range #{self.class::RANGE}"
+                end
+            elsif opts[:optional] and input.nil?
+                CompactEncoder::putI8(input)
+            else
+                raise Error.new "expecting an integer but got a '#{input.class}'"
+            end
         end
 
         # @private

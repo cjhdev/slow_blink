@@ -117,29 +117,27 @@ module SlowBlink
             end
         end
 
-        # @param input [Hash] Blink JSON format
-        # @return [true]
-        # @raise [Error]
-        def validate_json(input)
-            type = input["$type"]
-            if type.nil?
-                raise Error.new "$type field missing"
-            end
-            @groups[type].validate_json(input)            
-        end
-
         # @param input [Hash] Blink JSON format input to serialise
         # @return [String] compact binary format
         # @raise [Error] type not found
         def to_compact(input)
-            type = input["$type"]
             begin
-                @groups[type].to_compact(input, dynamic: true)
-            rescue NoMethodError
-                raise Error.new "type not found"
+                type = input["$type"]
+                if type
+                    group = @groups[type]
+                    if group
+                        group.to_compact(input, dynamic: true)
+                    else
+                        raise Error.new "group '#{type}' not defined on top level schema"
+                    end
+                else
+                    raise Error.new "top level '$type' field is missing"
+                end
+            rescue Error => ex
+                puts "to_compact: error at #{ex}"
+                raise
             end                
         end
-
     end    
 
 end

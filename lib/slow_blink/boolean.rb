@@ -24,7 +24,11 @@ module SlowBlink
 
         # @private
         def to_compact(input, **opts)
-            CompactEncoder::putBool(input)        
+            if input or input.kind_of? FalseClass or (opts[:optional] and input.nil?)
+                CompactEncoder::putBool(input)                        
+            else
+                raise Error.new "expecting true or false, got a '#{input.class}'"
+            end                
         end
 
         # @private
