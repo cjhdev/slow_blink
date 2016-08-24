@@ -32,19 +32,18 @@
 /* defines ************************************************************/
 
 
-#define MIN8    0x80L
-#define MAX8    0x7fL
-#define MIN16   0x8000L
-#define MAX16   0x7fffL
-#define MIN32   0x80000000L
-#define MAX32   0x7fffffffL
-#define MIN64   0x8000000000000000L
-#define MAX64   0x7fffffffffffffffL
+#define MIN8    -128
+#define MAX8    127
+#define MIN16   -32768
+#define MAX16   32767
+#define MIN32   -2147483648
+#define MAX32   2147483647
+#define MIN64   -9223372036854775808
+#define MAX64   9223372036854775807
 #define MAXU8   0xffUL
 #define MAXU16  0xffffUL
 #define MAXU32  0xffffffffUL
 #define MAXU64  0xffffffffffffffffUL
-
 
 /* static function prototypes *****************************************/
 
@@ -105,10 +104,10 @@ void Init_ext_compact_encoder(void)
     rb_define_module_function(cCompactEncoder, "putU16", putU16, 1);
     rb_define_module_function(cCompactEncoder, "putU32", putU32, 1);
     rb_define_module_function(cCompactEncoder, "putU64", putU64, 1);
-    rb_define_module_function(cCompactEncoder, "puti8", putI8, 1);
-    rb_define_module_function(cCompactEncoder, "puti16", putI16, 1);
-    rb_define_module_function(cCompactEncoder, "puti32", putI32, 1);
-    rb_define_module_function(cCompactEncoder, "puti64", putI64, 1);
+    rb_define_module_function(cCompactEncoder, "putI8", putI8, 1);
+    rb_define_module_function(cCompactEncoder, "putI16", putI16, 1);
+    rb_define_module_function(cCompactEncoder, "putI32", putI32, 1);
+    rb_define_module_function(cCompactEncoder, "putI64", putI64, 1);
 
     rb_define_module_function(cCompactEncoder, "putF64", putF64, 1);
 
@@ -279,7 +278,7 @@ static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned)
                 rb_raise(cError, "out of range");
             }
 
-            retval = rb_str_new((const char *)out, BLINK_putVLC((uint64_t)value, false, out, sizeof(out)));
+            retval = rb_str_new((const char *)out, BLINK_putVLC((uint64_t)value, true, out, sizeof(out)));
         }
         else{
 
@@ -477,7 +476,6 @@ static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned)
 
                 retval = ULL2NUM(out);
             }
-
         }        
     }
     else{

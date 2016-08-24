@@ -25,9 +25,85 @@ class TestCompactEncoder < Test::Unit::TestCase
     include SlowBlink
 
     def test_putU8
-        input = 42
+        input = 0x7f
         output = CompactEncoder::putU8(input)
-        assert_equal(output, "\x2a")
+        assert_equal("\x7f".force_encoding("ASCII-8BIT"), output)
     end
+
+    def test_putU8_big
+        input = 0x80
+        output = CompactEncoder::putU8(input)
+        assert_equal("\x80\x02".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putU8_tooBig
+        input = 0x100
+        assert_raise do
+            CompactEncoder::putU8(input)
+        end
+    end
+
+    def test_putU8_null
+        input = nil
+        output = CompactEncoder::putU8(input)
+        assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putU16_small
+        input = 0xff
+        output = CompactEncoder::putU16(input)
+        assert_equal("\xbf\x03".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_putU16
+        input = 0xffff
+        output = CompactEncoder::putU16(input)
+        assert_equal("\xC2\xff\xff".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_spec_64unsigned
+        input = 64
+        output = CompactEncoder::putU8(input)
+        assert_equal("\x40".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_spec_64signed
+        input = 64
+        output = CompactEncoder::putI8(input)
+        assert_equal("\x80\x01".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_spec_4711unsigned
+        input = 4711
+        output = CompactEncoder::putU16(input)
+        assert_equal("\xa7\x49".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_spec_4294967295unsigned
+        input = 4294967295
+        output = CompactEncoder::putU32(input)
+        assert_equal("\xc4\xff\xff\xff\xff".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_spec_minus64
+        input = -64
+        output = CompactEncoder::putI8(input)
+        assert_equal("\x40".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_spec_minus4711
+        input = -4711
+        output = CompactEncoder::putI16(input)
+        assert_equal("\x99\xb6".force_encoding("ASCII-8BIT"), output)
+    end
+
+    def test_spec_minus2147483648
+        input = -2147483648
+        output = CompactEncoder::putI32(input)
+        assert_equal("\xc4\x00\x00\x00\x80".force_encoding("ASCII-8BIT"), output)
+    end
+
+    
+    
 
 end

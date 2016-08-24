@@ -52,19 +52,19 @@ uint8_t BLINK_getSizeUnsigned(uint64_t value)
     else if(value <= 0xffffUL){
         retval = 3U;
     }
-    else if(value < 0xffffffUL){
+    else if(value <= 0xffffffUL){
         retval = 4U;
     }
-    else if(value < 0xffffffffUL){
+    else if(value <= 0xffffffffUL){
         retval = 5U;
     }
-    else if(value < 0xffffffffffUL){
+    else if(value <= 0xffffffffffUL){
         retval = 6U;
     }
-    else if(value < 0xffffffffffffUL){
+    else if(value <= 0xffffffffffffUL){
         retval = 7U;
     }
-    else if(value < 0xffffffffffffffUL){
+    else if(value <= 0xffffffffffffffUL){
         retval = 8U;
     }
     else{
@@ -77,35 +77,34 @@ uint8_t BLINK_getSizeUnsigned(uint64_t value)
 uint8_t BLINK_getSizeSigned(int64_t value)
 {
     uint8_t retval;
+    uint8_t i;
 
     if(value < 0){
 
-        if(value > 0x40L){
+        if(value >= -64){
+
             retval = 1U;
         }
-        else if(value > 0x2000L){
+        else if(value >= -8192){
+
             retval = 2U;
         }
-        else if(value > 0x8000L){
-            retval = 3U;
-        }
-        else if(value > 0x800000L){
-            retval = 4U;
-        }
-        else if(value > 0x80000000L){
-            retval = 5U;
-        }
-        else if(value > 0x8000000000L){
-            retval = 6U;
-        }
-        else if(value > 0x800000000000L){
-            retval = 7U;    
-        }
-        else if(value > 0x80000000000000L){
-            retval = 8U;    
-        }
         else{
-            retval = 9U;    
+
+            int64_t min = -32768;
+            retval = 3U;
+
+            for(i=0; i < 6; i++){
+
+                if((min << (i*8)) <= value){
+
+                    break;
+                }
+                else{
+
+                    retval++;
+                }
+            }
         }
     }
     else{
@@ -151,15 +150,19 @@ uint8_t BLINK_putVLC(uint64_t in, bool isSigned, uint8_t *out, uint32_t outMax)
     if(outMax >= bytes){
 
         if(bytes == 1){
-            *out = (uint8_t)in;
+
+            *out = (uint8_t)(in & 0x7f);
         }
         else if(bytes == 2){
-            out[1] = ((uint8_t)(in >> 6)) & 0x3f | 0x80;
-            out[0] = ((uint8_t)in) & 0x3f;            
+
+            out[0] = 0x80 | (uint8_t)(in & 0x3f);
+            out[1] = (uint8_t)(in >> 6);   
         }
         else{
-            out[0] = 0xC0U | bytes;
+            
+            out[0] = 0xC0U | bytes-1;
             for(i=1; i < bytes; i++){
+
                 out[i] = (uint8_t)(in >> ((i-1)*8));
             }            
         }
