@@ -130,7 +130,7 @@ module SlowBlink
                     if type
                         group = @groups[type]
                         if group
-                            group.to_compact(d, dynamic: true)
+                            out << group.to_compact(d, dynamic: true)
                         else
                             raise Error.new "group '#{type}' not defined on top level schema"
                         end

@@ -32,5 +32,9 @@ end
 task :local => [:flexbison, :compile, :test] do    
 end
 
+task :benchmark do
+    system "ruby -Ilib -- bench/think_blink_example.rb"
+end
+
 task :default => :test
 
