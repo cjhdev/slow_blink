@@ -390,10 +390,13 @@ static VALUE getBinary(VALUE self, VALUE input)
     if(size != Qnil){
 
         retval = rb_str_substr(input, 0, NUM2UINT(size));
-        rb_str_drop_bytes(input, NUM2UINT(size));
 
-        //todo: not sure how substr works if input is short
-        assert(RSTRING_LEN(retval) == NUM2UINT(size));
+        if(RSTRING_LEN(retval) != NUM2UINT(size)){
+
+            rb_raise(cError, "eof");
+        }
+        
+        rb_str_drop_bytes(input, NUM2UINT(size));
     }
 
     return retval;
@@ -415,11 +418,12 @@ static VALUE getFixed(VALUE self, VALUE input, VALUE size)
 {
     VALUE retval;
 
-    
-
     retval = rb_str_substr(input, 0, NUM2UINT(size));
 
-    assert(RSTRING_LEN(retval) == NUM2UINT(size));
+    if(RSTRING_LEN(retval) != NUM2UINT(size)){
+
+        rb_raise(cError, "eof");
+    }
 
     rb_str_drop_bytes(input, NUM2UINT(size));
 
@@ -446,7 +450,12 @@ static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size)
         else if(present == 0x01){
 
             retval = rb_str_substr(input, 0, NUM2UINT(size));
-            assert(RSTRING_LEN(retval) == NUM2UINT(size));
+
+            if(RSTRING_LEN(retval) != NUM2UINT(size)){
+
+                rb_raise(cError, "eof");
+            }
+
             rb_str_drop_bytes(input, NUM2UINT(size));
         }
         else{

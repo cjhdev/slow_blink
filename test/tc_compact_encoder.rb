@@ -164,7 +164,7 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal("\x00".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_putBool_nil
+    def test_putBool_null
         input = nil
         output = CompactEncoder::putBool(input)
         assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
@@ -260,6 +260,13 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal("hello world", output)
         assert_equal(0, input.size)
     end
+    
+    def test_getString_null
+        input = "\xc0"
+        output = CompactEncoder::getString!(input)
+        assert_equal(nil, output)
+        assert_equal(0, input.size)
+    end
 
     def test_getBinary
         input = "\x0bhello world"
@@ -267,6 +274,21 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal("hello world", output)
         assert_equal(0, input.size)
     end
+
+    def test_getBinary_null
+        input = "\xc0"
+        output = CompactEncoder::getBinary!(input)
+        assert_equal(nil, output)
+        assert_equal(0, input.size)
+    end
+
+    def test_getBinary_eof
+        input = "\x0c"
+        assert_raise do
+            CompactEncoder::getBinary!(input)
+        end
+    end
+    
 
     def test_getFixed
         input = "hello world"

@@ -28,7 +28,7 @@ class TestMessage < Test::Unit::TestCase
 
         schema = Schema.parse("test/0 -> u8 field")
         data = {"$type" => "test", "field" => 42}
-        compact = Message.compact(schema, data)
+        compact = Message.to_compact(schema, data)
 
         assert_equal("\x02\x00\x2a", compact)
         
@@ -37,7 +37,7 @@ class TestMessage < Test::Unit::TestCase
 
         schema = Schema.parse("test/0 -> u8 \\u8, u16 \\u16, u32 \\u32")
         data = {"$type" => "test", "\\u8" => 42, "\\u16" => 42, "\\u32" => 42}
-        compact = Message.compact(schema, data)
+        compact = Message.to_compact(schema, data)
 
         assert_equal("\x04\x00\x2a\x2a\x2a", compact)
         
@@ -46,7 +46,7 @@ class TestMessage < Test::Unit::TestCase
 
         schema = Schema.parse("test/0 -> string \\string")
         data = {"$type" => "test", "\\string" => "hello world"}
-        compact = Message.compact(schema, data)
+        compact = Message.to_compact(schema, data)
 
         assert_equal("\x0d\x00\x0bhello world", compact)
         
@@ -55,7 +55,7 @@ class TestMessage < Test::Unit::TestCase
 
         schema = Schema.parse("test/0 -> binary \\binary")
         data = {"$type" => "test", "\\binary" => "hello world"}
-        compact = Message.compact(schema, data)
+        compact = Message.to_compact(schema, data)
 
         assert_equal("\x0d\x00\x0bhello world", compact)
         
@@ -63,14 +63,14 @@ class TestMessage < Test::Unit::TestCase
     def test_encode_enum
         schema = Schema.parse("colour = red | green | blue test/0 -> colour f1, colour f2, colour f3")
         data = {"$type" => "test", "f1" => "red", "f2" => "green", "f3" => "blue"}
-        compact = Message.compact(schema, data)
+        compact = Message.to_compact(schema, data)
 
         assert_equal("\x04\x00\x00\x01\x02", compact)
     end
     def test_encode_sequence
         schema = Schema.parse("colour = red | green | blue test/0 -> u8 [] f1")
         data = {"$type" => "test", "f1" => [1,2,3,4,5]}
-        compact = Message.compact(schema, data)
+        compact = Message.to_compact(schema, data)
 
         assert_equal("\x07\x00\x05\x01\x02\x03\x04\x05", compact)
     end

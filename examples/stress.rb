@@ -21,20 +21,16 @@ data = [
         "MatchId" => 6902
     }
 ]
-m = Message.new(schema, data)
 
 count = 0
 time = Time.now
 while count < 1000000 do
-    m.to_compact
+    Message.to_compact(schema, data)
     count += 1
 end
 
 puts "#{count/(Time.now-time)} messages per second"
 
-puts "message:"
-puts m.to_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join
-    
 
 
 
