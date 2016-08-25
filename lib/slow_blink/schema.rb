@@ -138,6 +138,22 @@ module SlowBlink
                 raise
             end                
         end
+
+        # @param input [String] Blink compact form
+        # @return [Array<Hash>] Blink JSON form
+        # @raise [Error]
+        def from_compact!(input)
+            out = []
+            size = CompactEncoder.getU32(input)
+            if size > 0
+                type = CompactEncoder.getU64(input)
+                group = self.group(type)
+                if group
+                    out << group.from_compact!(input)
+                end
+            end
+        end
+
     end    
 
 end

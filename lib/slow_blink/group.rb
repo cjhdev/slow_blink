@@ -127,6 +127,7 @@ module SlowBlink
         end
 
         def from_compact!(input, **opts)
+            out = {}
             out["$type"] = @nameWithID.name
             @fields.each do |name, f|
                 out[name] = f.from_compact!(value)

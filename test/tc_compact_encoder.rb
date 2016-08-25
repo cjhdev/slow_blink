@@ -176,5 +176,58 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
     end
 
+    # Blink Specification 3.1
+    def test_getU8_64unsigned
+        input = "\x40"
+        output = CompactEncoder::getU8!(input)
+        assert_equal(64, output)
+    end
 
+    # Blink Specification 3.1
+    def test_getI8_64signed
+        input = "\x80\x01"
+        output = CompactEncoder::getI8!(input)
+        assert_equal(64, output)
+    end
+
+    # Blink Specification 3.1
+    def test_getU16_4711unsigned
+        input = "\xa7\x49"
+        output = CompactEncoder::getU16!(input)
+        assert_equal(4711, output)
+    end
+
+    # Blink Specification 3.1
+    def test_getU32_4294967295unsigned
+        input = "\xc4\xff\xff\xff\xff"
+        output = CompactEncoder::getU32!(input)
+        assert_equal(4294967295, output)
+    end
+
+    # Blink Specification 3.1
+    def test_getI8_minus64
+        input = "\x40"
+        output = CompactEncoder::getI8!(input)
+        assert_equal(-64, output)
+    end
+
+    # Blink Specification 3.1
+    def test_getI16_minus4711
+        input = "\x99\xb6"
+        output = CompactEncoder::getI16!(input)
+        assert_equal(-4711, output)
+    end
+
+    # Blink Specification 3.1
+    def test_getI32_minus2147483648
+        input = "\xc4\x00\x00\x00\x80"
+        output = CompactEncoder::getI32!(input)
+        assert_equal(-2147483648, output)
+    end
+    
+    
+
+    
+
+    
 end

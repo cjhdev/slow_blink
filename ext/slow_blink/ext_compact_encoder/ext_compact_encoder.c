@@ -118,23 +118,23 @@ void Init_ext_compact_encoder(void)
     rb_define_module_function(cCompactEncoder, "putFixed", putFixed, 1);
     rb_define_module_function(cCompactEncoder, "putFixedOptional", putFixedOptional, 1);
 
-    rb_define_module_function(cCompactEncoder, "getU8", getU8, 1);
-    rb_define_module_function(cCompactEncoder, "getU16", getU16, 1);
-    rb_define_module_function(cCompactEncoder, "getU32", getU32, 1);
-    rb_define_module_function(cCompactEncoder, "getU64", getU64, 1);
-    rb_define_module_function(cCompactEncoder, "getI8", getI8, 1);
-    rb_define_module_function(cCompactEncoder, "getI16", getI16, 1);
-    rb_define_module_function(cCompactEncoder, "getI32", getI32, 1);
-    rb_define_module_function(cCompactEncoder, "getI64", getI64, 1);
+    rb_define_module_function(cCompactEncoder, "getU8!", getU8, 1);
+    rb_define_module_function(cCompactEncoder, "getU16!", getU16, 1);
+    rb_define_module_function(cCompactEncoder, "getU32!", getU32, 1);
+    rb_define_module_function(cCompactEncoder, "getU64!", getU64, 1);
+    rb_define_module_function(cCompactEncoder, "getI8!", getI8, 1);
+    rb_define_module_function(cCompactEncoder, "getI16!", getI16, 1);
+    rb_define_module_function(cCompactEncoder, "getI32!", getI32, 1);
+    rb_define_module_function(cCompactEncoder, "getI64!", getI64, 1);
 
-    rb_define_module_function(cCompactEncoder, "getF64", getF64, 1);
+    rb_define_module_function(cCompactEncoder, "getF64!", getF64, 1);
 
-    rb_define_module_function(cCompactEncoder, "getBool", getBool, 1);
+    rb_define_module_function(cCompactEncoder, "getBool!", getBool, 1);
 
-    rb_define_module_function(cCompactEncoder, "getString", getString, 1);    
-    rb_define_module_function(cCompactEncoder, "getBinary", getBinary, 1);    
-    rb_define_module_function(cCompactEncoder, "getFixed", getFixed, 2);    
-    rb_define_module_function(cCompactEncoder, "getFixedOptional", getFixedOptional, 2);    
+    rb_define_module_function(cCompactEncoder, "getString!", getString, 1);    
+    rb_define_module_function(cCompactEncoder, "getBinary!", getBinary, 1);    
+    rb_define_module_function(cCompactEncoder, "getFixed!", getFixed, 2);    
+    rb_define_module_function(cCompactEncoder, "getFixedOptional!", getFixedOptional, 2);    
 }
 
 /* static functions ***************************************************/

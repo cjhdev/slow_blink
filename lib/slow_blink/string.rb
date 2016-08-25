@@ -51,12 +51,14 @@ module SlowBlink
         end
 
         def from_compact!(input, **opts)
-            size = CompactEncoder::getU32!(input)
-            if size and size > 0
-                input.slice(0, size)
+            out = CompactEncoder::getString(input)
+            if !opts[:optional] and out.nil?
+                raise Error.new "field must be present"
+            elsif out and @size and out.size > @size
+                raise Error.new "W7"
             else
-                nil
-            end            
+                out
+            end                                    
         end
         
     end

@@ -223,9 +223,9 @@ uint8_t BLINK_getVLC(const uint8_t *in, uint32_t inLen, bool isSigned, uint64_t 
         }
         else{
 
-            if(inLen > 2U){
-                
-                bytes = *in & 0x3fU;
+            bytes = *in & 0x3fU;
+
+            if(inLen >= (1U + bytes)){
 
                 if(bytes <= 8U){
 
@@ -233,18 +233,15 @@ uint8_t BLINK_getVLC(const uint8_t *in, uint32_t inLen, bool isSigned, uint64_t 
                         
                         *out = 0xffffffffffff00U;
                     }
-                    
-                    if(inLen >= (1U + bytes)){
                         
-                        for(i=bytes; (i+1U) > 0U; i--){
+                    for(i=bytes; i > 0U; i--){
 
-                            *out |= in[i];
-                            *out <<= 8;                
-                        }
-
-                        retval = bytes + 1U;
+                        *out |= in[i];
+                        *out <<= 8;                
                     }
-                }                
+
+                    retval = bytes + 1U;                    
+                }
             }
         }
     }
