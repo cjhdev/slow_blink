@@ -22,14 +22,34 @@ data = [
     }
 ]
 
+CYCLES = 1000000
+
 count = 0
 time = Time.now
-while count < 1000000 do
-    Message.to_compact(schema, data)
+while count < CYCLES do
+    schema.to_compact(data)
     count += 1
 end
+encodeTime = count/(Time.now-time)
+=begin
+compactForm = schema.to_compact(data)
+count = 0
+time = Time.now
+while count < CYCLES
+    schema.from_compact!(input.dup)
+    count += 1
+end
+decodeTime = count/(Time.now-time)
+=end
 
-puts "#{count/(Time.now-time)} messages per second"
+puts "encoding #{encodeTime} message per second"
+#puts "decoding #{decodeTime} message per second"
+
+
+
+
+
+
 
 
 

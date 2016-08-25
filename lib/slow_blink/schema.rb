@@ -117,21 +117,26 @@ module SlowBlink
             end
         end
 
-        # @param input [Hash] Blink JSON format input to serialise
+        # @param input [Hash,Array<Hash>] Blink JSON format input to serialise
         # @return [String] compact binary format
         # @raise [Error] type not found
         def to_compact(input)
-            begin
-                type = input["$type"]
-                if type
-                    group = @groups[type]
-                    if group
-                        group.to_compact(input, dynamic: true)
+            if input.kind_of? Hash
+                input = [input]
+            end
+            begin                
+                input.inject("") do |out, d|
+                    type = d["$type"]
+                    if type
+                        group = @groups[type]
+                        if group
+                            group.to_compact(d, dynamic: true)
+                        else
+                            raise Error.new "group '#{type}' not defined on top level schema"
+                        end
                     else
-                        raise Error.new "group '#{type}' not defined on top level schema"
+                        raise Error.new "top level '$type' field is missing"
                     end
-                else
-                    raise Error.new "top level '$type' field is missing"
                 end
             rescue Error => ex
                 puts "to_compact: error at #{ex}"
@@ -188,7 +193,6 @@ require 'slow_blink/enumeration'
 require 'slow_blink/sym'
 require 'slow_blink/name_with_id'
 require 'slow_blink/ext_schema_parser'
-require 'slow_blink/message'
 
 
 
