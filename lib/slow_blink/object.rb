@@ -30,7 +30,7 @@ module SlowBlink
             raise
         end
 
-        def from_compact!(input)
+        def from_compact!(input, **opts)
             raise
         end
         

@@ -78,8 +78,8 @@ module SlowBlink
             end
         end
 
-        def from_compact!(value)
-            @type.from_compact!(value[@nameWithID.name], opt: @opt)                
+        def from_compact!(input, **opts)
+            @type.from_compact!(input, **({:optional => @opt}.merge(opts)))                
         end
         
     end

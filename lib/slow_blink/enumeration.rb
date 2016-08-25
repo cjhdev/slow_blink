@@ -75,7 +75,7 @@ module SlowBlink
             if nameOrVal.kind_of? String
                 @syms[nameOrVal]
             else
-                @syms.detect{|s|s.val == nameOrVal.to_i}
+                @syms.values.detect{|s|s.val == nameOrVal.to_i}
             end
         end
 
@@ -95,8 +95,13 @@ module SlowBlink
             end               
         end
 
-        def from_compact!(value)
-            
+        def from_compact!(input, **opts)
+            value = CompactEncoder::getI32!(input)
+            sym = self.symbol(value)
+            if sym.nil?
+                raise "W10"
+            end
+            sym.name
         end
 
     end

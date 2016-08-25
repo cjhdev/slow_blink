@@ -147,16 +147,30 @@ module SlowBlink
         # @param input [String] Blink compact form
         # @return [Array<Hash>] Blink JSON form
         # @raise [Error]
-        def from_compact!(input)
+        def from_compact(input)
+            compact = input.dup
             out = []
-            size = CompactEncoder.getU32(input)
-            if size > 0
-                type = CompactEncoder.getU64(input)
-                group = self.group(type)
-                if group
-                    out << group.from_compact!(input)
+            while compact.size > 0 do
+                groupField = CompactEncoder::getBinary!(compact)
+                if groupField.nil?
+                    raise Error.new "strong error? group is nil"
+                elsif groupField.size == 0
+                    raise Error.new "W1"
+                else
+                    type = CompactEncoder::getU64!(groupField)
+                    if type.nil?
+                        raise Error.new "strong error? type tag is nil"
+                    else
+                        group = self.group(type)
+                        if group.nil?
+                            raise Error.new "W2"
+                        else
+                            out << group.from_compact!(groupField)
+                        end                            
+                    end
                 end
             end
+            out               
         end
 
     end    

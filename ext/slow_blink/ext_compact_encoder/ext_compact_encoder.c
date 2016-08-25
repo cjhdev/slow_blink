@@ -391,9 +391,11 @@ static VALUE getBinary(VALUE self, VALUE input)
 
         retval = rb_str_substr(input, 0, NUM2UINT(size));
 
+        assert(retval != Qnil);
+
         if(RSTRING_LEN(retval) != NUM2UINT(size)){
 
-            rb_raise(cError, "eof");
+            rb_raise(cError, "S1");
         }
         
         rb_str_drop_bytes(input, NUM2UINT(size));
@@ -422,7 +424,7 @@ static VALUE getFixed(VALUE self, VALUE input, VALUE size)
 
     if(RSTRING_LEN(retval) != NUM2UINT(size)){
 
-        rb_raise(cError, "eof");
+        rb_raise(cError, "S1");
     }
 
     rb_str_drop_bytes(input, NUM2UINT(size));
@@ -453,7 +455,7 @@ static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size)
 
             if(RSTRING_LEN(retval) != NUM2UINT(size)){
 
-                rb_raise(cError, "eof");
+                rb_raise(cError, "S1");
             }
 
             rb_str_drop_bytes(input, NUM2UINT(size));
@@ -465,7 +467,7 @@ static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size)
     }
     else{
 
-        rb_raise(cError, "eof");
+        rb_raise(cError, "S1");
     }
 
     return retval;
@@ -518,7 +520,7 @@ static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned)
     }
     else{
 
-        rb_raise(cError, "eof");
+        rb_raise(cError, "S1");
     }
 
     return retval;

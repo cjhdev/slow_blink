@@ -66,6 +66,15 @@ module SlowBlink
             end                
         end
 
+        def from_compact!(input, **opts)
+            out = []
+            size = CompactEncoder::getU32!(input)
+            while out.size < size do
+                out << @type.from_compact!(input)
+            end
+            out
+        end
+
     end
 
 end

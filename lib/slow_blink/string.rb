@@ -51,7 +51,7 @@ module SlowBlink
         end
 
         def from_compact!(input, **opts)
-            out = CompactEncoder::getString(input)
+            out = CompactEncoder::getString!(input)
             if !opts[:optional] and out.nil?
                 raise Error.new "field must be present"
             elsif out and @size and out.size > @size

@@ -94,6 +94,10 @@ module SlowBlink
             @fields[name]
         end
 
+        # Is this group a sub group of the super group?
+        #
+        # @param superGroup [Group]
+        # @return [true,false]
         def group_kind_of?(superGroup)
             (self == superGroup) or (@superGroup and @superGroup.group_kind_of?(superGroup))            
         end
@@ -130,7 +134,7 @@ module SlowBlink
             out = {}
             out["$type"] = @nameWithID.name
             @fields.each do |name, f|
-                out[name] = f.from_compact!(value)
+                out[name] = f.from_compact!(input)
             end
             out
         end

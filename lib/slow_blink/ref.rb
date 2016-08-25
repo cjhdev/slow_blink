@@ -79,7 +79,7 @@ module SlowBlink
             @object.to_compact(input, dynamic: @dynamic)        
         end
 
-        def from_compact!(input)
+        def from_compact!(input, **opts)
             @object.from_compact!(input, dynamic: @dynamic)
         end
     end
