@@ -353,6 +353,10 @@ static VALUE getF64(VALUE self, VALUE input)
             retval = rb_float_new(out);
         }        
     }
+    else{
+
+        rb_raise(cError, "eof");
+    }
 
     return retval;
 }
@@ -411,6 +415,8 @@ static VALUE getFixed(VALUE self, VALUE input, VALUE size)
 {
     VALUE retval;
 
+    
+
     retval = rb_str_substr(input, 0, NUM2UINT(size));
 
     assert(RSTRING_LEN(retval) == NUM2UINT(size));
@@ -422,13 +428,36 @@ static VALUE getFixed(VALUE self, VALUE input, VALUE size)
 
 static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size)
 {
-    VALUE retval;
+    VALUE retval = Qnil;
+    uint32_t ret;
+    bool isNull;
+    uint64_t present;
 
-    retval = rb_str_substr(input, 0, NUM2UINT(size));
+    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(input), RSTRING_LEN(input), false, (uint64_t *)&present, &isNull);
 
-    assert(RSTRING_LEN(retval) == NUM2UINT(size));
+    if(ret > 0){
 
-    rb_str_drop_bytes(input, NUM2UINT(size));
+        rb_str_drop_bytes(input, ret);
+
+        if(isNull){
+
+           retval = Qnil; 
+        }
+        else if(present == 0x01){
+
+            retval = rb_str_substr(input, 0, NUM2UINT(size));
+            assert(RSTRING_LEN(retval) == NUM2UINT(size));
+            rb_str_drop_bytes(input, NUM2UINT(size));
+        }
+        else{
+
+            rb_raise(cError, "W9");
+        }   
+    }
+    else{
+
+        rb_raise(cError, "eof");
+    }
 
     return retval;
 }

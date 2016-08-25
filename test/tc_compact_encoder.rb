@@ -267,5 +267,26 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal("hello world", output)
         assert_equal(0, input.size)
     end
+
+    def test_getFixed
+        input = "hello world"
+        output = CompactEncoder::getFixed!(input, "hello world".size)
+        assert_equal("hello world", output)
+        assert_equal(0, input.size)
+    end
+
+    def test_getFixedOptional
+        input = "\x01hello world"
+        output = CompactEncoder::getFixedOptional!(input, "hello world".size)
+        assert_equal("hello world", output)
+        assert_equal(0, input.size)
+    end
+
+    def test_getFixedOptional_null
+        input = "\xc0"
+        output = CompactEncoder::getFixedOptional!(input, "hello world".size)
+        assert_equal(nil, output)
+        assert_equal(0, input.size)
+    end
     
 end
