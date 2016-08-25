@@ -62,3 +62,6 @@ puts "#{(1/avg_parse).round(2)} schema/s (parse)"
 puts "#{(1/avg_to_compact).round(2)} message/s (to_compact)"
 puts "#{(1/avg_from_compact).round(2)} message/s (from_compact) "
 
+puts "#{(1/avg_to_compact*compact.size).round} bytes/s (to_compact)"
+puts "#{(1/avg_from_compact*compact.size).round} bytes/s (from_compact) "
+
