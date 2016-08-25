@@ -22,7 +22,6 @@ require 'bigdecimal'
 module SlowBlink
 
     class INTEGER < Type
- 
     end
 
         # Blink Specification 3.1
@@ -33,7 +32,7 @@ module SlowBlink
         # @private
         def to_compact(input, **opts)
             if input.kind_of? Integer
-                if self.class::RANGE.include?(value)
+                if self.class::RANGE.cover?(value)
                     CompactEncoder::putI8(input)
                 else
                     raise Error.new "value '#{input}' is outside of range #{self.class::RANGE}"
