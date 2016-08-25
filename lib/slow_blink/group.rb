@@ -139,7 +139,7 @@ module SlowBlink
 
         def from_compact!(input, **opts)
             out = {}
-            out["$type"] = @nameWithID.name
+            out["$type".freeze] = @nameWithID.name
             @fields.each do |name, f|
                 out[name] = f.from_compact!(input)
             end

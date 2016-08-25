@@ -128,7 +128,7 @@ module SlowBlink
             end
             begin                
                 input.inject("") do |out, d|
-                    type = d["$type"]
+                    type = d["$type".freeze]
                     if type
                         group = @groups[type]
                         if group
@@ -163,7 +163,7 @@ module SlowBlink
                     if type.nil?
                         raise Error.new "strong error? type tag is nil"
                     else
-                        group = self.group(type)
+                        group = @groupsByID[type]
                         if group.nil?
                             raise Error.new "W2"
                         else

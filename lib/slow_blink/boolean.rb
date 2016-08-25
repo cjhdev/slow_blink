@@ -32,11 +32,6 @@ module SlowBlink
         end
 
         # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [true,false]
-        # @raise [Error] soft or hard error encountered        
         def from_compact!(input, **opts)
             CompactEncoder::getBool!(input)
         end
