@@ -73,7 +73,7 @@ module SlowBlink
         end
 
         # @private
-        def to_compact(value, **opts)
+        def to_compact(value)
             if value[@nameWithID.name] or @opt
                 begin
                     @type.to_compact(value[@nameWithID.name], optional: @opt)
@@ -85,9 +85,8 @@ module SlowBlink
             end
         end
 
-        def from_compact!(input, **opts)
-            opts[:optional] = @opt
-            @type.from_compact!(input, **opts)                
+        def from_compact!(input)
+            @type.from_compact!(input, optional: @opt)                
         end
         
     end
