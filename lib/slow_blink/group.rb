@@ -29,6 +29,9 @@ module SlowBlink
         # @return [NameWithID]
         attr_reader :nameWithID
 
+        attr_reader :name
+        attr_reader :id
+
         # @return [Array<Field>]
         def fields
             @fields.values
@@ -48,6 +51,8 @@ module SlowBlink
             @location = location
             @fields = []
             @nameWithID = nameWithID
+            @name = nil
+            @id = nil
         end
         
         # @private
@@ -83,6 +88,8 @@ module SlowBlink
                         puts "#{@superGroup.location} error: superGroup must be a group"
                     end
                 end
+                @name = @nameWithID.name
+                @id = @nameWithID.id
             end
             @schema            
         end

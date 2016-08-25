@@ -54,6 +54,7 @@ module SlowBlink
             @annotes = {}
             @groups = {}
             @defs = {}
+            @groupsByID = {}
             
             errors = 0
             
@@ -74,7 +75,8 @@ module SlowBlink
                         @defs[d.nameWithID.name] = d
                         if d.is_a? Group
                             @groups[d.nameWithID.name] = d
-                        end
+                            @groupsByID[d.nameWithID.id] = d
+                        end                        
                     end                    
                 end
             end
@@ -113,7 +115,7 @@ module SlowBlink
             if nameOrID.kind_of? String
                 @groups[nameOrID]
             else
-                @groups.values.detect{|g|g.nameWithID.id == nameOrID.to_i}
+                @groupsByID[nameOrID]                
             end
         end
 

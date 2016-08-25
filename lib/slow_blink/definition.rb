@@ -32,6 +32,9 @@ module SlowBlink
         # @return [Type]
         attr_reader :enumOrType
 
+        attr_reader :name
+        attr_reader :id
+
         # @private
         #
         # @param nameWithID [NameWithID]
@@ -49,7 +52,12 @@ module SlowBlink
         #
         # @!macro common_link
         def link(schema, stack=[])
-            @schema = @enumOrType.link(schema, stack << self)
+            if @schema.nil?
+                @schema = @enumOrType.link(schema, stack << self)
+                @name = @nameWithID.name
+                @id = @nameWithID.id
+            end
+            @schema
         end
 
     end
