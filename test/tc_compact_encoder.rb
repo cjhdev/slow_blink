@@ -268,6 +268,13 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal(0, input.size)
     end
 
+    def test_getString_eof
+        input = "\x01"
+        assert_raise do
+            CompactEncoder::getString!(input)
+        end
+    end
+
     def test_getBinary
         input = "\x0bhello world"
         output = CompactEncoder::getBinary!(input)
@@ -283,18 +290,24 @@ class TestCompactEncoder < Test::Unit::TestCase
     end
 
     def test_getBinary_eof
-        input = "\x0c"
+        input = "\x01"
         assert_raise do
             CompactEncoder::getBinary!(input)
         end
     end
     
-
     def test_getFixed
         input = "hello world"
         output = CompactEncoder::getFixed!(input, "hello world".size)
         assert_equal("hello world", output)
         assert_equal(0, input.size)
+    end
+
+    def test_getFixed_eof
+        input = ""
+        assert_raise do
+            CompactEncoder::getFixed!(input, 1)
+        end
     end
 
     def test_getFixedOptional
@@ -309,6 +322,13 @@ class TestCompactEncoder < Test::Unit::TestCase
         output = CompactEncoder::getFixedOptional!(input, "hello world".size)
         assert_equal(nil, output)
         assert_equal(0, input.size)
+    end
+
+    def test_getFixedOptional_eof
+        input = "\x01"
+        assert_raise do
+            CompactEncoder::getFixedOptional!(input, 1)
+        end
     end
     
 end
