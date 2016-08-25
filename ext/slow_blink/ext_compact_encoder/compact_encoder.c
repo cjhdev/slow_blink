@@ -231,13 +231,17 @@ uint8_t BLINK_getVLC(const uint8_t *in, uint32_t inLen, bool isSigned, uint64_t 
 
                     if(isSigned && ((in[bytes] & 0x80U) == 0x80U)){
                         
-                        *out = 0xffffffffffff00U;
+                        *out = 0xffffffffffff00U | in[bytes];
                     }
-                        
-                    for(i=bytes; i > 0U; i--){
+                    else{
 
-                        *out |= in[i];
-                        *out <<= 8;                
+                        *out = in[bytes];
+                    }
+
+                    for(i=bytes-1; i != 0U; i--){
+
+                        *out <<= 8;
+                        *out |= in[i];                        
                     }
 
                     retval = bytes + 1U;                    

@@ -32,14 +32,14 @@
 /* defines ************************************************************/
 
 
-#define MIN8    -128
-#define MAX8    127
-#define MIN16   -32768
-#define MAX16   32767
-#define MIN32   -2147483648
-#define MAX32   2147483647
-#define MIN64   -9223372036854775808
-#define MAX64   9223372036854775807
+#define MIN8    -128L
+#define MAX8    127L
+#define MIN16   -32768L
+#define MAX16   32767L
+#define MIN32   -2147483648L
+#define MAX32   2147483647L
+#define MIN64   -9223372036854775808L
+#define MAX64   9223372036854775807L
 #define MAXU8   0xffUL
 #define MAXU16  0xffffUL
 #define MAXU32  0xffffffffUL
@@ -463,7 +463,7 @@ static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned)
                 retval = LL2NUM((int64_t)out);
             }
             else{
-
+                
                 if(out > (uint64_t)max){
 
                     rb_raise(cError, "W3");            

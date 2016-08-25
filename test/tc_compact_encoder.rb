@@ -226,8 +226,4 @@ class TestCompactEncoder < Test::Unit::TestCase
     end
     
     
-
-    
-
-    
 end
