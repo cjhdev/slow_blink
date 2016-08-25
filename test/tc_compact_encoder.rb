@@ -181,6 +181,7 @@ class TestCompactEncoder < Test::Unit::TestCase
         input = "\x40"
         output = CompactEncoder::getU8!(input)
         assert_equal(64, output)
+        assert_equal(0, input.size)
     end
 
     # Blink Specification 3.1
@@ -188,6 +189,7 @@ class TestCompactEncoder < Test::Unit::TestCase
         input = "\x80\x01"
         output = CompactEncoder::getI8!(input)
         assert_equal(64, output)
+        assert_equal(0, input.size)
     end
 
     # Blink Specification 3.1
@@ -195,6 +197,7 @@ class TestCompactEncoder < Test::Unit::TestCase
         input = "\xa7\x49"
         output = CompactEncoder::getU16!(input)
         assert_equal(4711, output)
+        assert_equal(0, input.size)
     end
 
     # Blink Specification 3.1
@@ -202,6 +205,7 @@ class TestCompactEncoder < Test::Unit::TestCase
         input = "\xc4\xff\xff\xff\xff"
         output = CompactEncoder::getU32!(input)
         assert_equal(4294967295, output)
+        assert_equal(0, input.size)
     end
 
     # Blink Specification 3.1
@@ -209,6 +213,7 @@ class TestCompactEncoder < Test::Unit::TestCase
         input = "\x40"
         output = CompactEncoder::getI8!(input)
         assert_equal(-64, output)
+        assert_equal(0, input.size)
     end
 
     # Blink Specification 3.1
@@ -216,6 +221,7 @@ class TestCompactEncoder < Test::Unit::TestCase
         input = "\x99\xb6"
         output = CompactEncoder::getI16!(input)
         assert_equal(-4711, output)
+        assert_equal(0, input.size)
     end
 
     # Blink Specification 3.1
@@ -223,7 +229,43 @@ class TestCompactEncoder < Test::Unit::TestCase
         input = "\xc4\x00\x00\x00\x80"
         output = CompactEncoder::getI32!(input)
         assert_equal(-2147483648, output)
+        assert_equal(0, input.size)
     end
-    
+
+    def test_getBool_true
+        input = "\x01"
+        output = CompactEncoder::getBool!(input)
+        assert_equal(true, output)
+        assert_equal(0, input.size)
+    end
+
+    def test_getBool_false
+        input = "\x00"
+        output = CompactEncoder::getBool!(input)
+        assert_equal(false, output)
+        assert_equal(0, input.size)
+    end
+
+    def test_getBool_other
+        input = "\x02"
+        assert_raise do
+            CompactEncoder::getBool!(input)
+        end
+        assert_equal(0, input.size)
+    end
+
+    def test_getString
+        input = "\x0bhello world"
+        output = CompactEncoder::getString!(input)
+        assert_equal("hello world", output)
+        assert_equal(0, input.size)
+    end
+
+    def test_getBinary
+        input = "\x0bhello world"
+        output = CompactEncoder::getBinary!(input)
+        assert_equal("hello world", output)
+        assert_equal(0, input.size)
+    end
     
 end
