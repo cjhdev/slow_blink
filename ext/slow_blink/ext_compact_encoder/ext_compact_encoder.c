@@ -47,7 +47,10 @@
 
 /* static function prototypes *****************************************/
 
-static VALUE putNull(void);
+static VALUE putNull(VALUE self);
+
+static VALUE putPresent(VALUE self, VALUE val);
+static VALUE getPresent(VALUE self, VALUE input);
 
 static VALUE putU8(VALUE self, VALUE val);
 static VALUE putU16(VALUE self, VALUE val);
@@ -99,6 +102,10 @@ void Init_ext_compact_encoder(void)
     cError = rb_const_get(cSlowBlink, rb_intern("Error"));
     
     cCompactEncoder = rb_define_module_under(cSlowBlink, "CompactEncoder");
+
+    rb_define_module_function(cCompactEncoder, "putNull", putNull, 0);
+    rb_define_module_function(cCompactEncoder, "putPresent", putPresent, 1);
+    rb_define_module_function(cCompactEncoder, "getPresent", getPresent, 1);
 
     rb_define_module_function(cCompactEncoder, "putU8", putU8, 1);
     rb_define_module_function(cCompactEncoder, "putU16", putU16, 1);
@@ -179,7 +186,7 @@ static VALUE putF64(VALUE self, VALUE val)
 
     if(val == Qnil){
 
-        retval = putNull();
+        retval = putNull(self);
     }
     else{
 
@@ -196,7 +203,7 @@ static VALUE putBool(VALUE self, VALUE val)
     
     if(val == Qnil){
 
-        retval = putNull();
+        retval = putNull(self);
     }
     else{
         
@@ -206,10 +213,27 @@ static VALUE putBool(VALUE self, VALUE val)
     return retval;        
 }
 
-static VALUE putNull(void)
+static VALUE putNull(VALUE self)
 {
     uint8_t str[] = {0xc0};
     return rb_str_new((const char *)str, sizeof(str));
+}
+
+static VALUE putPresent(VALUE self, VALUE val)
+{
+    VALUE retval;
+    
+    if(val == Qfalse){
+
+        retval = putNull(self);
+    }
+    else{
+
+        uint8_t str[] = {0x1};
+        retval = rb_str_new((const char *)str, sizeof(str));
+    }
+
+    return retval;
 }
 
 static VALUE putBinary(VALUE self, VALUE val)
@@ -218,7 +242,7 @@ static VALUE putBinary(VALUE self, VALUE val)
 
     if(val == Qnil){
 
-        retval = putNull();
+        retval = putNull(self);
     }
     else{
 
@@ -241,7 +265,7 @@ static VALUE putFixedOptional(VALUE self, VALUE val)
 
     if(val == Qnil){
 
-        retval = putNull();    
+        retval = putNull(self);    
     }
     else{
 
@@ -265,7 +289,7 @@ static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned)
 
     if(val == Qnil){
 
-        retval = putNull();
+        retval = putNull(Qnil);
     }
     else{
 
@@ -359,6 +383,18 @@ static VALUE getF64(VALUE self, VALUE input)
     }
 
     return retval;
+}
+
+static VALUE getPresent(VALUE self, VALUE input)
+{
+    VALUE retval = getInt(input, 0, 1, false);
+
+    if(retval != Qnil){
+
+        retval = Qtrue;
+    }
+
+    return retval;    
 }
 
 static VALUE getBool(VALUE self, VALUE input)

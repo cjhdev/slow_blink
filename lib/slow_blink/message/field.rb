@@ -24,6 +24,12 @@ module SlowBlink::Message
         def self.opt?
             @opt
         end
+        def self.name
+            @name
+        end
+        def self.id
+            @id
+        end
 
     end
 

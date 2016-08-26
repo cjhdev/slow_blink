@@ -21,10 +21,14 @@ module SlowBlink::Message
 
     module INTEGER
 
+        def self.in_range?(value)
+            @range.cover? value
+        end
+
         def value=(v)
             if v
                 if v.kind_of? Integer
-                    if RANGE.cover? v
+                    if self.class.in_range?(v)
                         @value = v.to_i
                     else
                         raise Error.new "value out of range"
@@ -49,8 +53,6 @@ module SlowBlink::Message
     end
 
     module U8
-        RANGE = Range.new(0, 0xff)
-        include INTEGER
         def self.from_compact!(input)
             self.new(CompactEncoder::getU8!(input))
         end
@@ -60,8 +62,6 @@ module SlowBlink::Message
     end
 
     module U16
-        RANGE = Range.new(0, 0xffff)
-        include INTEGER
         def self.from_compact!(input)
             self.new(CompactEncoder::getU16!(input))
         end
@@ -71,8 +71,6 @@ module SlowBlink::Message
     end
 
     module U32
-        RANGE = Range.new(0, 0xffffffff)
-        include INTEGER
         def self.from_compact!(input)
             self.new(CompactEncoder::getU32!(input))
         end
@@ -82,8 +80,6 @@ module SlowBlink::Message
     end
 
     module U64
-        RANGE = Range.new(0, 0xffffffffffffffff)
-        include INTEGER
         def self.from_compact!(input)
             self.new(CompactEncoder::getU64!(input))
         end
@@ -93,8 +89,6 @@ module SlowBlink::Message
     end
 
     module I8
-        RANGE = Range.new(-128, 127)
-        include INTEGER
         def self.from_compact!(input)
             self.new(CompactEncoder::getI8!(input))
         end
@@ -104,8 +98,6 @@ module SlowBlink::Message
     end
 
     module I16
-        RANGE = Range.new(-32768, 32767)
-        include INTEGER
         def self.from_compact!(input)
             self.new(CompactEncoder::getI16!(input))
         end
@@ -115,8 +107,6 @@ module SlowBlink::Message
     end
 
     module I32
-        RANGE = Range.new(-2147483648, 2147483647)
-        include INTEGER
         def self.from_compact!(input)
             self.new(CompactEncoder::getI32!(input))
         end
@@ -126,8 +116,6 @@ module SlowBlink::Message
     end
 
     module I64
-        RANGE = Range.new(-9223372036854775808, 9223372036854775807)
-        include INTEGER
         def self.from_compact!(input)
             self.new(CompactEncoder::getI64!(input))
         end

@@ -19,7 +19,7 @@
 
 module SlowBlink::Message
 
-    module FLOAT
+    module FLOATING_POINT
 
         def self.from_compact!(input)
             self.new(CompactEncoder::getF64!(input))
@@ -37,6 +37,10 @@ module SlowBlink::Message
             else
                 raise Error.new "value unacceptable"
             end
+        end
+
+        def value
+            @value
         end
 
         def initialize(value)

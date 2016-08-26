@@ -20,18 +20,9 @@
 module SlowBlink::Message
 
     module Group
-
-        def self.from_compact!(input)
-            fields = []
-            @fields.each do |f|
-                f.from_compact!(input)
-            end
-            self.new(fields)
-        end
-
         def value=(v)
             if v
-                if v.kind_of? Array
+                if v.kind_of? Hash
                     @value = v
                 else
                     raise
@@ -50,45 +41,78 @@ module SlowBlink::Message
         def initialize(value)
             self.value = value
         end
-
-        def to_compact                
-            @fields.each do |f|
-                f.to_compact
-            end
-        end
-
-        def initialize(fields)
-            @fields = fields
-        end
-
     end
 
-    # a dynamic group has a few options for Groups or Dynamic Groups
     module DynamicGroup
 
         def self.from_compact!(input)
             groupBuf = CompactEncoder::getBinary(input)
             if groupBuf.size == 0
-                raise Error.new "zero group"
+                raise Error.new "W1"    # size of zero
             end
-            type = CompactEncoder::getU64(input)
-            group = @groups[type]
+            type = CompactEncoder::getU64(input)                    
+            group = self.alternatives[type]
             if group
-                group.new(groupBuf)
+                fields = {"$type".freeze => self.name}
+                group.fields.each do |f|
+                    newField = f.from_compact!(input)
+                    fields[newField.name] << newField
+                end
+                self.new(fields)
             else
-                raise Error.new "do not recognise group"
-            end
+                raise Error.new "W2"    # type identifier not know to decoder
+            end            
         end
 
         def to_compact
-            if @value
-                out = CompactEncoder::putU64(@id)
-                @fields.each do |name, f|
-                    out << f.to_compact(value)
+             if @value
+                out = @fields.inject(CompactEncoder::putU64(@id)) do |acc, f|
+                    acc << f.to_compact(value)
                 end
                 CompactEncoder::putU32(out.size) + out
             else
                 CompactEncoder::putU32(nil)
+            end
+        end
+
+    end
+
+    module StaticGroup
+
+        def self.from_compact!(input)
+            fields = {"$type".freeze => self.name}
+            if self.opt?
+                if CompactEncoder::getPresent!(input)
+                    self.fields.each do |f|
+                        newField = f.from_compact!(input)
+                        fields[newField.name] << newField
+                    end
+                    self.new(fields)
+                else
+                    self.new(nil)
+                end
+            else
+                self.fields.each do |f|
+                    newField = f.from_compact!(input)
+                    fields[newField.name] << newField
+                end
+                self.new(fields)
+            end            
+        end
+
+        def to_compact
+            if @value
+                if self.class.opt?
+                    @fields.inject(CompactEncoder::putPresent(true)) do |acc, f|
+                        acc << f.to_compact(value)
+                    end
+                else
+                    @fields.inject("") do |acc, f|
+                        acc << f.to_compact(value)
+                    end
+                end
+            else
+                CompactEncoder::putPresent(false)
             end
         end
 
