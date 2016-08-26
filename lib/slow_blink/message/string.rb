@@ -17,5 +17,44 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'slow_blink/schema'
-require 'slow_blink/message/model'
+module SlowBlink::Message
+
+    module STRING
+
+        def self.from_compact!(input)
+            self.new(CompactEncoder::getString!(input))
+        end
+
+        def value=(v)
+            if v
+                if v.kind_of? String
+                    if !@size or v.size <= @size
+                        @value = v
+                    else
+                        raise Error.new "W7"
+                    end
+                else
+                    raise "expecting string"
+                end
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise Error.new "value unacceptable"
+            end
+        end
+
+        def value
+            @value
+        end
+
+        def initialize(value)
+           self.value = value
+        end
+
+        def to_compact
+            CompactEncoder::putString(@value)
+        end
+        
+    end
+
+end

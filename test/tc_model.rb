@@ -17,5 +17,28 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'slow_blink/schema'
-require 'slow_blink/message/model'
+require "test/unit"
+require 'slow_blink'
+
+class TestModel < Test::Unit::TestCase
+
+    include SlowBlink
+
+    def setup
+        rawSchema = <<-eos
+        OrderExecuted/0x4c ->
+            string Symbol,
+            u64 OrderId,
+            u32 Price,
+            u32 Qty,
+            u32 MatchId
+        eos
+    
+        @schema = Schema.parse(rawSchema)
+    end
+
+    def test_init        
+        model = Message::Model.new(@schema)
+    end
+
+end

@@ -17,5 +17,39 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'slow_blink/schema'
-require 'slow_blink/message/model'
+module SlowBlink::Message
+
+    module MILLI_TIME
+
+        def self.from_compact!(input)
+            self.new(CompactEncoder::getI64(input))
+        end
+
+        def value=(v)
+            if v
+                raise
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise 
+            end
+        end
+
+        def value
+            @value
+        end
+
+        def initialize(value)
+            self.value = value
+        end
+
+        def to_compact
+            CompactEncoder::putI64(@value)
+        end        
+    
+    end
+
+    module NANO_TIME
+    end
+
+end

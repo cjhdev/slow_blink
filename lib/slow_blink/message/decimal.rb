@@ -17,5 +17,9 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'slow_blink/schema'
-require 'slow_blink/message/model'
+module SlowBlink::Message
+
+    module DECIMAL
+    end
+
+end
