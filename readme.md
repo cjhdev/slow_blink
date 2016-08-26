@@ -32,11 +32,11 @@ Define a group composed of one string type field.
 - The group shall be named 'DemoGroup' and shall be assigned type tag '0'
 - The single field shall be named 'fieldName' and shall be a string no larger than 42 bytes
 
-~~~
+```ruby
 require 'slow_blink'
 include SlowBlink
 schema = Schema.parse("DemoGroup/0 -> string size(42) fieldName")
-~~~
+```
 
 ## Documentation
 
