@@ -41,7 +41,7 @@ module SlowBlink
         def link(schema, stack=[])
             @schema = schema
         end
-
+    
     end
     
 end

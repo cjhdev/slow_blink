@@ -22,27 +22,6 @@ module SlowBlink
 
     # Blink Specification 3.1
     class F64 < INTEGER
-
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? Numeric
-                CompactEncoder::putF64(input.to_f)
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putF64(nil)
-            else
-                raise "expecting float, got #{input}"
-            end
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Float]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getF64!(input)
-        end
     end
 
 end

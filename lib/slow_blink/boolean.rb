@@ -21,20 +21,6 @@ module SlowBlink
 
     # Blink Specification 3.6
     class BOOLEAN < Type
-
-        # @private
-        def to_compact(input, **opts)
-            if input or input.kind_of? FalseClass or (opts[:optional] and input.nil?)
-                CompactEncoder::putBool(input)                        
-            else
-                raise Error.new "expecting true or false, got a '#{input.class}'"
-            end                
-        end
-
-        # @private
-        def from_compact!(input, **opts)
-            CompactEncoder::getBool!(input)
-        end
     end
 
 end

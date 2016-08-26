@@ -119,62 +119,6 @@ module SlowBlink
             end
         end
 
-        # @param input [Hash,Array<Hash>] Blink JSON format input to serialise
-        # @return [String] compact binary format
-        # @raise [Error] type not found
-        def to_compact(input)
-            if input.kind_of? Hash
-                input = [input]
-            end
-            begin                
-                input.inject("") do |out, d|
-                    type = d["$type".freeze]
-                    if type
-                        group = @groups[type]
-                        if group
-                            out << group.to_compact(d, dynamic: true)
-                        else
-                            raise Error.new "group '#{type}' not defined on top level schema"
-                        end
-                    else
-                        raise Error.new "top level '$type' field is missing"
-                    end
-                end
-            rescue Error => ex
-                puts "to_compact: error at #{ex}"
-                raise
-            end                
-        end
-
-        # @param input [String] Blink compact form
-        # @return [Array<Hash>] Blink JSON form
-        # @raise [Error]
-        def from_compact(input)
-            compact = input.dup
-            out = []
-            while compact.size > 0 do
-                groupField = CompactEncoder::getBinary!(compact)
-                if groupField.nil?
-                    raise Error.new "strong error? group is nil"
-                elsif groupField.size == 0
-                    raise Error.new "W1"
-                else
-                    type = CompactEncoder::getU64!(groupField)
-                    if type.nil?
-                        raise Error.new "strong error? type tag is nil"
-                    else
-                        group = @groupsByID[type]
-                        if group.nil?
-                            raise Error.new "W2"
-                        else
-                            out << group.from_compact!(groupField)
-                        end                            
-                    end
-                end
-            end
-            out               
-        end
-
     end    
 
 end

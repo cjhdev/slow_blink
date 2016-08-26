@@ -109,42 +109,5 @@ module SlowBlink
             (self == superGroup) or (@superGroup and @superGroup.group_kind_of?(superGroup))            
         end
 
-        # @private
-        #
-        # @param value [Hash] Blink JSON format
-        # @param opts [Hash] options
-        # @option opts [Symbol] :dynamic encode as dynamic group
-        # @return [String] compact format
-        def to_compact(value, **opts)            
-            if value
-                if opts[:dynamic]
-                    out = CompactEncoder::putU64(@nameWithID.id)
-                else
-                    out = ""
-                end
-                @fields.each do |name, f|
-                    out << f.to_compact(value)
-                end
-                if opts[:dynamic]
-                    CompactEncoder::putU32(out.size) + out
-                else
-                    out
-                end
-            elsif opts[:optional] and value.nil?
-                CompactEncoder::putU64(nil)
-            else
-                raise Error.new "expecting a group"
-            end
-        end
-
-        def from_compact!(input, **opts)
-            out = {}
-            out["$type".freeze] = @nameWithID.name
-            @fields.each do |name, f|
-                out[name] = f.from_compact!(input)
-            end
-            out
-        end
-        
     end
 end

@@ -20,26 +20,7 @@
 module SlowBlink
 
     # Blink Specification 3.4
-    class FIXED < STRING
-        
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? String
-                if input.size == @size
-                    if opts[:optional]
-                        CompactEncoder::putFixedOptional(input)
-                    else
-                        CompactEncoder::putFixed(input)
-                    end
-                else
-                    raise Error.new "fixed field not correct size"
-                end
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putFixedOptional(input)
-            else
-                raise Error.new "expecting string of #{@size} bytes, got #{input.class}"
-            end             
-        end
+    class FIXED < STRING        
     end
 
 end

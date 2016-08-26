@@ -20,21 +20,7 @@
 module SlowBlink
 
     # Blink Specification 3.9
-    class NANO_TIME < Type
-
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? String
-                CompactEncoder::putI64(Time.new(input).to_i)
-            elsif input.kind_of? Integer or input.kind_of? Time
-                CompactEncoder::putI64(input.to_i)
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putI64(nil)
-            else
-                raise Error.new "expecting time in nanoseconds, got #{input}"            
-            end
-        end    
-        
+    class NANO_TIME < Type        
     end
 
 end

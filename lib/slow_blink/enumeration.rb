@@ -33,7 +33,6 @@ module SlowBlink
             @schema = nil       
         end
 
-
         # @private
         #
         # @macro common_link
@@ -77,31 +76,6 @@ module SlowBlink
             else
                 @syms.values.detect{|s|s.val == nameOrVal.to_i}
             end
-        end
-
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? String
-                sym = self.symbol(input)
-                if sym
-                    CompactEncoder::putI32(sym.val)
-                else
-                    raise Error.new "symbol #{input} does not exist in enum"
-                end
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putI32(nil)
-            else
-                raise Error.new "expecting symbol"
-            end               
-        end
-
-        def from_compact!(input, **opts)
-            value = CompactEncoder::getI32!(input)
-            sym = self.symbol(value)
-            if sym.nil?
-                raise "W10"
-            end
-            sym.name
         end
 
     end

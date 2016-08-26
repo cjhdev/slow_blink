@@ -17,8 +17,6 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'bigdecimal'
-
 module SlowBlink
 
     class INTEGER < Type
@@ -26,180 +24,42 @@ module SlowBlink
 
         # Blink Specification 3.1
     class I8 < INTEGER
-
         RANGE = Range.new(-128, 127)
-
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? Integer
-                if self.class::RANGE.cover?(value)
-                    CompactEncoder::putI8(input)
-                else
-                    raise Error.new "value '#{input}' is outside of range #{self.class::RANGE}"
-                end
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putI8(input)
-            else
-                raise Error.new "expecting an integer but got a '#{input.class}'"
-            end
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Integer]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getI8!(input)
-        end
     end
 
     # Blink Specification 3.1
     class I16 < INTEGER
-
         RANGE = Range.new(-32768, 32767)
-
-        # @private
-        def to_compact(input, **opts)
-            CompactEncoder::putI16(input)        
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Integer]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getI16!(input)
-        end
     end
 
     # Blink Specification 3.1
     class I32 < INTEGER
-
         RANGE = Range.new(-2147483648, 2147483647)
-
-        # @private
-        def to_compact(input, **opts)
-            CompactEncoder::putI32(input)        
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Integer]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getI32!(input)
-        end
     end
 
     # Blink Specification 3.1
     class I64 < INTEGER
-
         RANGE = Range.new(-9223372036854775808, 9223372036854775807)
-
-        # @private
-        def to_compact(input, **opts)
-            CompactEncoder::putI64(input)        
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Integer]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getI32!(input)
-        end
     end
 
     # Blink Specification 3.1
     class U8 < INTEGER
-
         RANGE = Range.new(0, 0xff)
-
-        # @private
-        def to_compact(input, **opts)
-            CompactEncoder::putU8(input)        
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Integer]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getU8!(input)
-        end
     end
 
     # Blink Specification 3.1
     class U16 < INTEGER
-
         RANGE = Range.new(0, 0xffff)
-
-        # @private
-        def to_compact(input, **opts)
-            CompactEncoder::putU16(input)        
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Integer]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getU16!(input)
-        end
     end
 
     # Blink Specification 3.1
     class U32 < INTEGER
-
         RANGE = Range.new(0, 0xffffffff)
-
-        # @private
-        def to_compact(input, **opts)
-            CompactEncoder::putU32(input)        
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Integer]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getU32!(input)
-        end
     end
 
     # Blink Specification 3.1
     class U64 < INTEGER
-
         RANGE = Range.new(0, 0xffffffffffffffff)
-
-        # @private
-        def to_compact(input, **opts)
-            CompactEncoder::putU64(input)        
-        end
-
-        # @private
-        #
-        # @param input [String] binary string to consume
-        # @return [nil] NULL encoded input
-        # @return [Integer]
-        # @raise [Error] soft or hard error encountered        
-        def from_compact!(input, **opts)
-            CompactEncoder::getU64!(input)
-        end
     end
 
 end

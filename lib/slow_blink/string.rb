@@ -35,32 +35,6 @@ module SlowBlink
             super(location)
         end
 
-        # @private
-        def to_compact(input, **opts)            
-            if input.kind_of? String
-                if @size.nil? or input.size <= @size
-                    CompactEncoder::putString(input)
-                else
-                    raise Error.new "string is '#{input.size}' bytes long but the constraint is '{@size}' bytes long"
-                end
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putString(input)
-            else
-                raise Error.new "expecting a string, got a '#{input.class}'"
-            end
-        end
-
-        def from_compact!(input, **opts)
-            out = CompactEncoder::getString!(input)
-            if !opts[:optional] and out.nil?
-                raise Error.new "field must be present"
-            elsif out and @size and out.size > @size
-                raise Error.new "W7"
-            else
-                out
-            end                                    
-        end
-        
     end
 
 end

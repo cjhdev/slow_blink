@@ -20,9 +20,6 @@
 module SlowBlink
 
     class DATE < Type
-
-        
-    
     end
 
 end

@@ -525,5 +525,3 @@ static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned)
 
     return retval;
 }
-
-

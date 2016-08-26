@@ -21,16 +21,6 @@ module SlowBlink
 
     # Blink Specification 3.3
     class BINARY < STRING
-        def from_compact!(input, **opts)
-            out = CompactEncoder::getBinary!(input)
-            if !opts[:optional] and out.nil?
-                raise Error.new "field must be present"
-            elsif out and @size and out.size > @size
-                raise Error.new "W8"
-            else
-                out
-            end
-        end
     end
 
 end

@@ -71,23 +71,6 @@ module SlowBlink
             end
             @schema
         end
-
-        # @private
-        def to_compact(value)
-            if value[@nameWithID.name] or @opt
-                begin
-                    @type.to_compact(value[@nameWithID.name], optional: @opt)
-                rescue Error => ex
-                    raise Error.new "[#{@nameWithID.name}]: #{ex}"
-                end
-            else
-                raise Error.new "expecting a field named #{@nameWithID.name}"
-            end
-        end
-
-        def from_compact!(input)
-            @type.from_compact!(input, optional: @opt)                
-        end
         
     end
 end
