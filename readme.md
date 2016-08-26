@@ -14,7 +14,7 @@ This project is currently under development and not very useful.
 
 - Integrated and complete Blink Protocol schema parser built on GLR Flex/Bison
 - VLC encode/decode functions implemented as native extensions
-- 'message' models generated dynamically from Blink Schemas (no compilation step necessary)
+- 'message' models generated dynamically from Blink schema (no compilation step necessary)
 - A complete message serialisation solution dependent only on MRI
 
 
