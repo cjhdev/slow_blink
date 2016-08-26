@@ -24,7 +24,7 @@ module SlowBlink::Message
         def self.in_range?(value)
             @range.cover? value
         end
-
+        
         def value=(v)
             if v
                 if v.kind_of? Integer
@@ -47,6 +47,7 @@ module SlowBlink::Message
             @value
         end
 
+        # @param value [Integer, nil]
         def initialize(value)
             self.value = value
         end        

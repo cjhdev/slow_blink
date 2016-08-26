@@ -20,13 +20,18 @@
 module SlowBlink::Message
 
     module Field
-
+        
+        # @return [true,false] field is optional?
         def self.opt?
             @opt
         end
+
+        # @return [String] field name
         def self.name
             @name
         end
+
+        # @return [Integer,nil] field ID
         def self.id
             @id
         end

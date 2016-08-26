@@ -34,7 +34,7 @@ module SlowBlink::Message
             end
         end
 
-        # @param [Array,nil]
+        # @param v [Array,nil]
         def value=(v)
             if v
                 if v.kind_of? Array
@@ -52,7 +52,8 @@ module SlowBlink::Message
         def value
             @value
         end
-    
+
+        # @param value [Array]
         def initialize(value)
             self.value = value
         end

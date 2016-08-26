@@ -54,8 +54,6 @@ module SlowBlink
         def link(schema, stack=[])
             if @schema.nil?
                 @schema = @enumOrType.link(schema, stack << self)
-                @name = @nameWithID.name
-                @id = @nameWithID.id
             end
             @schema
         end

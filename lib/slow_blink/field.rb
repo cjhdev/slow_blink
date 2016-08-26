@@ -32,9 +32,6 @@ module SlowBlink
         # @return [NameWithID]
         attr_reader :nameWithID
 
-        attr_reader :name
-        attr_reader :id
-
         # @return [true] field is optional
         # @return [false] field is mandatory
         def opt?
@@ -54,8 +51,6 @@ module SlowBlink
             @opt = opt
             @location = location
             @nameWithID = nameWithID
-            @name = nil
-            @id = nil
         end
 
         # @private
@@ -66,8 +61,6 @@ module SlowBlink
                 if @type.link(schema, stack << self)
                     @schema = schema
                 end
-                @name = @nameWithID.name
-                @id = @nameWithID.id
             end
             @schema
         end

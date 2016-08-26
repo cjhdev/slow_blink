@@ -31,6 +31,7 @@ module SlowBlink
 
                 @schema = schema
                 @groups = {}
+                @top
                 
                 schema.groups.each do |name, g|
                     @groups[name] = model_group(g)
@@ -41,8 +42,8 @@ module SlowBlink
             # Decode a compact form string
             #
             # @param input [String] compact form
-            # @return [Model::Group]
-            def from_compact!(input)
+            # @return [Array] array of group instances
+            def compact(input)
                 raise
             end
 
@@ -87,7 +88,7 @@ module SlowBlink
                 klass = model_type(field.type).class_eval do
                     @opt = field.opt?
                     @name = field.nameWithID.name
-                    @id = field.nameWithID.id                    
+                    @id = field.nameWithID.id
                     include SlowBlink::Message::Field
                 end
                 
@@ -131,4 +132,5 @@ require "slow_blink/message/field"
 require "slow_blink/message/group"
 require "slow_blink/message/time"
 require "slow_blink/message/time_of_day"
+require "slow_blink/message/date"
 

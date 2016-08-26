@@ -20,6 +20,7 @@
 module SlowBlink::Message
 
     module Group
+
         def value=(v)
             if v
                 if v.kind_of? Hash
@@ -51,7 +52,7 @@ module SlowBlink::Message
                 raise Error.new "W1"    # size of zero
             end
             type = CompactEncoder::getU64(input)                    
-            group = self.alternatives[type]
+            group = self.groups[type]
             if group
                 fields = {"$type".freeze => self.name}
                 group.fields.each do |f|
