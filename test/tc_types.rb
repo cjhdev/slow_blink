@@ -111,7 +111,7 @@ class TestTypes < Test::Unit::TestCase
 
         assert_equal("test", schema.group("test").field("test").nameWithID.name)
         assert_equal(nil, schema.group("test").field("test").nameWithID.id)
-        assert_equal(F64, schema.group("test").field("test").type.class)
+        assert_equal(FLOATING_POINT, schema.group("test").field("test").type.class)
     end
 
     def test_string
@@ -184,7 +184,7 @@ class TestTypes < Test::Unit::TestCase
         assert_equal("test", schema.group("test").field("test").nameWithID.name)
         assert_equal(nil, schema.group("test").field("test").nameWithID.id)
         assert_equal(REF, schema.group("test").field("test").type.class)
-        assert_equal(Enumeration, schema.group("test").field("test").type.object.class)
+        assert_equal(ENUMERATION, schema.group("test").field("test").type.object.class)
         assert_equal("blue", schema.group("test").field("test").type.object.symbol("blue").name)
         assert_equal(0, schema.group("test").field("test").type.object.symbol("blue").val)
         
@@ -197,7 +197,7 @@ class TestTypes < Test::Unit::TestCase
         assert_equal("test", schema.group("test").field("test").nameWithID.name)
         assert_equal(nil, schema.group("test").field("test").nameWithID.id)
         assert_equal(REF, schema.group("test").field("test").type.class)
-        assert_equal(Enumeration, schema.group("test").field("test").type.object.class)
+        assert_equal(ENUMERATION, schema.group("test").field("test").type.object.class)
         assert_equal("blue", schema.group("test").field("test").type.object.symbol("blue").name)
         assert_equal(0, schema.group("test").field("test").type.object.symbol("blue").val)
         assert_equal("white", schema.group("test").field("test").type.object.symbol("white").name)

@@ -37,7 +37,7 @@ static VALUE cAnnotation;
 static VALUE cIncrementalAnnotation;
 
 static VALUE cDefinition;
-static VALUE cEnumeration;
+static VALUE cENUMERATION;
 static VALUE cSym;
 
 static VALUE cI8;
@@ -48,7 +48,7 @@ static VALUE cU8;
 static VALUE cU16;
 static VALUE cU32;
 static VALUE cU64;
-static VALUE cF64;
+static VALUE cFLOATING_POINT;
 static VALUE cDECIMAL;
 static VALUE cFIXED;
 static VALUE cSEQUENCE;
@@ -186,7 +186,7 @@ define:
     nameWithId '=' enum
     {
         VALUE enumArgs[] = {$enum};        
-        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cEnumeration), newLocation(filename, &@$)};        
+        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cENUMERATION), newLocation(filename, &@$)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinition);        
     }
     |
@@ -415,7 +415,7 @@ number:
     F64
     {
         VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cF64);
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFLOATING_POINT);
     }
     |
     DECIMAL
@@ -820,7 +820,7 @@ void Init_ext_schema_parser(void)
     cIncrementalAnnotation = rb_const_get(cSlowBlink, rb_intern("IncrementalAnnotation"));
 
     cDefinition = rb_const_get(cSlowBlink, rb_intern("Definition"));
-    cEnumeration = rb_const_get(cSlowBlink, rb_intern("Enumeration"));
+    cENUMERATION = rb_const_get(cSlowBlink, rb_intern("ENUMERATION"));
     cSym = rb_const_get(cSlowBlink, rb_intern("Sym"));
 
     cU8 = rb_const_get(cSlowBlink, rb_intern("U8"));
@@ -831,7 +831,7 @@ void Init_ext_schema_parser(void)
     cI16 = rb_const_get(cSlowBlink, rb_intern("I16"));
     cI32 = rb_const_get(cSlowBlink, rb_intern("I32"));
     cI64 = rb_const_get(cSlowBlink, rb_intern("I64"));
-    cF64 = rb_const_get(cSlowBlink, rb_intern("F64"));
+    cFLOATING_POINT = rb_const_get(cSlowBlink, rb_intern("FLOATING_POINT"));
     cDECIMAL = rb_const_get(cSlowBlink, rb_intern("DECIMAL"));
     cFIXED = rb_const_get(cSlowBlink, rb_intern("FIXED"));
     cBINARY = rb_const_get(cSlowBlink, rb_intern("BINARY"));

@@ -85,7 +85,7 @@ static VALUE cAnnotation;
 static VALUE cIncrementalAnnotation;
 
 static VALUE cDefinition;
-static VALUE cEnumeration;
+static VALUE cENUMERATION;
 static VALUE cSym;
 
 static VALUE cI8;
@@ -96,7 +96,7 @@ static VALUE cU8;
 static VALUE cU16;
 static VALUE cU32;
 static VALUE cU64;
-static VALUE cF64;
+static VALUE cFLOATING_POINT;
 static VALUE cDECIMAL;
 static VALUE cFIXED;
 static VALUE cSEQUENCE;
@@ -1206,7 +1206,7 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
 #line 187 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE enumArgs[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cEnumeration), newLocation(filename, &(*yylocp))};        
+        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cENUMERATION), newLocation(filename, &(*yylocp))};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinition);        
     }
 #line 1213 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
@@ -1486,7 +1486,7 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
 #line 416 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cF64);
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFLOATING_POINT);
     }
 #line 1492 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
@@ -3737,7 +3737,7 @@ void Init_ext_schema_parser(void)
     cIncrementalAnnotation = rb_const_get(cSlowBlink, rb_intern("IncrementalAnnotation"));
 
     cDefinition = rb_const_get(cSlowBlink, rb_intern("Definition"));
-    cEnumeration = rb_const_get(cSlowBlink, rb_intern("Enumeration"));
+    cENUMERATION = rb_const_get(cSlowBlink, rb_intern("ENUMERATION"));
     cSym = rb_const_get(cSlowBlink, rb_intern("Sym"));
 
     cU8 = rb_const_get(cSlowBlink, rb_intern("U8"));
@@ -3748,7 +3748,7 @@ void Init_ext_schema_parser(void)
     cI16 = rb_const_get(cSlowBlink, rb_intern("I16"));
     cI32 = rb_const_get(cSlowBlink, rb_intern("I32"));
     cI64 = rb_const_get(cSlowBlink, rb_intern("I64"));
-    cF64 = rb_const_get(cSlowBlink, rb_intern("F64"));
+    cFLOATING_POINT = rb_const_get(cSlowBlink, rb_intern("FLOATING_POINT"));
     cDECIMAL = rb_const_get(cSlowBlink, rb_intern("DECIMAL"));
     cFIXED = rb_const_get(cSlowBlink, rb_intern("FIXED"));
     cBINARY = rb_const_get(cSlowBlink, rb_intern("BINARY"));

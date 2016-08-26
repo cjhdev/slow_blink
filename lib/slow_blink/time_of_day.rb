@@ -19,8 +19,12 @@
 
 module SlowBlink
 
-    # Blink Specification 3.9
-    class MILLI_TIME < Type
+    # Blink Specification 3.11
+    class TIME_OF_DAY_MILLI < Type
+    end
+
+     # Blink Specification 3.11
+    class TIME_OF_DAY_NANO < Type
     end
 
 end

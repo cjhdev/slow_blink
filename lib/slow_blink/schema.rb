@@ -45,6 +45,8 @@ module SlowBlink
         #   @option opts [String] :fileName filename to append to error message strings
         #   @return [Schema]
 
+        attr_reader :groups
+
         # @private
         #
         # @param namespace [nil,String]
@@ -136,15 +138,13 @@ require 'slow_blink/definition'
 require 'slow_blink/type'
 require 'slow_blink/integer'
 require 'slow_blink/decimal'
-require 'slow_blink/float'
+require 'slow_blink/floating_point'
 require 'slow_blink/string'
 require 'slow_blink/binary'
 require 'slow_blink/fixed'
 require 'slow_blink/date'
-require 'slow_blink/time_of_day_milli'
-require 'slow_blink/time_of_day_nano'
-require 'slow_blink/nano_time'
-require 'slow_blink/milli_time'
+require 'slow_blink/time_of_day'
+require 'slow_blink/time'
 require 'slow_blink/sequence'
 require 'slow_blink/ref'
 require 'slow_blink/object'

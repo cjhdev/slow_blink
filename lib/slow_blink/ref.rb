@@ -74,14 +74,6 @@ module SlowBlink
             @schema
         end
         
-        # @private
-        def to_compact(input, **opts)
-            @object.to_compact(input, dynamic: @dynamic)        
-        end
-
-        def from_compact!(input, **opts)
-            @object.from_compact!(input, dynamic: @dynamic)
-        end
     end
 
 end

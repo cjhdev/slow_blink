@@ -19,7 +19,7 @@
 
 module SlowBlink
 
-    class Enumeration
+    class ENUMERATION
 
         include Annotatable
 

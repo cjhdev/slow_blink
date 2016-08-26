@@ -53,28 +53,6 @@ module SlowBlink
             @schema
         end
 
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? Array
-                input.inject(CompactEncoder::putU32(input.size)) do |out, v|
-                    out << @type.to_compact(v)
-                end
-            elsif opts[:optional] and input.nil?
-                out = CompactEncoder::putU32(input)
-            else
-                raise Error.new "expecting an Array, got a '#{input.class}'"
-            end                
-        end
-
-        def from_compact!(input, **opts)
-            out = []
-            size = CompactEncoder::getU32!(input)
-            while out.size < size do
-                out << @type.from_compact!(input)
-            end
-            out
-        end
-
     end
 
 end

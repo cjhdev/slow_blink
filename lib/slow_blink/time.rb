@@ -19,26 +19,12 @@
 
 module SlowBlink
 
-    # Blink Specification 3.11
-    class TIME_OF_DAY_MILLI < Type
+    # Blink Specification 3.9
+    class MILLI_TIME < Type
+    end
 
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? Integer
-                if input < 86400000
-                    CompactEncoder::putU32(input)
-                else
-                    raise Error.new "input out of range"
-                end
-            elsif input.kind_of? Time
-                CompactEncoder::putU32(input.to_i)
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putU32(nil)
-            else
-                raise Error.new "expecting time of day in milliseconds, got #{input}"
-            end                
-        end        
-        
+    # Blink Specification 3.9
+    class NANO_TIME < Type        
     end
 
 end

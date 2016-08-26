@@ -23,17 +23,7 @@ module SlowBlink
     # any group
     #
     # Blink Specification 3.9
-    class OBJECT < Type
-
-        # @private
-        def to_compact(input, **opts)
-            raise
-        end
-
-        def from_compact!(input, **opts)
-            raise
-        end
-        
+    class OBJECT < Type        
     end
 
 end

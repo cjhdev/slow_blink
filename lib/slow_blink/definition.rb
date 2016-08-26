@@ -28,7 +28,7 @@ module SlowBlink
         # @return [String]
         attr_reader :nameWithID
 
-        # @return [Enumeration]
+        # @return [ENUMERATION]
         # @return [Type]
         attr_reader :enumOrType
 
@@ -38,7 +38,7 @@ module SlowBlink
         # @private
         #
         # @param nameWithID [NameWithID]
-        # @param enumOrType [Enumeration, Type]
+        # @param enumOrType [ENUMERATION, Type]
         # @param location [String]
         def initialize(nameWithID, enumOrType, location)
             @annotes = {}
