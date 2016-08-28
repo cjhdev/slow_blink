@@ -19,7 +19,7 @@
 
 module SlowBlink
 
-    class Module
+    class Namespace
 
         include Annotatable
 
@@ -67,6 +67,7 @@ module SlowBlink
                 else
                     if @definitions[d.nameWithID.name]
                         puts "#{d.location} error: duplicate definition name"
+                        puts "info: name first defined at #{definitions[d.nameWithID.name].location}"
                         errors += 1
                     else
                         @definitions[d.nameWithID.name] = d
@@ -91,6 +92,7 @@ module SlowBlink
                 definitions.each do |d|
                     if @definitions[d.nameWithID.name]
                         puts "#{d.location} error: duplicate definition name"
+                        puts "info: name first defined at #{definitions[d.nameWithID.name].location}"
                         errors += 1
                     else
                         @definitions[d.nameWithID.name] = d
@@ -100,16 +102,17 @@ module SlowBlink
                     end                    
                 end
             else
-                raise "cannot merge different namespaces"
+                raise "error: cannot merge different namespaces"
             end
         end
 
-        # @macro common_link
-        def link(schema)
+        # @param schema [Schema] common schema
+        # @param stack [Array] used to detect cycles
+        def link(schema, stack=[])
             if @schema.nil?
                 errors = 0
-                @defs.each do |name, d|
-                    if !d.link(schema)
+                @definitions.each do |name, d|
+                    if !d.link(schema, stack.dup << self)
                         errors += 1
                     end                    
                 end
@@ -124,6 +127,32 @@ module SlowBlink
         # @return [Definition,Group]
         def resolve(name)
             @definitions[name]
+        end
+
+        # @private
+        #
+        def lookup(reference)
+            fields = reference.split(".")
+            case fields.size
+            when 1
+                @definitions[fields.first]
+            else
+                f = @definitions[fields.first]
+                
+
+                
+                loop do
+                    if d
+                        case d.class
+                        when Group
+                            
+                        when Definition
+
+                
+            
+                fields.each do |f|                    
+                end
+            end
         end
 
     end    

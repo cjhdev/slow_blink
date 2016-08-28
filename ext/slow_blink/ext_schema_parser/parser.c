@@ -78,7 +78,7 @@ static VALUE cSlowBlink;
 
 static VALUE cNameWithID;
 
-static VALUE cSchema;
+static VALUE cNamespace;
 static VALUE cGroup;
 static VALUE cField;
 static VALUE cAnnotation;
@@ -353,7 +353,7 @@ static const char *const yytname[] =
   "\"int\"", "\"name\"", "\"ncName\"", "\"\\\\ncName\"", "\"cName\"",
   "\"\\\"<annotation>\\\" or '<annotation>'\"", "'='", "':'", "','", "'?'",
   "'['", "']'", "'('", "')'", "'*'", "'|'", "'/'", "'@'", "'.'", "$accept",
-  "top", "schema", "defs", "defList", "def", "define", "groupDef",
+  "top", "namespace", "defs", "defList", "def", "define", "groupDef",
   "fields", "field", "opt", "type", "single", "sequence", "string",
   "binary", "fixed", "size", "ref", "number", "time", "enum", "symList",
   "sym", "val", "annots", "annotList", "annot", "literal", "nameWithId",
@@ -1144,8 +1144,8 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
   case 3:
 #line 135 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {Qnil, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cSchema);            
+        VALUE args[] = {filename, Qnil, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cNamespace);            
     }
 #line 1151 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
@@ -1153,8 +1153,8 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
   case 4:
 #line 141 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
-        VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
-        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cSchema);            
+        VALUE args[] = {filename, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
+        ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cNamespace);            
     }
 #line 1160 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
@@ -3728,7 +3728,7 @@ void Init_ext_schema_parser(void)
 
     cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
     
-    cSchema = rb_const_get(cSlowBlink, rb_intern("Schema"));
+    cNamespace = rb_const_get(cSlowBlink, rb_intern("Namespace"));
     cGroup = rb_const_get(cSlowBlink, rb_intern("Group"));
     cField = rb_const_get(cSlowBlink, rb_intern("Field"));
     cDefinition = rb_const_get(cSlowBlink, rb_intern("Field"));
@@ -3769,7 +3769,7 @@ void Init_ext_schema_parser(void)
     cFieldRef = rb_const_get(cSlowBlink, rb_intern("FieldRef"));
     cFieldTypeRef = rb_const_get(cSlowBlink, rb_intern("FieldTypeRef"));
 
-    rb_define_singleton_method(cSchema, "parse", parseFileBuffer, -1);
+    rb_define_singleton_method(cNamespace, "parse", parseFileBuffer, -1);
 }
 
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... )

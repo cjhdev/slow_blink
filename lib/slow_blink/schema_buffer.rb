@@ -19,6 +19,21 @@
 
 module SlowBlink
 
-    
+    class SchemaBuffer
+
+        # @return [String]
+        attr_reader :buffer
+
+        # @return [String]
+        attr_reader :filename
+        
+        # @param buffer [String] the contents of the file
+        # @param filename [String] name of the file (for error reporting)
+        def initialize(buffer, filename=nil)
+            @filename = filename
+            @buffer = buffer
+        end
+
+    end
 
 end

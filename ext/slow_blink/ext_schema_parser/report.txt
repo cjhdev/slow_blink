@@ -14,10 +14,10 @@ Grammar
 
     0 $accept: top $end
 
-    1 top: schema
+    1 top: namespace
 
-    2 schema: defs
-    3       | nsDecl defs
+    2 namespace: defs
+    3          | nsDecl defs
 
     4 defs: e
     5     | defList
@@ -243,7 +243,7 @@ $accept (50)
     on left: 0
 top (51)
     on left: 1, on right: 0
-schema (52)
+namespace (52)
     on left: 2 3, on right: 1
 defs (53)
     on left: 4 5, on right: 2 3
@@ -337,9 +337,9 @@ e (95)
 State 0
 
     0 $accept: . top $end
-    1 top: . schema
-    2 schema: . defs
-    3       | . nsDecl defs
+    1 top: . namespace
+    2 namespace: . defs
+    3          | . nsDecl defs
     4 defs: . e
     5     | . defList
     6 defList: . def
@@ -378,7 +378,7 @@ State 0
     $default    reduce using rule 124 (e)
 
     top        go to state 7
-    schema     go to state 8
+    namespace  go to state 8
     defs       go to state 9
     defList    go to state 10
     def        go to state 11
@@ -511,16 +511,16 @@ State 7
 
 State 8
 
-    1 top: schema .
+    1 top: namespace .
 
     $default  reduce using rule 1 (top)
 
 
 State 9
 
-    2 schema: defs .
+    2 namespace: defs .
 
-    $default  reduce using rule 2 (schema)
+    $default  reduce using rule 2 (namespace)
 
 
 State 10
@@ -666,7 +666,7 @@ State 19
 
 State 20
 
-    3 schema: nsDecl . defs
+    3 namespace: nsDecl . defs
     4 defs: . e
     5     | . defList
     6 defList: . def
@@ -1033,9 +1033,9 @@ State 59
 
 State 60
 
-    3 schema: nsDecl defs .
+    3 namespace: nsDecl defs .
 
-    $default  reduce using rule 3 (schema)
+    $default  reduce using rule 3 (namespace)
 
 
 State 61

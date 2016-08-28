@@ -33,9 +33,6 @@ module SlowBlink
             @schema = nil       
         end
 
-        # @private
-        #
-        # @macro common_link
         def link(schema, ns, stack=[])
             if @schema.nil?
                 value = 0
@@ -44,6 +41,7 @@ module SlowBlink
                 @rawSyms.each do |s|
                     if @syms[s.name]
                         puts "#{s.location} error: duplicate name"
+                        puts "info: name first defined at #{@syms[s.name].location}"
                         errors += 1
                     else
                         if s.val

@@ -51,9 +51,6 @@ module SlowBlink
             @ns = nil
         end
 
-        # @private
-        #
-        # @!macro common_link
         def link(schema, stack=[])
             if @schema.nil?
                 @schema = @enumOrType.link(schema, @ns, stack << self)

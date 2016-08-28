@@ -17,46 +17,49 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-# @!macro [new] common_link
-#   
-#   Resolve references within schema
-#
-#   @param schema [Schema] schema to link
-#   @param stack [Array]
-#
-#   @return [Schema] linked
-#   @return [nil] not linked
-#
-
 module SlowBlink
 
     class Schema
 
-        # @!method self.parse(input, **opts)
+        # Initialise a Schema from one or more Blink Schema files
         #
-        #   Initialise a Schema object from Blink Schema input string
-        #
-        #   @param input [String] Blink Schema
-        #   @param opts [Hash] options
-        #   @option opts [String] :fileName filename to append to error message strings
-        #   @return [Schema]
-        def self.parse
+        # @param filename [Array<String>]
+        def self.read(*filename)
+            input = []
+            if filename.size > 0
+                filename.each do |f|
+                    input << SchemaBuffer.new(File.read(f), f)
+                end
+                self.new(*input)
+            else
+                raise "at least one file required"                
+            end
         end
 
         # Tagged groups are able to be serialised as dynamic groups
         #
         # @return [Array<Group>]
         attr_reader :taggedGroups
+
+        # @return [Array<Namespace>]
+        attr_reader :ns
     
-        # @private
-        #
-        # @param namespace [Array<Namespace>]
-        def initialize(*namespace)
+        # @param buffer [Array<SchemaBuffer>]
+        def initialize(*buffer)
+
+            if buffer > 0
+                namespace = []
+                buffer.each do |b|
+                    namespace << Namespace.parse(b.buffer, filename: b.filename)                    
+                end
+            else
+                raise "at least one buffer required"
+            end
 
             @ns = {}
-            @groups = {}
+            @taggedGroups = {}
             
-            errors = 1
+            errors = 0            
 
             # gather and merge namespaces
             namespace.each do |ns|
@@ -73,7 +76,7 @@ module SlowBlink
 
             # apply incremental annotation in order of input
             namespace.each do |ns|
-                ns.incrAnnotations.each |a|
+                ns.incrAnnotations.each do |a|
                     a.apply(self, ns)
                 end
             end
@@ -113,11 +116,36 @@ module SlowBlink
                 nil
             end               
         end
-                   
+
+        # lookup a group, field, or definition
+        #
+        # @param reference [String] [namespace, ':'], definition, ['.', field]*
+        # @param return [Namespace, Group, Definition, Field, Sym]
+        def lookup(reference)
+            case reference.split(":").size
+            when 1
+                ns = @ns[nil]
+                fields = reference.split(".")                
+            when 2
+                ns = @ns[reference.split(":").first]
+                fields = reference.split(":").last.split(".")
+            else
+                return nil                
+            end
+            if ns.nil?
+                return nil
+            end
+            
+            
+            
+                
+        end
+           
     end    
 
 end
 
+require 'slow_blink/schema_buffer'
 require 'slow_blink/annotatable'
 require 'slow_blink/namespace'
 require 'slow_blink/error'
@@ -128,7 +156,6 @@ require 'slow_blink/annotation'
 require 'slow_blink/incremental_annotation'
 require 'slow_blink/group'
 require 'slow_blink/field'
-require 'slow_blink/component_reference'
 require 'slow_blink/definition'
 require 'slow_blink/type'
 require 'slow_blink/integer'
