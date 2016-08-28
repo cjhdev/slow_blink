@@ -33,8 +33,8 @@ module SlowBlink
                 @groups = {}
                 @top
                 
-                schema.groups.each do |name, g|
-                    @groups[name] = model_group(g)
+                schema.taggedGroups.each do |id, g|
+                    @groups[g.name] = model_group(g)
                 end
 
             end

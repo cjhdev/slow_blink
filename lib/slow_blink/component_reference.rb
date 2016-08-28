@@ -19,38 +19,6 @@
 
 module SlowBlink
 
-    # SCHEMA
-    class SchemaRef
-        def self.===(other)
-            self == other
-        end
-    end
-
-    # qName
-    class DefinitionRef < SchemaRef
-        attr_reader :qName
-        # @param qName [String] name of the definition to annotate
-        def initialize(qName)
-            @qName = qName
-        end
-    end
-
-    # qName.TYPE
-    class DefinitionTypeRef < DefinitionRef
-    end
-
-    # qName.name
-    class FieldRef < SchemaRef
-        attr_reader :qName
-        attr_reader :name
-        def initialize(qName, name)
-            @qName = qName
-            @name = name
-        end
-    end
-
-    # qName.name.TYPE
-    class FieldTypeRef < FieldRef
-    end
+    
 
 end

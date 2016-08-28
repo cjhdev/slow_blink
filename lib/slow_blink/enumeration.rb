@@ -36,7 +36,7 @@ module SlowBlink
         # @private
         #
         # @macro common_link
-        def link(schema, stack=[])
+        def link(schema, ns, stack=[])
             if @schema.nil?
                 value = 0
                 errors = 0

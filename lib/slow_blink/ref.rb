@@ -24,7 +24,7 @@ module SlowBlink
         # @return referenced object
         attr_reader :object
 
-        # @return [true] dynamic reference
+        # @return [true] dynamic group reference
         # @return [false] static reference
         def dynamic?
             @dynamic
@@ -32,11 +32,18 @@ module SlowBlink
 
         # @private
         #
-        # @param ref [String] 
+        # @param qname [String] 
         # @param dynamic [true,false]
         # @param location [String]    
-        def initialize(ref, dynamic, location)
-            @ref = ref
+        def initialize(qname, dynamic, location)
+            @qname = qname
+            if qname.split(":").size == 1
+                @namespace = nil
+                @name = qname                
+            else                
+                @namespace = qname.split(":").first
+                @name = qname.split(":").last
+            end
             @dynamic = dynamic
             @object = nil
             super(location)
@@ -45,23 +52,23 @@ module SlowBlink
         # @private
         # 
         # @macro common_link
-        def link(schema, stack=[])
+        def link(schema, ns, stack=[])
             if @schema.nil?
-                ref = @ref
-                object = schema.definition(ref)
+                if @namespace
+                    object = schema.resolve(@namespace, @name)                    
+                else
+                    object = ns.resolve(@name) || schema.resolve(@namespace, @name)
+                end
                 if object and object.link(schema, stack << self)
-                    # walk through all references until object
-                    # refers to an actual type
+                    # follow reference
                     loop do
-                        if object.is_a? REF
-                            object = object.object
-                        elsif object.is_a? Definition
+                        if object.kind_of? Definition and object.kind_of? REF
                             object = object.enumOrType
                         else
                             break
                         end
                     end
-                    if @dynamic and object.class != Group
+                    if @dynamic and object.kind_of? Group
                         puts "#{@location}: error: '#{@ref} *' must resolve to a Group"
                     else                    
                         @object = object

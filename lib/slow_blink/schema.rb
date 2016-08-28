@@ -17,8 +17,6 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'slow_blink/annotatable'
-
 # @!macro [new] common_link
 #   
 #   Resolve references within schema
@@ -34,8 +32,6 @@ module SlowBlink
 
     class Schema
 
-        include Annotatable
-
         # @!method self.parse(input, **opts)
         #
         #   Initialise a Schema object from Blink Schema input string
@@ -44,57 +40,59 @@ module SlowBlink
         #   @param opts [Hash] options
         #   @option opts [String] :fileName filename to append to error message strings
         #   @return [Schema]
+        def self.parse
+        end
 
-        attr_reader :groups
-
+        # Tagged groups are able to be serialised as dynamic groups
+        #
+        # @return [Array<Group>]
+        attr_reader :taggedGroups
+    
         # @private
         #
-        # @param namespace [nil,String]
-        # @param defs [Array<Definition>]
-        def initialize(namespace, defs)
-            @nameWithID = NameWithID.new(nil,nil)
-            @annotes = {}
+        # @param namespace [Array<Namespace>]
+        def initialize(*namespace)
+
+            @ns = {}
             @groups = {}
-            @defs = {}
-            @groupsByID = {}
             
-            errors = 0
-            
-            if namespace
-                @namespace = namespace
-            else
-                @namespace = nil
+            errors = 1
+
+            # gather and merge namespaces
+            namespace.each do |ns|
+                if @ns[ns.name]
+                    begin
+                        @ns[ns.name].merge!(ns)
+                    rescue
+                        errors += 1
+                    end
+                else
+                    @ns[ns.name] = ns
+                end
             end
 
-            # populate table of definitions
-            # keep a separate table for groups
-            defs.each do |d|
-                if !d.is_a? IncrementalAnnotation
-                    if @defs[d.nameWithID.name]
-                        puts "#{d.location} error: duplicate definition name"
+            # apply incremental annotation in order of input
+            namespace.each do |ns|
+                ns.incrAnnotations.each |a|
+                    a.apply(self, ns)
+                end
+            end
+            
+            # gather tagged groups and detect duplicates
+            @ns.each do |name, ns|
+                ns.groups.each do |g|
+                    if @taggedGroups[g.nameWithID.id]
+                        puts "error: duplicate group id"
                         errors += 1
                     else
-                        @defs[d.nameWithID.name] = d
-                        if d.is_a? Group
-                            @groups[d.nameWithID.name] = d
-                            @groupsByID[d.nameWithID.id] = d
-                        end                        
-                    end                    
+                        @taggedGroups[g.nameWithID.id] = g
+                    end
                 end
             end
 
-            # now apply incremental annotation
-            @defs.each do |d|
-                if d.is_a? IncrementalAnnotation
-                    d.link(self)
-                end
-            end
-
-            # now link the definitions
-            @defs.each do |name, d|
-                if !d.link(self)
-                    errors += 1
-                end
+            # resolve all references
+            @ns.each do |name, ns|
+                ns.link(self)
             end
 
             if errors > 0
@@ -103,28 +101,25 @@ module SlowBlink
             
         end
 
-        # @param name [String] definition or group name
-        # @return [Definition]
-        # @return [Group]
-        def definition(name)
-            @defs[name]            
-        end
-
-        # @param nameOrID [String,Integer] group name or id
-        # @return [Group] group exists
-        # @return [nil] group does not exist
-        def group(nameOrID)
-            if nameOrID.kind_of? String
-                @groups[nameOrID]
+        # resolve a name to a definition in any namespace
+        #
+        # @param namespace [String,nil]
+        # @param name [String]
+        # @return [Definition,Group]
+        def resolve(namespace, name)
+            if @ns[namespace]
+                @ns[namespace].resolve(name)
             else
-                @groupsByID[nameOrID]                
-            end
+                nil
+            end               
         end
-
+                   
     end    
 
 end
 
+require 'slow_blink/annotatable'
+require 'slow_blink/namespace'
 require 'slow_blink/error'
 require 'slow_blink/compact_encoder'
 require 'slow_blink/ext_compact_encoder'

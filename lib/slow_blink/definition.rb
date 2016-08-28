@@ -32,8 +32,10 @@ module SlowBlink
         # @return [Type]
         attr_reader :enumOrType
 
-        attr_reader :name
-        attr_reader :id
+        # @param namespace [Namespace]
+        def namespace=(namespace)
+            @ns = namespace
+        end
 
         # @private
         #
@@ -46,6 +48,7 @@ module SlowBlink
             @enumOrType = enumOrType
             @location = location
             @nameWithID = nameWithID
+            @ns = nil
         end
 
         # @private
@@ -53,7 +56,7 @@ module SlowBlink
         # @!macro common_link
         def link(schema, stack=[])
             if @schema.nil?
-                @schema = @enumOrType.link(schema, stack << self)
+                @schema = @enumOrType.link(schema, @ns, stack << self)
             end
             @schema
         end

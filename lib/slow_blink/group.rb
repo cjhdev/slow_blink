@@ -34,6 +34,11 @@ module SlowBlink
             @fields.values
         end
 
+        # @param namespace [Namespace]
+        def namespace=(namespace)
+            @ns = namespace
+        end
+
         # @private
         #
         # @param nameWithID [NameWithID]
@@ -48,6 +53,7 @@ module SlowBlink
             @location = location
             @fields = []
             @nameWithID = nameWithID
+            @ns = nil
         end
         
         # @private

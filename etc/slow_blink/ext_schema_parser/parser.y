@@ -30,7 +30,7 @@ static VALUE cSlowBlink;
 
 static VALUE cNameWithID;
 
-static VALUE cSchema;
+static VALUE cNamespace;
 static VALUE cGroup;
 static VALUE cField;
 static VALUE cAnnotation;
@@ -124,23 +124,23 @@ static VALUE cFieldTypeRef;
 %%    
 
 top:
-    schema
+    namespace
     {
-        *tree = $schema;
+        *tree = $namespace;
     }
     ;
 
-schema:    
+namespace:    
     defs
     {
-        VALUE args[] = {Qnil, $defs};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cSchema);            
+        VALUE args[] = {filename, Qnil, $defs};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cNamespace);            
     }
     |
     nsDecl defs
     {
-        VALUE args[] = {$nsDecl, $defs};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cSchema);            
+        VALUE args[] = {filename, $nsDecl, $defs};        
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cNamespace);            
     }
     ;
 
@@ -811,7 +811,7 @@ void Init_ext_schema_parser(void)
 
     cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
     
-    cSchema = rb_const_get(cSlowBlink, rb_intern("Schema"));
+    cNamespace = rb_const_get(cSlowBlink, rb_intern("Namespace"));
     cGroup = rb_const_get(cSlowBlink, rb_intern("Group"));
     cField = rb_const_get(cSlowBlink, rb_intern("Field"));
     cDefinition = rb_const_get(cSlowBlink, rb_intern("Field"));
@@ -852,7 +852,7 @@ void Init_ext_schema_parser(void)
     cFieldRef = rb_const_get(cSlowBlink, rb_intern("FieldRef"));
     cFieldTypeRef = rb_const_get(cSlowBlink, rb_intern("FieldTypeRef"));
 
-    rb_define_singleton_method(cSchema, "parse", parseFileBuffer, -1);
+    rb_define_singleton_method(cNamespace, "parse", parseFileBuffer, -1);
 }
 
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... )

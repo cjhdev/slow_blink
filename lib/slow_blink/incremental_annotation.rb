@@ -22,17 +22,17 @@ module SlowBlink
     # Blink Specification 7.3
     class IncrementalAnnotation
 
-        attr_reader :ref
+        attr_reader :componentReference
         attr_reader :annotes
         attr_reader :location
 
         # @private
         #
-        # @param ref [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef] annotation target
+        # @param componentReference [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef] annotation target
         # @param annotations [Array<Integer,Annotation>]
         # @param location [String]    
-        def initialize(ref, annotes, location)
-            @ref = ref
+        def initialize(componentReference, annotes, location)
+            @componentReference = componentReference
             @annotes = annotes
             @location = location
             @schema = nil
@@ -42,49 +42,104 @@ module SlowBlink
         #
         # Apply annotes to targets
         #
-        # @macro common_link
-        def link(schema, stack=[])
+        # @param schema [Schema]
+        # @param namespace [Namespace] the namespace this annotation was defined in
+        #
+        def apply(schema, namespace)
             if @schema.nil?
-                case @ref.class
-                when SchemaRef
-                    schema.annote(@annotes)
+                case @componentReference.class
+                when SchemaRef # this actually refers to the Namespace
+                    namespace.annote(@annotes)
                     @schema = schema
                 when DefinitionRef
-                    object = schema.definition(@ref.qName)
+                    object = schema.resolve(@componentReference.namespace, @componentReference.name)
                     if object
                         object.annote(@annotes)
                         @schema = schema
                     end
                 when DefinitionTypeRef
-                    object = schema.definition(@ref.qName)
+                    object = schema.resolve(@componentReference.namespace, @componentReference.name)
                     if object
                         object.enumOrType.annote(@annotes)
                         @schema = schema
                     end
                 when FieldRef
-                    object = schema.definition(@ref.qName)
+                    object = schema.resolve(@componentReference.namespace, @componentReference.name)
                     if object
-                        field = object.field(@ref.name)
+                        field = object.field(@componentReference.subname)
                         if field
                             field.annote(@annotes)
                             @schema = schema
                         end                    
                     end                
                 when FieldTypeRef
-                    object = schema.definition(@ref.qName)
+                    object = schema.resolve(@componentReference.namespace, @componentReference.name)
                     if object
-                        field = object.field(@ref.name)
+                        field = object.field(@componentReference.subname)
                         if field
                             field.type.annote(@annotes)
                             @schema = schema
                         end                    
                     end                
                 else
-                    raise "unknown component reference #{@ref.class}".freeze
+                    raise "unknown component reference #{@componentReference.class}".freeze
                 end                    
             end
             @schema                
         end        
         
     end
+
+    # SCHEMA
+    class SchemaRef
+        def self.===(other)
+            self == other
+        end
+    end
+
+    # qName
+    class DefinitionRef < SchemaRef
+        attr_reader :namespace
+        attr_reader :name
+        attr_reader :qname
+        # @param qName [String] name of the definition to annotate
+        def initialize(qname)
+            @qname = qname
+            if qname.split(":").size == 1
+                @namespace = nil
+                @name = qname                
+            else                
+                @namespace = qname.split(":").first
+                @name = qName.split(":").last
+            end
+        end
+    end
+
+    # qName.TYPE
+    class DefinitionTypeRef < DefinitionRef
+    end
+
+    # qName.name
+    class FieldRef < SchemaRef
+        attr_reader :namespace
+        attr_reader :name
+        attr_reader :qname
+        attr_reader :subname
+        def initialize(qname, name)
+            @qname = qname
+            if qname.split(":").size == 1
+                @namespace = nil
+                @name = qname                
+            else                
+                @namespace = qname.split(":").first
+                @name = qName.split(":").last
+            end
+            @subname = name
+        end
+    end
+
+    # qName.name.TYPE
+    class FieldTypeRef < FieldRef
+    end
+    
 end
