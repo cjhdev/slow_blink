@@ -21,9 +21,9 @@ module SlowBlink::Message
 
     module FIXED
 
-        include SlowBlink::CompactEncoder
-
         module CLASS
+
+            include SlowBlink::CompactEncoder
 
             def from_compact!(input)
                 if opt?
@@ -40,6 +40,8 @@ module SlowBlink::Message
         end
 
         module INSTANCE
+
+            include SlowBlink::CompactEncoder
 
             def set(value)
                 if value

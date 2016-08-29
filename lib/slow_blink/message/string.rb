@@ -21,9 +21,9 @@ module SlowBlink::Message
 
     module STRING
 
-        include SlowBlink::CompactEncoder
-
         module CLASS
+
+            include SlowBlink::CompactEncoder
 
             def opt?
                 @opt
@@ -40,6 +40,8 @@ module SlowBlink::Message
         end
 
         module INSTANCE
+
+            include SlowBlink::CompactEncoder
 
             def get
                 @value

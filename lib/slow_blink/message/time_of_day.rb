@@ -21,9 +21,11 @@ module SlowBlink::Message
 
     module TIME_OF_DAY_MILLI
 
-        include SlowBlink::CompactEncoder
+        
 
         module CLASS
+
+            include SlowBlink::CompactEncoder
 
             def from_compact!(input)
                 self.new(getU32!(input))
@@ -32,6 +34,8 @@ module SlowBlink::Message
         end
 
         module INSTANCE
+
+            include SlowBlink::CompactEncoder
 
             def set(value)
             end
@@ -71,9 +75,11 @@ module SlowBlink::Message
 
     module TIME_OF_DAY_NANO
 
-        include SlowBlink::CompactEncoder
+        
 
         module CLASS
+
+            include SlowBlink::CompactEncoder
 
             def from_compact!(input)
                 self.new(getU32!(input))
@@ -82,6 +88,8 @@ module SlowBlink::Message
         end
 
         module INSTANCE
+
+            include SlowBlink::CompactEncoder
 
             def set(value)
             end

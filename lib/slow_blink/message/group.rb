@@ -21,9 +21,11 @@ module SlowBlink::Message
 
     module StaticGroup
 
-        include SlowBlink::CompactEncoder
+        
 
         module CLASS
+
+            include SlowBlink::CompactEncoder
 
             def fields
                 @fields
@@ -56,10 +58,12 @@ module SlowBlink::Message
 
         module INSTANCE
 
-            def fields=(v)
-                if v
-                    if v.kind_of? Hash
-                        @fields = v
+            include SlowBlink::CompactEncoder
+
+            def set(value)
+                if value
+                    if value.kind_of? Hash
+                        @fields = value
                     else
                         raise
                     end
@@ -70,38 +74,22 @@ module SlowBlink::Message
                 end
             end
 
-            def fields
-                @fields
+            def get
+                @value
             end
-
-=begin
-            def initialize
-                @fields = {}
-                self.class.fields.each do |f|
-                    @fields[f.nameWithID.name] = f.new
-                end
-            end
-=end            
 
             def initialize(fields)
-                if fields.nil?
-                    @fields = {}
+                if fields
+                    set(fields)            
                 else
                     self.fields = fields
                 end                
             end
 
             def field(name)
-                @fields[name].value
+                @fields[name]
             end
 
-            def [](name)
-                @fields[name].value
-            end
-            def []=(name, value)
-                @fields[name].value = value
-            end
-            
             def to_compact
                 if @value
                     if self.class.opt?
@@ -109,8 +97,8 @@ module SlowBlink::Message
                             acc << f.to_compact(value)
                         end
                     else
-                        @fields.inject("") do |acc, f|
-                            acc << f.to_compact(value)
+                        @fields.inject("") do |out, f|
+                            out << f.to_compact(value)
                         end
                     end
                 else

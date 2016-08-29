@@ -21,9 +21,11 @@ module SlowBlink::Message
 
     module FLOATING_POINT
 
-        include SlowBlink::CompactEncoder
+        
 
         module CLASS
+
+            include SlowBlink::CompactEncoder
 
             def from_compact!(input)
                 self.new(getF64!(input))
@@ -32,6 +34,8 @@ module SlowBlink::Message
         end
 
         module INSTANCE
+
+            include SlowBlink::CompactEncoder
 
             def set(value)
                 if value

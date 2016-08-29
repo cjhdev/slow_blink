@@ -21,10 +21,9 @@ module SlowBlink
 
     module Message
 
-        module Generated
-        end
-
         class Model
+
+            include SlowBlink::CompactEncoder
 
             # Initialise a message model from a schema
             #
@@ -41,9 +40,9 @@ module SlowBlink
             end
 
             def from_compact(input)
-                buf = SlowBlink::CompactEncoder::getBinary!(input)
+                buf = getBinary!(input)
                 if buf.size > 0
-                    id = SlowBlink::CompactEncoder::getU64!(buf)
+                    id = getU64!(buf)
                     group = @groups[id]                    
                     if group                        
                         group.from_compact!(buf)
@@ -111,8 +110,8 @@ module SlowBlink
                         @opt = opt
                         @groups = groups
                         @permitted = permitted
-                        extend SlowBlink::Message::DynamicGroup::CLASS
-                        include SlowBlink::Message::DynamicGroup::INSTANCE
+                        extend DynamicGroup::CLASS
+                        include DynamicGroup::INSTANCE
                     end                               
                 when SlowBlink::REF
                     if type.ref.kind_of? Group
@@ -128,8 +127,8 @@ module SlowBlink
                                 @opt = opt
                                 @groups = groups
                                 @permitted = permitted
-                                extend SlowBlink::Message::DynamicGroup::CLASS
-                                include SlowBlink::Message::DynamicGroup::INSTANCE
+                                extend DynamicGroup::CLASS
+                                include DynamicGroup::INSTANCE
                             end                               
                         else
                             model_group(opt, type.ref)

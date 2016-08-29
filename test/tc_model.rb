@@ -44,12 +44,29 @@ class TestModel < Test::Unit::TestCase
         input = "\x0b\x4c\x05hello\x00\x01\x02\x03"
         model = Message::Model.new(@schema)
         message = model.from_compact(input)
-        assert_equal("hello", message.field("Symbol"))
-        assert_equal(0, message.field("OrderId"))
-        assert_equal(1, message.field("Price"))
-        assert_equal(2, message.field("Qty"))
-        assert_equal(3, message.field("MatchId"))
+        assert_equal("hello", message.field("Symbol").get)
+        assert_equal(0, message.field("OrderId").get)
+        assert_equal(1, message.field("Price").get)
+        assert_equal(2, message.field("Qty").get)
+        assert_equal(3, message.field("MatchId").get)        
+    end
+
+=begin
+    def test_new
+        model = Message::Model.new(@schema)        
+        message = model.new do
+            group "OrderExecuted" do
+                field("Symbol").set "hey"
+                field("OrderId").set 42
+                field("Price").set [
+                    group "OrderExecuted" { field("hey").set "heyhey" }
+                    group "OrderExecuted" { field("hey").set "heyhey" }
+                    group "OrderExecuted" { field("hey").set "heyhey" }
+                ]                       
+            end
+        end
         
     end
+=end    
 
 end

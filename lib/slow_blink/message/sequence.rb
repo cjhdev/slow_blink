@@ -21,9 +21,11 @@ module SlowBlink::Message
 
     module SEQUENCE
 
-        include SlowBlink::CompactEncoder
+        
 
         module CLASS
+
+            include SlowBlink::CompactEncoder
 
             def from_compact!(input)
                 value = []
@@ -41,6 +43,8 @@ module SlowBlink::Message
         end
 
         module INSTANCE
+
+            include SlowBlink::CompactEncoder
 
             # @param v [Array,nil]
             def set(value)

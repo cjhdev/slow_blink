@@ -25,6 +25,46 @@ module SlowBlink
         # @param input [String]
         # @return [nil, Integer]
         # @raise [Error]
+
+        # @!method getU16(input)
+        # @param input [String]
+        # @return [nil, Integer]
+        # @raise [Error]
+    
+        # @!method getU32(input)
+        # @param input [String]
+        # @return [nil, Integer]
+        # @raise [Error]
+    
+        # @!method getU64(input)
+        # @param input [String]
+        # @return [nil, Integer]
+        # @raise [Error]
+    
+        # @!method getI8(input)
+        # @param input [String]
+        # @return [nil, Integer]
+        # @raise [Error]
+    
+        # @!method getI16(input)
+        # @param input [String]
+        # @return [nil, Integer]
+        # @raise [Error]
+    
+        # @!method getI32(input)
+        # @param input [String]
+        # @return [nil, Integer]
+        # @raise [Error]
+    
+        # @!method getI64(input)
+        # @param input [String]
+        # @return [nil, Integer]
+        # @raise [Error]
+    
+        # @!method getF64(input)
+        # @param input [String]
+        # @return [nil, Integer]
+        # @raise [Error]
     
     end
     
