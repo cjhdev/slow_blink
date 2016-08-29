@@ -21,31 +21,39 @@ module SlowBlink::Message
 
     module MILLI_TIME
 
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getI64(input))
-        end
+        module CLASS
 
-        def value=(v)
-            if v
-                raise
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise 
+            def from_compact!(input)
+                self.new(CompactEncoder::getI64(input))
             end
+
         end
 
-        def value
-            @value
-        end
+        module INSTANCE
 
-        def initialize(value)
-            self.value = value
-        end
+            def value=(v)
+                if v
+                    raise
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise 
+                end
+            end
 
-        def to_compact
-            CompactEncoder::putI64(@value)
-        end        
+            def value
+                @value
+            end
+
+            def initialize(value)
+                self.value = value
+            end
+
+            def to_compact
+                CompactEncoder::putI64(@value)
+            end
+
+        end
     
     end
 

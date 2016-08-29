@@ -20,109 +20,190 @@
 module SlowBlink::Message
 
     module INTEGER
-
-        def self.in_range?(value)
-            @range.cover? value
-        end
         
-        def value=(v)
-            if v
-                if v.kind_of? Integer
-                    if self.class.in_range?(v)
-                        @value = v.to_i
+        module CLASS
+
+            def opt?
+                @opt
+            end
+
+            def in_range?(value)
+                @schema.class::RANGE.cover? value
+            end
+
+        end
+
+        module INSTANCE
+
+            def value=(v)
+                if v
+                    if v.kind_of? Integer
+                        if self.class.in_range?(v)
+                            @value = v.to_i
+                        else
+                            raise Error.new "value out of range"
+                        end
                     else
-                        raise Error.new "value out of range"
+                        raise Error.new "value must be an integer"
                     end
+                elsif self.class.opt?
+                    @value = nil
                 else
-                    raise Error.new "value must be an integer"
+                    raise Error.new "value unacceptable"
                 end
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise Error.new "value unacceptable"
+            end
+            
+            def value
+                @value
+            end
+
+            # @param value [Integer, nil]
+            def initialize(value)
+                self.value = value
             end
         end
         
-        def value
-            @value
-        end
-
-        # @param value [Integer, nil]
-        def initialize(value)
-            self.value = value
-        end        
     end
 
     module U8
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getU8!(input))
+
+        module CLASS    
+            include SlowBlink::Message::INTEGER::CLASS
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getU8!(input))
+            end
         end
-        def to_compact
-            CompactEncoder::putU8(@value)
-        end        
+
+        module INSTANCE
+            include SlowBlink::Message::INTEGER::INSTANCE
+            def to_compact
+                SlowBlink::CompactEncoder::putU8(@value)
+            end
+        end
+        
     end
 
     module U16
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getU16!(input))
+
+        module CLASS
+            include SlowBlink::Message::INTEGER::CLASS
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getU16!(input))
+            end
         end
-        def to_compact
-            CompactEncoder::putU16(@value)
-        end        
+
+        module INSTANCE
+            include SlowBlink::Message::INTEGER::INSTANCE
+            def to_compact
+                SlowBlink::CompactEncoder::putU16(@value)
+            end
+        end
     end
 
     module U32
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getU32!(input))
+
+        module CLASS            
+            include SlowBlink::Message::INTEGER::CLASS
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getU32!(input))
+            end
         end
-        def to_compact
-            CompactEncoder::putU32(@value)
-        end        
+
+        module INSTANCE
+            include SlowBlink::Message::INTEGER::INSTANCE
+            def to_compact
+                SlowBlink::CompactEncoder::putU32(@value)
+            end
+        end
+        
     end
 
     module U64
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getU64!(input))
+
+        module CLASS
+            include SlowBlink::Message::INTEGER::CLASS
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getU64!(input))
+            end
         end
-        def to_compact
-            CompactEncoder::putU64(@value)
-        end        
+
+        module INSTANCE
+            include SlowBlink::Message::INTEGER::INSTANCE
+            def to_compact
+                SlowBlink::CompactEncoder::putU64(@value)
+            end
+        end
+        
     end
 
     module I8
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getI8!(input))
+
+        module CLASS
+            include SlowBlink::Message::INTEGER::CLASS
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getI8!(input))
+            end
         end
-        def to_compact
-            CompactEncoder::putI8(@value)
-        end        
+
+        module INSTANCE
+            include SlowBlink::Message::INTEGER::INSTANCE
+            def to_compact
+                SlowBlink::CompactEncoder::putI8(@value)
+            end
+        end
+        
     end
 
     module I16
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getI16!(input))
+        module CLASS
+            include SlowBlink::Message::INTEGER::CLASS
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getI16!(input))
+            end
         end
-        def to_compact
-            CompactEncoder::putI16(@value)
-        end        
+
+        module INSTANCE
+            include SlowBlink::Message::INTEGER::INSTANCE
+            def to_compact
+                SlowBlink::CompactEncoder::putI16(@value)
+            end
+        end
+        
     end
 
     module I32
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getI32!(input))
+
+        module CLASS
+            include SlowBlink::Message::INTEGER::CLASS
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getI32!(input))
+            end
         end
-        def to_compact
-            CompactEncoder::putI32(@value)
-        end        
+
+        module INSTANCE
+            include INTEGER::INSTANCE
+            def to_compact
+                SlowBlink::CompactEncoder::putI32(@value)
+            end
+        end
+        
     end
 
     module I64
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getI64!(input))
+
+        module CLASS
+            include SlowBlink::Message::INTEGER::CLASS
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getI64!(input))
+            end
         end
-        def to_compact
-            CompactEncoder::putI64(@value)
-        end        
+            
+        module INSTANCE
+            include SlowBlink::Message::INTEGER::INSTANCE
+            def to_compact
+                SlowBlink::CompactEncoder::putI64(@value)
+            end
+        end
     end
 
 end

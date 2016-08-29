@@ -20,6 +20,13 @@
 module SlowBlink::Message
 
     module DATE
+
+        module CLASS
+        end
+
+        module INSTANCE
+        end
+    
     end
 
 end

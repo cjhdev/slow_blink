@@ -33,12 +33,23 @@ class TestModel < Test::Unit::TestCase
             u32 Qty,
             u32 MatchId
         eos
-    
-        #@schema = Schema.new(SchemaBuffer.new(rawSchema))
+        @schema = Schema.new(SchemaBuffer.new(rawSchema))
     end
 
     def test_init        
-        #model = Message::Model.new(@schema)
+        model = Message::Model.new(@schema)
+    end
+
+    def test_from_compact
+        input = "\x0b\x4c\x05hello\x00\x01\x02\x03"
+        model = Message::Model.new(@schema)
+        message = model.from_compact(input)
+        assert_equal("hello", message.field("Symbol"))
+        assert_equal(0, message.field("OrderId"))
+        assert_equal(1, message.field("Price"))
+        assert_equal(2, message.field("Qty"))
+        assert_equal(3, message.field("MatchId"))
+        
     end
 
 end

@@ -21,38 +21,54 @@ module SlowBlink::Message
 
     module STRING
 
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getString!(input))
-        end
+        module CLASS
 
-        def value=(v)
-            if v
-                if v.kind_of? String
-                    if !@size or v.size <= @size
-                        @value = v
-                    else
-                        raise Error.new "W7"
-                    end
-                else
-                    raise "expecting string"
-                end
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise Error.new "value unacceptable"
+            def opt?
+                @opt
             end
+
+            def from_compact!(input)
+                self.new(SlowBlink::CompactEncoder::getString!(input))
+            end
+
+            def size
+                @schema.size
+            end
+
         end
 
-        def value
-            @value
-        end
+        module INSTANCE
 
-        def initialize(value)
-           self.value = value
-        end
+            def value=(v)
+                if v
+                    if v.kind_of? String
+                        if !self.class.size or v.size <= self.class.size
+                            @value = v
+                        else
+                            raise Error.new "W7"
+                        end
+                    else
+                        raise "expecting string"
+                    end
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise Error.new "value unacceptable"
+                end
+            end
 
-        def to_compact
-            CompactEncoder::putString(@value)
+            def value
+                @value
+            end
+
+            def initialize(value)
+               self.value = value
+            end
+
+            def to_compact
+                SlowBlink::CompactEncoder::putString(@value)
+            end
+
         end
         
     end

@@ -23,6 +23,10 @@ module SlowBlink
 
         include Annotatable
 
+        def self.===(other)
+            self == other                
+        end
+
         # @return [String]
         attr_reader :location
 

@@ -21,38 +21,50 @@ module SlowBlink::Message
 
     module BINARY
 
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getBinary!(input))
-        end
+        module CLASS
 
-        def value=(v)
-            if v
-                if v.kind_of? String
-                    if !@size or v.size <= @size
-                        @value = v
-                    else
-                        raise Error.new "W8"
-                    end
-                else
-                    raise "expecting string"
-                end
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise Error.new "value unacceptable"
+            def from_compact!(input)
+                self.new(CompactEncoder::getBinary!(input))
             end
+
+            def size
+                @schema.size
+            end
+
         end
 
-        def value
-            @value
-        end
+        module INSTANCE
 
-        def initialize(value)
-            self.value = value
-        end
+            def value=(v)
+                if v
+                    if v.kind_of? String
+                        if !self.class.size or v.size <= self.class.size
+                            @value = v
+                        else
+                            raise Error.new "W8"
+                        end
+                    else
+                        raise "expecting string"
+                    end
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise Error.new "value unacceptable"
+                end
+            end
 
-        def to_compact
-            CompactEncoder::putBinary(@value)
+            def value
+                @value
+            end
+
+            def initialize(value)
+                self.value = value
+            end
+
+            def to_compact
+                CompactEncoder::putBinary(@value)
+            end
+
         end
         
     end

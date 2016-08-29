@@ -28,90 +28,101 @@ module SlowBlink
             # @param schema [Schema]
             # @param opts [Hash]
             def initialize(schema, **opts)
-
                 @schema = schema
-                @groups = {}
-                @top
-                
+                @groups = {}                
                 schema.taggedGroups.each do |id, g|
-                    @groups[g.nameWithID.name] = model_group(g)
-                end
-
+                    @groups[id] = model_group(false, g)
+                end                
             end
 
-            # Decode a compact form string
-            #
-            # @param input [String] compact form
-            # @return [Array] array of group instances
-            def compact(input)
-                raise
+            def from_compact(input)
+                buf = SlowBlink::CompactEncoder::getBinary!(input)
+                if buf.size > 0
+                    id = SlowBlink::CompactEncoder::getU64!(buf)
+                    group = @groups[id]                    
+                    if group                        
+                        group.from_compact!(buf)
+                    else
+                        raise Error.new "W2"    # type identifier not know to decoder
+                    end
+                else
+                    raise Error.new "W1"    # size of zero
+                end                    
             end
 
-            # @private
-            #
-            # @param type [SlowBlink::Type]
-            # @return [Class]
-            def model_type(type)
-                case type.class
-                when SlowBlink::U8, SlowBlink::U16, SlowBlink::U32, SlowBlink::U64, SlowBlink::I8, SlowBlink::I16, SlowBlink::I32, SlowBlink::I64
-                    klass = Class.new do
-                        @range = type::RANGE
-                        include INTEGER
-                        include SlowBlink::Message.const_get(type.class.name.split('::').last)                        
-                    end
-                when SlowBlink::OBJECT
-                    klass = Class.new do
-                        @groups = @groups
-                        include SlowBlink::Message::DynamicGroup
-                    end
-                when SlowBlink::Group
-                    klass = Class.new do    
-                        
-
-                    end
-                when SlowBlink::REF
-                    model_type(type.object).class_eval do
-                        @dynamic = type.dynamic?
-                    end
-                else                        
-                    klass = Class.new do
-                        include SlowBlink::Message.const_get(type.class.name.split('::').last)
-                    end
-                end
-            end
-
-            # @private
-            #
-            # @param field [SlowBlink::Field]
-            # @return [Class]
-            def model_field(field)
-                klass = model_type(field.type).class_eval do
-                    @opt = field.opt?
-                    @name = field.nameWithID.name
-                    @id = field.nameWithID.id
-                    include SlowBlink::Message::Field
-                end
-                
-            end
-
-            # @private
-            #
-            # @param group [SlowBlink::Group]
-            # @return [Class]
-            def model_group(group)
+            # @param group [Group]
+            def model_group(opt, group)
                 this = self
                 klass = Class.new do
+                    @opt = opt
                     @name = group.nameWithID.name
                     @id = group.nameWithID.id
                     @fields = []
-                    def self.fields
-                        @fields
-                    end
-                    include SlowBlink::Message::DynamicGroup
                     group.fields.each do |f|
                         @fields << this.model_field(f)
                     end
-                end               
+                    extend StaticGroup::CLASS
+                    include StaticGroup::INSTANCE
+                end
+            end
+
+            def model_field(field)
+                this = self
+                klass = Class.new do
+                    @opt = field.opt?
+                    @name = field.nameWithID.name
+                    @id = field.nameWithID.id
+                    @type = this.model_type(field.opt?, field.type)
+                    @schema = field
+                    include Field::INSTANCE
+                    extend Field::CLASS
+                end                
+            end
+
+            def model_type(opt, type)
+                
+                case type.class
+                when SlowBlink::OBJECT
+                    groups = @groups
+                    permitted = @schema.taggedGroups.keys
+                    klass = Class.new do
+                        @opt = opt
+                        @groups = groups
+                        @permitted = permitted
+                        extend SlowBlink::Message::DynamicGroup::CLASS
+                        include SlowBlink::Message::DynamicGroup::INSTANCE
+                    end                               
+                when SlowBlink::REF
+                    if type.ref.kind_of? Group
+                        if type.dynamic?
+                            groups = @groups
+                            permitted = []
+                            @schema.taggedGroups.each do |id, g|
+                                if g.group_kind_of?(type)
+                                    permitted << id
+                                end
+                            end
+                            klass = Class.new do
+                                @opt = opt
+                                @groups = groups
+                                @permitted = permitted
+                                extend SlowBlink::Message::DynamicGroup::CLASS
+                                include SlowBlink::Message::DynamicGroup::INSTANCE
+                            end                               
+                        else
+                            model_group(opt, type.ref)
+                        end
+                    else
+                        model_type(opt, type.ref)
+                    end                        
+                else                        
+                    return Class.new do
+                        @opt = opt
+                        @schema = type
+                        extend SlowBlink::Message.const_get(type.class.name.split('::').last + "::CLASS")
+                        include SlowBlink::Message.const_get(type.class.name.split('::').last + "::INSTANCE")
+                    end                    
+                end
             end
 
         end
@@ -120,6 +131,7 @@ module SlowBlink
 
 end
 
+require "slow_blink/message/field"
 require "slow_blink/message/integer"
 require "slow_blink/message/string"
 require "slow_blink/message/binary"
@@ -128,7 +140,7 @@ require "slow_blink/message/boolean"
 require "slow_blink/message/enumeration"
 require "slow_blink/message/floating_point"
 require "slow_blink/message/sequence"
-require "slow_blink/message/field"
+
 require "slow_blink/message/group"
 require "slow_blink/message/time"
 require "slow_blink/message/time_of_day"

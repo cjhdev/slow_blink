@@ -21,51 +21,59 @@ module SlowBlink::Message
 
     module SEQUENCE
 
-        def self.from_compact!(input)
-            value = []
-            size = CompactEncoder::getU32!(input)
-            if size
-                while out.size < size do
-                    value << @type.from_compact!(input)
-                end
-                self.new(value)
-            else
-                self.new
-            end
-        end
+        module CLASS
 
-        # @param v [Array,nil]
-        def value=(v)
-            if v
-                if v.kind_of? Array
-                    @value = v
+            def from_compact!(input)
+                value = []
+                size = CompactEncoder::getU32!(input)
+                if size
+                    while out.size < size do
+                        value << @type.from_compact!(input)
+                    end
+                    self.new(value)
                 else
-                    raise Error.new "bad type"
+                    self.new
                 end
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise Error.new "value unacceptable"
             end
+
         end
 
-        def value
-            @value
-        end
+        module INSTANCE
 
-        # @param value [Array]
-        def initialize(value)
-            self.value = value
-        end
-
-        def to_compact
-            if @value                
-                @value.inject(CompactEncoder::putU32(@value.size)) do |out, v|
-                    out << v.to_compact
+            # @param v [Array,nil]
+            def value=(v)
+                if v
+                    if v.kind_of? Array
+                        @value = v
+                    else
+                        raise Error.new "bad type"
+                    end
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise Error.new "value unacceptable"
                 end
-            else
-                CompactEncoder::putU32(nil)
-            end                
+            end
+
+            def value
+                @value
+            end
+
+            # @param value [Array]
+            def initialize(value)
+                self.value = value
+            end
+
+            def to_compact
+                if @value                
+                    @value.inject(CompactEncoder::putU32(@value.size)) do |out, v|
+                        out << v.to_compact
+                    end
+                else
+                    CompactEncoder::putU32(nil)
+                end                
+            end
+
         end
 
     end

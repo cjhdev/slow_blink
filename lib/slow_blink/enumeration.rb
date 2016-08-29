@@ -23,6 +23,10 @@ module SlowBlink
 
         include Annotatable
 
+        def self.===(other)
+            self == other                
+        end
+
         # @private
         #
         # @param syms [Array<Sym>] symbol list

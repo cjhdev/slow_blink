@@ -20,20 +20,31 @@
 module SlowBlink::Message
 
     module Field
+
+        module CLASS
         
-        # @return [true,false] field is optional?
-        def self.opt?
-            @opt
+            # @return [true,false] field is optional?
+            def opt?
+                @opt
+            end
+
+            # @return [String] field name
+            def name
+                @name
+            end
+
+            # @return [Integer,nil] field ID
+            def id
+                @id
+            end
+
+            def from_compact!(input)
+                @type.from_compact!(input)
+            end            
+
         end
 
-        # @return [String] field name
-        def self.name
-            @name
-        end
-
-        # @return [Integer,nil] field ID
-        def self.id
-            @id
+        module INSTANCE
         end
 
     end

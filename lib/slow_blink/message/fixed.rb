@@ -21,46 +21,58 @@ module SlowBlink::Message
 
     module FIXED
 
-        def self.from_compact!(input)
-            if opt?
-                self.new(CompactEncoder::getFixedOptional!(input))
-            else
-                self.new(CompactEncoder::getFixed!(input))
-            end
-        end
+        module CLASS
 
-        def value=(v)
-            if v
-                if v.kind_of? String
-                    if v.size == @size
-                        @value = v
-                    else
-                        raise Error.new "must be #{@size} bytes"
-                    end
+            def from_compact!(input)
+                if opt?
+                    self.new(CompactEncoder::getFixedOptional!(input))
                 else
-                    raise "expecting string"
+                    self.new(CompactEncoder::getFixed!(input))
                 end
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise Error.new "value unacceptable"
             end
-        end
 
-        def value
-            @value
-        end
-
-        def initialize(value)
-            self.value = value
-        end
-
-        def to_compact
-            if self.opt?
-                CompactEncoder::putFixedOptional(@value)
-            else
-                CompactEncoder::putFixed(@value)
+            def size
+                @schema.size
             end
+
+        end
+
+        module INSTANCE
+
+            def value=(v)
+                if v
+                    if v.kind_of? String
+                        if v.size == self.class.size
+                            @value = v
+                        else
+                            raise Error.new "must be #{@size} bytes"
+                        end
+                    else
+                        raise "expecting string"
+                    end
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise Error.new "value unacceptable"
+                end
+            end
+
+            def value
+                @value
+            end
+
+            def initialize(value)
+                self.value = value
+            end
+
+            def to_compact
+                if self.opt?
+                    CompactEncoder::putFixedOptional(@value)
+                else
+                    CompactEncoder::putFixed(@value)
+                end
+            end
+
         end
         
     end

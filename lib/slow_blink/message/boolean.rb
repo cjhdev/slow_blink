@@ -21,30 +21,38 @@ module SlowBlink::Message
 
     module BOOLEAN
 
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getBool!(input))
-        end
+        module CLASS
 
-        def value=(v)
-            if v
-                if v.kind_of? TrueClass or v.kind_of? FalseClass
-                    @value = v
-                else
-                    raise "expecting true/false"
-                end
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise Error.new "value unacceptable"
+            def from_compact!(input)
+                self.new(CompactEncoder::getBool!(input))
             end
+
         end
 
-        def initialize(value)
-            self.value = value
-        end
+        module INSTANCE
 
-        def to_compact
-            CompactEncoder::putBool(@value)
+            def value=(v)
+                if v
+                    if v.kind_of? TrueClass or v.kind_of? FalseClass
+                        @value = v
+                    else
+                        raise "expecting true/false"
+                    end
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise Error.new "value unacceptable"
+                end
+            end
+
+            def initialize(value)
+                self.value = value
+            end
+
+            def to_compact
+                CompactEncoder::putBool(@value)
+            end
+
         end
 
     end
