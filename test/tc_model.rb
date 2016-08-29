@@ -34,11 +34,11 @@ class TestModel < Test::Unit::TestCase
             u32 MatchId
         eos
     
-        @schema = Schema.parse(rawSchema)
+        #@schema = Schema.new(SchemaBuffer.new(rawSchema))
     end
 
     def test_init        
-        model = Message::Model.new(@schema)
+        #model = Message::Model.new(@schema)
     end
 
 end

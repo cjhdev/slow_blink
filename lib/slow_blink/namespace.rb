@@ -55,6 +55,7 @@ module SlowBlink
             @groups = []
             @definitions = {}
             @name = name
+            @schema = nil
             
             errors = 0
             
@@ -129,30 +130,8 @@ module SlowBlink
             @definitions[name]
         end
 
-        # @private
-        #
-        def lookup(reference)
-            fields = reference.split(".")
-            case fields.size
-            when 1
-                @definitions[fields.first]
-            else
-                f = @definitions[fields.first]
-                
-
-                
-                loop do
-                    if d
-                        case d.class
-                        when Group
-                            
-                        when Definition
-
-                
-            
-                fields.each do |f|                    
-                end
-            end
+        def group(name)
+            @groups.detect{|g|g.nameWithID.name == name}
         end
 
     end    

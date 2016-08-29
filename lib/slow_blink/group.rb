@@ -63,10 +63,10 @@ module SlowBlink
             if @schema.nil?
                 errors = 0
                 @fields = {}
-                if !@superGroup or (@superGroup and @superGroup.link(schema, stack << self))                    
-                    if !@superGroup or @superGroup.object.is_a?(Group)
+                if !@superGroup or (@superGroup and @superGroup.link(schema, @ns, stack << self))                    
+                    if !@superGroup or @superGroup.ref.is_a?(Group)
                         if @superGroup
-                            @superGroup.object.fields.each do |f|
+                            @superGroup.ref.fields.each do |f|
                                  @fields[f.nameWithID.name] = f
                             end
                         end
@@ -75,7 +75,7 @@ module SlowBlink
                                 puts "#{f.location} error: field with duplicate name '#{f.nameWithID.name}'"
                                 errors += 1
                             else
-                                if f.link(schema, stack.dup << self)
+                                if f.link(schema, @ns, stack.dup << self)
                                     @fields[f.nameWithID.name] = f
                                 else
                                     errors += 1

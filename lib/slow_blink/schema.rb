@@ -38,6 +38,8 @@ module SlowBlink
 
         # Tagged groups are able to be serialised as dynamic groups
         #
+        # - These groups are of interest to message code generators
+        #
         # @return [Array<Group>]
         attr_reader :taggedGroups
 
@@ -47,7 +49,7 @@ module SlowBlink
         # @param buffer [Array<SchemaBuffer>]
         def initialize(*buffer)
 
-            if buffer > 0
+            if buffer.size > 0
                 namespace = []
                 buffer.each do |b|
                     namespace << Namespace.parse(b.buffer, filename: b.filename)                    
@@ -84,11 +86,13 @@ module SlowBlink
             # gather tagged groups and detect duplicates
             @ns.each do |name, ns|
                 ns.groups.each do |g|
-                    if @taggedGroups[g.nameWithID.id]
-                        puts "error: duplicate group id"
-                        errors += 1
-                    else
-                        @taggedGroups[g.nameWithID.id] = g
+                    if g.nameWithID.id
+                        if @taggedGroups[g.nameWithID.id]
+                            puts "error: duplicate group id"
+                            errors += 1
+                        else
+                            @taggedGroups[g.nameWithID.id] = g
+                        end
                     end
                 end
             end
@@ -116,31 +120,7 @@ module SlowBlink
                 nil
             end               
         end
-
-        # lookup a group, field, or definition
-        #
-        # @param reference [String] [namespace, ':'], definition, ['.', field]*
-        # @param return [Namespace, Group, Definition, Field, Sym]
-        def lookup(reference)
-            case reference.split(":").size
-            when 1
-                ns = @ns[nil]
-                fields = reference.split(".")                
-            when 2
-                ns = @ns[reference.split(":").first]
-                fields = reference.split(":").last.split(".")
-            else
-                return nil                
-            end
-            if ns.nil?
-                return nil
-            end
-            
-            
-            
-                
-        end
-           
+    
     end    
 
 end

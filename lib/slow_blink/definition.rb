@@ -22,6 +22,10 @@ module SlowBlink
 
         include Annotatable
 
+        def self.===(other)
+            self == other                
+        end
+
         # @return [String]
         attr_reader :location
 
@@ -30,7 +34,7 @@ module SlowBlink
 
         # @return [ENUMERATION]
         # @return [Type]
-        attr_reader :enumOrType
+        attr_reader :type
 
         # @param namespace [Namespace]
         def namespace=(namespace)
@@ -40,12 +44,12 @@ module SlowBlink
         # @private
         #
         # @param nameWithID [NameWithID]
-        # @param enumOrType [ENUMERATION, Type]
+        # @param type [ENUMERATION, Type]
         # @param location [String]
-        def initialize(nameWithID, enumOrType, location)
+        def initialize(nameWithID, type, location)
             @annotes = {}
             @schema = nil
-            @enumOrType = enumOrType
+            @type = type
             @location = location
             @nameWithID = nameWithID
             @ns = nil
@@ -53,7 +57,7 @@ module SlowBlink
 
         def link(schema, stack=[])
             if @schema.nil?
-                @schema = @enumOrType.link(schema, @ns, stack << self)
+                @schema = @type.link(schema, @ns, stack << self)
             end
             @schema
         end

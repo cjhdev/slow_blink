@@ -60,7 +60,7 @@ module SlowBlink
                 when DefinitionTypeRef
                     object = schema.resolve(@componentReference.namespace, @componentReference.name)
                     if object
-                        object.enumOrType.annote(@annotes)
+                        object.type.annote(@annotes)
                         @schema = schema
                     end
                 when FieldRef

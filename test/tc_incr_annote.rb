@@ -26,15 +26,15 @@ class TestIncrAnnote < Test::Unit::TestCase
 
     def test_u8_annote
         input = "test -> u8 test test <- @note='test'"
-        schema = Schema.parse(input)
+        Schema.new(SchemaBuffer.new(input))
     end
     def test_u8_value
         input = "test -> u8 test test <- 1"
-        schema = Schema.parse(input)
+        Schema.new(SchemaBuffer.new(input))
     end
     def test_u8_annote_and_value
         input = "test -> u8 test test <- @note='test' <- 1"
-        schema = Schema.parse(input)
+        Schema.new(SchemaBuffer.new(input))
     end
 
 end

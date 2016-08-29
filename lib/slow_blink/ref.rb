@@ -22,7 +22,7 @@ module SlowBlink
     class REF < Type
 
         # @return referenced object
-        attr_reader :object
+        attr_reader :ref
 
         # @return [true] dynamic group reference
         # @return [false] static reference
@@ -45,7 +45,7 @@ module SlowBlink
                 @name = qname.split(":").last
             end
             @dynamic = dynamic
-            @object = nil
+            @ref = nil
             super(location)
         end
 
@@ -55,27 +55,30 @@ module SlowBlink
         def link(schema, ns, stack=[])
             if @schema.nil?
                 if @namespace
-                    object = schema.resolve(@namespace, @name)                    
+                    ref = schema.resolve(@namespace, @name)                    
                 else
-                    object = ns.resolve(@name) || schema.resolve(@namespace, @name)
+                    ref = ns.resolve(@name) or schema.resolve(@namespace, @name)
                 end
-                if object and object.link(schema, stack << self)
-                    # follow reference
+                if ref and ref.link(schema, stack << self)
+                    # follow reference to get type
                     loop do
-                        if object.kind_of? Definition and object.kind_of? REF
-                            object = object.enumOrType
+                        if ref.kind_of? Definition and ref.type.kind_of? REF
+                            ref = ref.type.ref
                         else
+                            if !ref.kind_of? Group
+                                ref = ref.type
+                            end
                             break
                         end
                     end
-                    if @dynamic and object.kind_of? Group
-                        puts "#{@location}: error: '#{@ref} *' must resolve to a Group"
-                    else                    
-                        @object = object
+                    if @dynamic and !ref.kind_of? Group
+                        puts "#{@location}: error: '#{@qname} *' must resolve to a Group"
+                    else
+                        @ref = ref
                         @schema = schema
                     end
                 else                    
-                    puts "#{@location}: error: '#{@ref}' is not defined in schema"
+                    puts "#{@location}: error: '#{@qname}' is not defined in schema"
                 end                
             end
             @schema
@@ -84,3 +87,4 @@ module SlowBlink
     end
 
 end
+

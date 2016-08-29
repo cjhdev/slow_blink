@@ -26,6 +26,10 @@ module SlowBlink
         # @param [String]
         attr_reader :location
 
+        def self.===(other)
+            self == other                
+        end
+
         # @private
         #
         # @param location [String]

@@ -56,9 +56,9 @@ module SlowBlink
         # @private
         #
         # @!macro common_link
-        def link(schema,stack=[])
+        def link(schema,ns, stack=[])
             if @schema.nil?
-                if @type.link(schema, stack << self)
+                if @type.link(schema, ns, stack << self)
                     @schema = schema
                 end
             end
