@@ -38,6 +38,10 @@ module SlowBlink::Message
                 @id
             end
 
+            def type
+                @type
+            end
+
             def from_compact!(input)
                 @type.from_compact!(input)
             end            
@@ -45,6 +49,7 @@ module SlowBlink::Message
         end
 
         module INSTANCE
+
         end
 
     end

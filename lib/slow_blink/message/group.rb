@@ -63,12 +63,12 @@ module SlowBlink::Message
             def set(value)
                 if value
                     if value.kind_of? Hash
-                        @fields = value
+                        @value = value
                     else
                         raise
                     end
-                elsif self.class.opt?
-                    @fields = nil
+                elsif self.class.opt?                
+                    @value = nil
                 else
                     raise
                 end
@@ -82,23 +82,26 @@ module SlowBlink::Message
                 if fields
                     set(fields)            
                 else
-                    self.fields = fields
+                    @value = {}
+                    self.class.fields.each do |f|
+                        @value[f.name] = f.type.new(nil)
+                    end                
                 end                
             end
 
             def field(name)
-                @fields[name]
+                @value[name]
             end
 
             def to_compact
                 if @value
                     if self.class.opt?
                         @fields.inject(putPresent(true)) do |acc, f|
-                            acc << f.to_compact(value)
+                            acc << f.to_compact
                         end
                     else
-                        @fields.inject("") do |out, f|
-                            out << f.to_compact(value)
+                        @value.inject("") do |out, f|
+                            out << f.to_compact
                         end
                     end
                 else

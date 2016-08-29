@@ -51,22 +51,30 @@ class TestModel < Test::Unit::TestCase
         assert_equal(3, message.field("MatchId").get)        
     end
 
-=begin
     def test_new
         model = Message::Model.new(@schema)        
         message = model.new do
             group "OrderExecuted" do
                 field("Symbol").set "hey"
-                field("OrderId").set 42
-                field("Price").set [
-                    group "OrderExecuted" { field("hey").set "heyhey" }
-                    group "OrderExecuted" { field("hey").set "heyhey" }
-                    group "OrderExecuted" { field("hey").set "heyhey" }
-                ]                       
+                field("OrderId").set 42 
+                field("Price").set 42 
+                field("Qty").set 42 
+                field("MatchId").set 42 
             end
         end
+
+        assert_equal("hey", message.field("Symbol").get)
+        assert_equal(42, message.field("OrderId").get)
+        assert_equal(42, message.field("Price").get)
+        assert_equal(42, message.field("Qty").get)
+        assert_equal(42, message.field("MatchId").get)
+
+        expected = "\x09\x4c\x03hey\x2a\x2a\2a\x2a"
         
+        #output = message.to_compact
+
+        #assert_equal(expected, output)
+
     end
-=end    
 
 end

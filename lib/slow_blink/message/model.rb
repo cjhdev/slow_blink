@@ -56,9 +56,10 @@ module SlowBlink
 
             def group(name, &block)
                 group = @groupsByName[name]
-                if group
-                    
-                    group.new(nil).instance_exec(&block)
+                if group                    
+                    result = group.new(nil)
+                    result.instance_exec(&block)
+                    result
                 else
                     raise
                 end
@@ -68,7 +69,7 @@ module SlowBlink
                 if block.nil?
                     raise                    
                 end
-                self.instance_exec(&block)            
+                result = self.instance_exec(&block)                
             end
 
             # @param group [Group]

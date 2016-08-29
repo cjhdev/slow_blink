@@ -14,7 +14,7 @@ This project is currently under development and not very useful.
 
 - Integrated and complete Blink Protocol schema parser built on GLR Flex/Bison
 - VLC encode/decode functions implemented as native extensions
-- 'message' models generated dynamically from Blink schema (no compilation step necessary)
+- GC collectible message models generated dynamically from Blink schema (no compilation step necessary)
 - A complete message serialisation solution dependent only on MRI
 
 
@@ -25,18 +25,38 @@ gem install slow_blink
 ~~~
 
 
-## Short Example
+## Usage Example
 
-Define a group composed of one string type field.
+We want to serialise a group containing a single string type field
 
-- The group shall be named 'DemoGroup' and shall be assigned type tag '0'
-- The single field shall be named 'fieldName' and shall be a string no larger than 42 bytes
+- The group shall be named 'Hello' and shall be serialisable as type '0'
+- The single field shall be named 'greeting' and shall be a string no larger than 42 bytes
+- The single field shall be mandatory
 
-```ruby
+~~~ruby
 require 'slow_blink'
-include SlowBlink
-schema = Schema.parse("DemoGroup/0 -> string size(42) fieldName")
-```
+
+# create a schema from Blink syntax
+buffer = SlowBlink::SchemaBuffer.new("Hello/0 -> string size(42) greeting")
+schema = SlowBlink::Schema.new(buffer)
+
+# generate a message model from the schema
+model = SlowBlink::Message::Model.new(schema)
+
+# create a message instance using the message model
+message = model.new do
+    group "Hello" do
+        field("greeting").set "hello"        
+    end
+end
+
+# serialise the message instance
+compact_form = message.to_compact
+
+# convert compact_form back to message instance
+decoded_message = model.from_compact(compact_form)
+
+~~~
 
 ## Documentation
 
