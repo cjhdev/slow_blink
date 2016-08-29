@@ -21,6 +21,9 @@ module SlowBlink
 
     module Message
 
+        module Generated
+        end
+
         class Model
 
             # Initialise a message model from a schema
@@ -29,9 +32,11 @@ module SlowBlink
             # @param opts [Hash]
             def initialize(schema, **opts)
                 @schema = schema
-                @groups = {}                
+                @groups = {}
+                @groupsByName = {}
                 schema.taggedGroups.each do |id, g|
                     @groups[id] = model_group(false, g)
+                    @groupsByName[g.nameWithID.name] = @groups[id]
                 end                
             end
 
@@ -50,6 +55,23 @@ module SlowBlink
                 end                    
             end
 
+            def group(name, &block)
+                group = @groupsByName[name]
+                if group
+                    
+                    group.new(nil).instance_exec(&block)
+                else
+                    raise
+                end
+            end
+
+            def new(&block)
+                if block.nil?
+                    raise                    
+                end
+                self.instance_exec(&block)            
+            end
+
             # @param group [Group]
             def model_group(opt, group)
                 this = self
@@ -63,7 +85,7 @@ module SlowBlink
                     end
                     extend StaticGroup::CLASS
                     include StaticGroup::INSTANCE
-                end
+                end            
             end
 
             def model_field(field)

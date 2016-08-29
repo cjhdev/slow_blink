@@ -21,36 +21,50 @@ module SlowBlink::Message
 
     module ENUMERATION
 
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getU32!(input))
-        end
+        include SlowBlink::CompactEncoder
 
-        # @param v [String]
-        def value=(v)
-            if v
-                if self.symbols[v]
-                    @value = self.class.symbols[v]
-                else
-                    raise Error.new "W10"
-                end                    
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise Error
+        module CLASS
+
+            def from_compact!(input)
+                self.new(getU32!(input))
             end
+
         end
 
-        def value
-            @value
-        end
+        module INSTANCE
 
-        def initialize(value)
-            self.value = value
+            # @param v [String]
+            def set(value)
+                if value
+                    if self.symbols[value]
+                        @value = self.class.symbols[value]
+                    else
+                        raise Error.new "W10"
+                    end                    
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise Error
+                end
+            end
+
+            def get
+                @value
+            end
+
+            def initialize(value)
+                if value
+                    set(value)
+                else
+                    @value = nil
+                end                
+            end
+            
+            def to_compact
+                putU32(@value ? self.class.symbols[@value] : nil)
+            end
+
         end
-        
-        def to_compact
-            CompactEncoder::putU32(@value ? self.class.symbols[@value] : nil)
-        end 
     
     end
 

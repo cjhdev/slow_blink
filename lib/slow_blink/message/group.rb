@@ -21,6 +21,8 @@ module SlowBlink::Message
 
     module StaticGroup
 
+        include SlowBlink::CompactEncoder
+
         module CLASS
 
             def fields
@@ -34,7 +36,7 @@ module SlowBlink::Message
             def from_compact!(input)
                 fields = {"$type".freeze => @name}
                 if @opt
-                    if SlowBlink::CompactEncoder::getPresent!(input)
+                    if getPresent!(input)
                         @fields.each do |f|
                             fields[f.name] = f.from_compact!(input)
                         end
@@ -49,40 +51,61 @@ module SlowBlink::Message
                     self.new(fields)
                 end            
             end
+
         end
 
         module INSTANCE
 
-            def value=(v)
+            def fields=(v)
                 if v
                     if v.kind_of? Hash
-                        @value = v
+                        @fields = v
                     else
                         raise
                     end
                 elsif self.class.opt?
-                    @value = nil
+                    @fields = nil
                 else
                     raise
                 end
             end
 
-            def value
-                @value
+            def fields
+                @fields
             end
 
-            def initialize(value)
-                self.value = value
+=begin
+            def initialize
+                @fields = {}
+                self.class.fields.each do |f|
+                    @fields[f.nameWithID.name] = f.new
+                end
+            end
+=end            
+
+            def initialize(fields)
+                if fields.nil?
+                    @fields = {}
+                else
+                    self.fields = fields
+                end                
             end
 
             def field(name)
-                @value[name].value
+                @fields[name].value
             end
 
+            def [](name)
+                @fields[name].value
+            end
+            def []=(name, value)
+                @fields[name].value = value
+            end
+            
             def to_compact
                 if @value
                     if self.class.opt?
-                        @fields.inject(SlowBlink::CompactEncoder::putPresent(true)) do |acc, f|
+                        @fields.inject(putPresent(true)) do |acc, f|
                             acc << f.to_compact(value)
                         end
                     else
@@ -91,7 +114,7 @@ module SlowBlink::Message
                         end
                     end
                 else
-                    SlowBlink::CompactEncoder::putPresent(false)
+                    putPresent(false)
                 end
             end
 
@@ -101,6 +124,8 @@ module SlowBlink::Message
 
     # methods that act on a dynamic group class
     module DynamicGroupClass
+
+        include SlowBlink::CompactEncoder
 
         def groups
             @groups
@@ -117,11 +142,11 @@ module SlowBlink::Message
         end
 
         def from_compact!(input)
-            groupBuf = SlowBlink::CompactEncoder::getBinary(input)
+            groupBuf = getBinary(input)
             if groupBuf.size == 0
                 raise Error.new "W1"    # size of zero
             end
-            group = self.group(SlowBlink::CompactEncoder::getU64(input))
+            group = self.group(getU64(input))
             if group
                 self.new(group.from_compact!(groupBuf))
             else

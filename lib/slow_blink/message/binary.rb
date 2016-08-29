@@ -21,10 +21,16 @@ module SlowBlink::Message
 
     module BINARY
 
+        include SlowBlink::CompactEncoder
+
         module CLASS
 
+            def opt?
+                @opt
+            end
+
             def from_compact!(input)
-                self.new(CompactEncoder::getBinary!(input))
+                self.new(getBinary!(input))
             end
 
             def size
@@ -35,16 +41,16 @@ module SlowBlink::Message
 
         module INSTANCE
 
-            def value=(v)
-                if v
-                    if v.kind_of? String
-                        if !self.class.size or v.size <= self.class.size
-                            @value = v
+            def set(value)
+                if value
+                    if value.kind_of? String
+                        if !self.class.size or value.size <= self.class.size
+                            @value = value
                         else
                             raise Error.new "W8"
                         end
                     else
-                        raise "expecting string"
+                        raise "expecting binary"
                     end
                 elsif self.class.opt?
                     @value = nil
@@ -53,16 +59,20 @@ module SlowBlink::Message
                 end
             end
 
-            def value
+            def get
                 @value
             end
 
             def initialize(value)
-                self.value = value
+                if value
+                    set(value)
+                else
+                    @value = nil
+                end
             end
 
             def to_compact
-                CompactEncoder::putBinary(@value)
+                putBinary(@value)
             end
 
         end

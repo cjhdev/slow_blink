@@ -21,11 +21,13 @@ module SlowBlink::Message
 
     module SEQUENCE
 
+        include SlowBlink::CompactEncoder
+
         module CLASS
 
             def from_compact!(input)
                 value = []
-                size = CompactEncoder::getU32!(input)
+                size = getU32!(input)
                 if size
                     while out.size < size do
                         value << @type.from_compact!(input)
@@ -41,9 +43,9 @@ module SlowBlink::Message
         module INSTANCE
 
             # @param v [Array,nil]
-            def value=(v)
-                if v
-                    if v.kind_of? Array
+            def set(value)
+                if value
+                    if value.kind_of? Array
                         @value = v
                     else
                         raise Error.new "bad type"
@@ -55,22 +57,26 @@ module SlowBlink::Message
                 end
             end
 
-            def value
+            def get
                 @value
             end
 
             # @param value [Array]
             def initialize(value)
-                self.value = value
+                if value
+                    set(value)
+                else
+                    @value = nil
+                end
             end
 
             def to_compact
                 if @value                
-                    @value.inject(CompactEncoder::putU32(@value.size)) do |out, v|
+                    @value.inject(putU32(@value.size)) do |out, v|
                         out << v.to_compact
                     end
                 else
-                    CompactEncoder::putU32(nil)
+                    putU32(nil)
                 end                
             end
 

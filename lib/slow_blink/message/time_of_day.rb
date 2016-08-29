@@ -21,44 +21,102 @@ module SlowBlink::Message
 
     module TIME_OF_DAY_MILLI
 
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? Integer
-                if input < 86400000
-                    CompactEncoder::putU32(input)
+        include SlowBlink::CompactEncoder
+
+        module CLASS
+
+            def from_compact!(input)
+                self.new(getU32!(input))
+            end
+        
+        end
+
+        module INSTANCE
+
+            def set(value)
+            end
+
+            def get
+                @value
+            end
+
+            def initialize(value)
+                if value
+                    set(value)
                 else
-                    raise Error.new "input out of range"
+                    @value = nil
                 end
-            elsif input.kind_of? Time
-                CompactEncoder::putU32(input.to_i)
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putU32(nil)
-            else
-                raise Error.new "expecting time of day in milliseconds, got #{input}"
-            end                
-        end        
+            end
+
+            # @private
+            def to_compact(input, **opts)
+                if input.kind_of? Integer
+                    if input < 86400000
+                        putU32(input)
+                    else
+                        raise Error.new "input out of range"
+                    end
+                elsif input.kind_of? Time
+                    putU32(input.to_i)
+                elsif opts[:optional] and input.nil?
+                    putU32(nil)
+                else
+                    raise Error.new "expecting time of day in milliseconds, got #{input}"
+                end                
+            end        
+        
+        end
     
     end
 
     module TIME_OF_DAY_NANO
 
-        # @private
-        def to_compact(input, **opts)
-            if input.kind_of? Integer
-                if input < 86400000000000
-                    CompactEncoder::putU64(input)
+        include SlowBlink::CompactEncoder
+
+        module CLASS
+
+            def from_compact!(input)
+                self.new(getU32!(input))
+            end
+            
+        end
+
+        module INSTANCE
+
+            def set(value)
+            end
+
+            def get
+                @value
+            end
+        
+            def initialize(value)
+                if value
+                    set(value)
                 else
-                    raise Error.new "input out of range"
+                    @value = nil
                 end
-            elsif input.kind_of? Time
-                CompactEncoder::putU64(input.to_i)
-            elsif opts[:optional] and input.nil?
-                CompactEncoder::putU64(nil)
-            else
-                raise Error.new "expecting time of day in nanoseconds, got #{input}"
-            end                
-        end        
-    
+            end
+
+            # @private
+            def to_compact(input, **opts)
+                if input.kind_of? Integer
+                    if input < 86400000000000
+                        putU64(input)
+                    else
+                        raise Error.new "input out of range"
+                    end
+                elsif input.kind_of? Time
+                    putU64(input.to_i)
+                elsif opts[:optional] and input.nil?
+                    putU64(nil)
+                else
+                    raise Error.new "expecting time of day in nanoseconds, got #{input}"
+                end                
+            end        
+        
+        end
+        
     end
 
 end

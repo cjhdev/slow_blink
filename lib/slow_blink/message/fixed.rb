@@ -21,13 +21,15 @@ module SlowBlink::Message
 
     module FIXED
 
+        include SlowBlink::CompactEncoder
+
         module CLASS
 
             def from_compact!(input)
                 if opt?
-                    self.new(CompactEncoder::getFixedOptional!(input))
+                    self.new(getFixedOptional!(input))
                 else
-                    self.new(CompactEncoder::getFixed!(input))
+                    self.new(getFixed!(input))
                 end
             end
 
@@ -39,11 +41,11 @@ module SlowBlink::Message
 
         module INSTANCE
 
-            def value=(v)
-                if v
-                    if v.kind_of? String
-                        if v.size == self.class.size
-                            @value = v
+            def set(value)
+                if value
+                    if value.kind_of? String
+                        if value.size == self.class.size
+                            @value = value
                         else
                             raise Error.new "must be #{@size} bytes"
                         end
@@ -57,19 +59,23 @@ module SlowBlink::Message
                 end
             end
 
-            def value
+            def get
                 @value
             end
 
             def initialize(value)
-                self.value = value
+                if value
+                    set(value)
+                else
+                    @value = nil
+                end
             end
 
             def to_compact
                 if self.opt?
-                    CompactEncoder::putFixedOptional(@value)
+                    putFixedOptional(@value)
                 else
-                    CompactEncoder::putFixed(@value)
+                    putFixed(@value)
                 end
             end
 

@@ -21,20 +21,22 @@ module SlowBlink::Message
 
     module BOOLEAN
 
+        include SlowBlink::CompactEncoder
+
         module CLASS
 
             def from_compact!(input)
-                self.new(CompactEncoder::getBool!(input))
+                self.new(getBool!(input))
             end
 
         end
 
         module INSTANCE
 
-            def value=(v)
-                if v
-                    if v.kind_of? TrueClass or v.kind_of? FalseClass
-                        @value = v
+            def set(value)
+                if value
+                    if value.kind_of? TrueClass or value.kind_of? FalseClass
+                        @value = value
                     else
                         raise "expecting true/false"
                     end
@@ -45,12 +47,20 @@ module SlowBlink::Message
                 end
             end
 
+            def get
+                @value
+            end
+
             def initialize(value)
-                self.value = value
+                if value
+                    set(value)
+                else
+                    @value = nil
+                end
             end
 
             def to_compact
-                CompactEncoder::putBool(@value)
+                putBool(@value)
             end
 
         end

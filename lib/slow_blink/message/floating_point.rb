@@ -21,34 +21,48 @@ module SlowBlink::Message
 
     module FLOATING_POINT
 
-        def self.from_compact!(input)
-            self.new(CompactEncoder::getF64!(input))
-        end
+        include SlowBlink::CompactEncoder
 
-        def value=(v)
-            if v
-                if v.kind_of? Numeric
-                    @value = v
-                else
-                    raise "expecting float"
-                end
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise Error.new "value unacceptable"
+        module CLASS
+
+            def from_compact!(input)
+                self.new(getF64!(input))
             end
+
         end
 
-        def value
-            @value
-        end
+        module INSTANCE
 
-        def initialize(value)
-            self.value = value
-        end
+            def set(value)
+                if value
+                    if value.kind_of? Numeric
+                        @value = value
+                    else
+                        raise "expecting float"
+                    end
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise Error.new "value unacceptable"
+                end
+            end
 
-        def to_compact
-            CompactEncoder::putF64(@value)
+            def get
+                @value
+            end
+
+            def initialize(value)
+                if value
+                    set(value)
+                else
+                    @value = nil
+                end
+            end
+
+            def to_compact
+                putF64(@value)
+            end
+
         end
 
     end

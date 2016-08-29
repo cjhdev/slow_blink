@@ -21,6 +21,8 @@ module SlowBlink::Message
 
     module STRING
 
+        include SlowBlink::CompactEncoder
+
         module CLASS
 
             def opt?
@@ -28,7 +30,7 @@ module SlowBlink::Message
             end
 
             def from_compact!(input)
-                self.new(SlowBlink::CompactEncoder::getString!(input))
+                self.new(getString!(input))
             end
 
             def size
@@ -39,11 +41,15 @@ module SlowBlink::Message
 
         module INSTANCE
 
-            def value=(v)
-                if v
-                    if v.kind_of? String
-                        if !self.class.size or v.size <= self.class.size
-                            @value = v
+            def get
+                @value
+            end
+
+            def set(value)
+                if value
+                    if value.kind_of? String
+                        if !self.class.size or value.size <= self.class.size
+                            @value = value
                         else
                             raise Error.new "W7"
                         end
@@ -56,17 +62,17 @@ module SlowBlink::Message
                     raise Error.new "value unacceptable"
                 end
             end
-
-            def value
-                @value
-            end
-
+            
             def initialize(value)
-               self.value = value
+                if value
+                    set(value)
+                else
+                    @value = nil
+                end                    
             end
 
             def to_compact
-                SlowBlink::CompactEncoder::putString(@value)
+                putString(@value)
             end
 
         end
