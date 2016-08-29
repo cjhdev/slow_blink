@@ -18,23 +18,12 @@ OrderExecuted/0x4c ->
     u32 MatchId
 eos
 
-schema = Schema.parse(rawSchema)
+schema = Schema.new(SchemaBuffer.new(rawSchema))
 
-# one message shall be 10 groups of input data (note. we don't bother changing the field values)
-data = Array.new(10) do
-    {
-        "$type" => "OrderExecuted",
-        "Symbol" => "SPY",
-        "OrderId" => 4469263,
-        "Price" => 13550,
-        "Qty" => 200,
-        "MatchId" => 6902
-    }
-end
+model = Message::Model.new(schema)
+input = "\x0b\x4c\x05hello\x00\x01\x02\x03"
 
-compact = schema.to_compact(data)
-
-CYCLES = 1000
+CYCLES = 10000
 
 puts "real time measurements averaged over "
 
@@ -43,25 +32,26 @@ to_compact=0
 from_compact=0
 
 CYCLES.times do
-    parse += Benchmark.realtime { Schema.parse(rawSchema) }
+    parse += Benchmark.realtime { Message::Model.new(Schema.new(SchemaBuffer.new(rawSchema))) }
 end
-
+=begin
 CYCLES.times do
     to_compact += Benchmark.realtime { schema.to_compact(data) }
 end
+=end
 
 CYCLES.times do
-    from_compact += Benchmark.realtime { schema.from_compact(compact) }
+    from_compact += Benchmark.realtime { model.from_compact(input.dup) }
 end
 
 avg_parse = parse / CYCLES
-avg_to_compact = to_compact / CYCLES
+#avg_to_compact = to_compact / CYCLES
 avg_from_compact = from_compact / CYCLES
 
 puts "#{(1/avg_parse).round(2)} schema/s (parse)"
-puts "#{(1/avg_to_compact).round(2)} message/s (to_compact)"
+#puts "#{(1/avg_to_compact).round(2)} message/s (to_compact)"
 puts "#{(1/avg_from_compact).round(2)} message/s (from_compact) "
 
-puts "#{(1/avg_to_compact*compact.size).round} bytes/s (to_compact)"
-puts "#{(1/avg_from_compact*compact.size).round} bytes/s (from_compact) "
+#puts "#{(1/avg_to_compact*compact.size).round} bytes/s (to_compact)"
+puts "#{(1/avg_from_compact*input.size).round} bytes/s (from_compact) "
 

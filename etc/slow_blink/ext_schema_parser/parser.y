@@ -241,7 +241,7 @@ fields:
 field:
     annots[typeAnnot] type annots[nameAnnot] nameWithId opt
     {
-        VALUE args[] = {$nameWithId, $type, $opt, rb_funcall($type, rb_intern("location"), 0)};        
+        VALUE args[] = {$nameWithId, $type, $opt, newLocation(filename, &@type)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
 
         rb_funcall($$, rb_intern("annote"), 1, $typeAnnot);
@@ -296,7 +296,7 @@ single:
 sequence:
     single '[' ']'
     {
-        VALUE args[] = {$single, rb_funcall($single, rb_intern("location"), 0)};
+        VALUE args[] = {$single, newLocation(filename, &@single)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSEQUENCE);
     }
     ;
