@@ -21,6 +21,9 @@ module SlowBlink
 
     module Message
 
+        class Error < Exception
+        end
+
         class Model
 
             # Initialise a message model from a schema
@@ -31,7 +34,7 @@ module SlowBlink
                 @schema = schema
                 @groups = {}                
                 schema.groups.each do |id, g|
-                    @groups[id] = model_group(false, g)                    
+                    @groups[id] = _model_group(false, g)                    
                 end                
                 groups = @groups
                 @top = Class.new do
@@ -55,7 +58,7 @@ module SlowBlink
             def group(name, &block)
                 group = @top.groups.values.detect{|g|g.name == name}
                 if group                    
-                    result = group.new(nil)
+                    result = @top.new(group.new(nil))
                     result.instance_exec(&block)
                     result
                 else
@@ -67,37 +70,37 @@ module SlowBlink
                 if block.nil?
                     raise                    
                 end
-                result = self.instance_exec(&block)                
+                result = self.instance_exec(&block)
             end    
 
             # @param group [Group]
-            def model_group(opt, group)
+            def _model_group(opt, group)
                 this = self
                 klass = Class.new do
                     @name = group.nameWithID.name
                     @id = group.nameWithID.id
                     @opt = opt
                     @fields = group.fields.inject([]) do |fields, f|
-                        fields << this.model_field(f)                        
+                        fields << this._model_field(f)                        
                     end
                     extend StaticGroup::CLASS
                     include StaticGroup::INSTANCE
                 end            
             end
 
-            def model_field(field)
+            def _model_field(field)
                 this = self
                 klass = Class.new do
                     @opt = field.opt?
                     @name = field.nameWithID.name
                     @id = field.nameWithID.id
-                    @type = this.model_type(field)
+                    @type = this._model_type(field)
                     include Field::INSTANCE
                     extend Field::CLASS
                 end                
             end
 
-            def model_type(field)
+            def _model_type(field)
                 type = field.type
                 name = field.nameWithID.name    
                 case type.class
@@ -131,10 +134,10 @@ module SlowBlink
                                 include DynamicGroup::INSTANCE
                             end                               
                         else
-                            model_group(field.opt?, type.ref)
+                            _model_group(field.opt?, type.ref)
                         end
                     else
-                        model_type(opt, type.ref)
+                        _model_type(opt, type.ref)
                     end                        
                 else                        
                     return Class.new do

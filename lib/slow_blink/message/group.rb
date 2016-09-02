@@ -173,9 +173,9 @@ module SlowBlink::Message
                 @value = value
             end
 
-            def to_compact(out)
+            def to_compact(out="")
                 if @value
-                    group = @value.to_compact("".putU64(@value.id))
+                    group = @value.to_compact("".putU64(@value.class.id))
                     out.putU32(group.size)
                     out << group                
                 else
