@@ -31,7 +31,7 @@ class TestModel < Test::Unit::TestCase
             u64 OrderId,
             u32 Price,
             u32 Qty,
-            u32 MatchId
+            u8 MatchId
         eos
         @schema = Schema.new(SchemaBuffer.new(rawSchema))
     end
@@ -70,11 +70,11 @@ class TestModel < Test::Unit::TestCase
         assert_equal(42, message.field("Qty").get)
         assert_equal(42, message.field("MatchId").get)
 
-        expected = "\x09\x4c\x03hey\x2a\x2a\2a\x2a"
-        
-        #output = message.to_compact
+        expected = "\x09\x4c\x03hey\x2a\x2a\x2a\x2a"
 
-        #assert_equal(expected, output)
+        output = message.to_compact
+
+        assert_equal(expected, output)
 
     end
 
