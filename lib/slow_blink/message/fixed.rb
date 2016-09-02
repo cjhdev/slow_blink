@@ -23,13 +23,11 @@ module SlowBlink::Message
 
         module CLASS
 
-            include SlowBlink::CompactEncoder
-
             def from_compact!(input)
                 if opt?
-                    self.new(getFixedOptional!(input))
+                    self.new(input.getFixedOptional!)
                 else
-                    self.new(getFixed!(input))
+                    self.new(input.getFixed!)
                 end
             end
 
@@ -40,8 +38,6 @@ module SlowBlink::Message
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             def set(value)
                 if value
@@ -73,11 +69,11 @@ module SlowBlink::Message
                 end
             end
 
-            def to_compact
+            def to_compact(out)
                 if self.opt?
-                    putFixedOptional(@value)
+                    out.putFixedOptional(@value)
                 else
-                    putFixed(@value)
+                    out.putFixed(@value)
                 end
             end
 

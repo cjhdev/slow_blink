@@ -27,10 +27,11 @@ class TestTypes < Test::Unit::TestCase
     def test_bool
         input = "test/0 -> bool test"
         schema = Schema.new(SchemaBuffer.new(input))
-
         assert_equal("test", schema.ns[nil].group("test").field("test").nameWithID.name)
         assert_equal(nil, schema.ns[nil].group("test").field("test").nameWithID.id)
         assert_equal(BOOLEAN, schema.ns[nil].group("test").field("test").type.class)
+        assert_equal({}, schema.ns[nil].group("test").annotes)
+        assert_equal({}, schema.ns[nil].group("test").field("test").annotes)
     end
 
     def test_u8

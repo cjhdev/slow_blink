@@ -29,9 +29,6 @@ module SlowBlink
         # @return [nil]
         attr_reader :id
 
-        # @return [String, nil]
-        attr_reader :namespace
-
         # @private
         #
         # @param name [String]
@@ -39,12 +36,7 @@ module SlowBlink
         def initialize(name, id)
             @annotes = {}
             @name = name
-            @id = id
-            if name.split(":").size > 1
-                @namespace = name.split(":").first
-            else
-                @namespace = nil
-            end               
+            @id = id            
         end
 
         # @private

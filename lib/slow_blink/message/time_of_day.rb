@@ -21,21 +21,15 @@ module SlowBlink::Message
 
     module TIME_OF_DAY_MILLI
 
-        
-
         module CLASS
 
-            include SlowBlink::CompactEncoder
-
             def from_compact!(input)
-                self.new(getU32!(input))
+                self.new(input.get32!)
             end
         
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             def set(value)
             end
@@ -53,17 +47,17 @@ module SlowBlink::Message
             end
 
             # @private
-            def to_compact(input, **opts)
+            def to_compact(out, input, **opts)
                 if input.kind_of? Integer
                     if input < 86400000
-                        putU32(input)
+                        out.putU32(input)
                     else
                         raise Error.new "input out of range"
                     end
                 elsif input.kind_of? Time
-                    putU32(input.to_i)
+                    out.putU32(input.to_i)
                 elsif opts[:optional] and input.nil?
-                    putU32(nil)
+                    out.putU32(nil)
                 else
                     raise Error.new "expecting time of day in milliseconds, got #{input}"
                 end                
@@ -74,23 +68,18 @@ module SlowBlink::Message
     end
 
     module TIME_OF_DAY_NANO
-
-        
-
+    
         module CLASS
-
-            include SlowBlink::CompactEncoder
-
+            
             def from_compact!(input)
-                self.new(getU32!(input))
+                self.new(input.getU32!)
             end
             
         end
 
         module INSTANCE
 
-            include SlowBlink::CompactEncoder
-
+        
             def set(value)
             end
 
@@ -107,17 +96,17 @@ module SlowBlink::Message
             end
 
             # @private
-            def to_compact(input, **opts)
+            def to_compact(out, input, **opts)
                 if input.kind_of? Integer
                     if input < 86400000000000
-                        putU64(input)
+                        out.putU64(input)
                     else
                         raise Error.new "input out of range"
                     end
                 elsif input.kind_of? Time
-                    putU64(input.to_i)
+                    out.putU64(input.to_i)
                 elsif opts[:optional] and input.nil?
-                    putU64(nil)
+                    out.putU64(nil)
                 else
                     raise Error.new "expecting time of day in nanoseconds, got #{input}"
                 end                

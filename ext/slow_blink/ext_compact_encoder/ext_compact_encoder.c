@@ -50,7 +50,7 @@
 static VALUE putNull(VALUE self);
 
 static VALUE putPresent(VALUE self, VALUE val);
-static VALUE getPresent(VALUE self, VALUE input);
+static VALUE getPresent(VALUE self);
 
 static VALUE putU8(VALUE self, VALUE val);
 static VALUE putU16(VALUE self, VALUE val);
@@ -68,23 +68,23 @@ static VALUE putString(VALUE self, VALUE val);
 static VALUE putFixed(VALUE self, VALUE val);
 static VALUE putFixedOptional(VALUE self, VALUE val);
 
-static VALUE getU8(VALUE self, VALUE input);
-static VALUE getU16(VALUE self, VALUE input);
-static VALUE getU32(VALUE self, VALUE input);
-static VALUE getU64(VALUE self, VALUE input);
-static VALUE getI8(VALUE self, VALUE input);
-static VALUE getI16(VALUE self, VALUE input);
-static VALUE getI32(VALUE self, VALUE input);
-static VALUE getI64(VALUE self, VALUE input);
-static VALUE getF64(VALUE self, VALUE input);
-static VALUE getBool(VALUE self, VALUE input);
+static VALUE getU8(VALUE self);
+static VALUE getU16(VALUE self);
+static VALUE getU32(VALUE self);
+static VALUE getU64(VALUE self);
+static VALUE getI8(VALUE self);
+static VALUE getI16(VALUE self);
+static VALUE getI32(VALUE self);
+static VALUE getI64(VALUE self);
+static VALUE getF64(VALUE self);
+static VALUE getBool(VALUE self);
 
-static VALUE getBinary(VALUE self, VALUE input);
-static VALUE getString(VALUE self, VALUE input);
-static VALUE getFixed(VALUE self, VALUE input, VALUE size);
-static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size);
+static VALUE getBinary(VALUE self);
+static VALUE getString(VALUE self);
+static VALUE getFixed(VALUE self, VALUE size);
+static VALUE getFixedOptional(VALUE self, VALUE size);
 
-static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned);
+static VALUE putInt(VALUE self, VALUE val, int64_t min, int64_t max, bool isSigned);
 static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned);
 
 /* static variables ***************************************************/
@@ -96,88 +96,84 @@ static VALUE cError;
 void Init_ext_compact_encoder(void)
 {
     VALUE cSlowBlink;
-    VALUE cCompactEncoder;
 
     cSlowBlink = rb_define_module("SlowBlink");
     cError = rb_const_get(cSlowBlink, rb_intern("Error"));
     
-    cCompactEncoder = rb_define_module_under(cSlowBlink, "CompactEncoder");
+    rb_define_method(rb_cString, "putNull", putNull, 0);
+    rb_define_method(rb_cString, "putPresent", putPresent, 0);
+    rb_define_method(rb_cString, "getPresent", getPresent, 0);
 
-    rb_define_module_function(cCompactEncoder, "putNull", putNull, 0);
-    rb_define_module_function(cCompactEncoder, "putPresent", putPresent, 1);
-    rb_define_module_function(cCompactEncoder, "getPresent", getPresent, 1);
+    rb_define_method(rb_cString, "putU8", putU8, 1);
+    rb_define_method(rb_cString, "putU16", putU16, 1);
+    rb_define_method(rb_cString, "putU32", putU32, 1);
+    rb_define_method(rb_cString, "putU64", putU64, 1);
+    rb_define_method(rb_cString, "putI8", putI8, 1);
+    rb_define_method(rb_cString, "putI16", putI16, 1);
+    rb_define_method(rb_cString, "putI32", putI32, 1);
+    rb_define_method(rb_cString, "putI64", putI64, 1);
 
-    rb_define_module_function(cCompactEncoder, "putU8", putU8, 1);
-    rb_define_module_function(cCompactEncoder, "putU16", putU16, 1);
-    rb_define_module_function(cCompactEncoder, "putU32", putU32, 1);
-    rb_define_module_function(cCompactEncoder, "putU64", putU64, 1);
-    rb_define_module_function(cCompactEncoder, "putI8", putI8, 1);
-    rb_define_module_function(cCompactEncoder, "putI16", putI16, 1);
-    rb_define_module_function(cCompactEncoder, "putI32", putI32, 1);
-    rb_define_module_function(cCompactEncoder, "putI64", putI64, 1);
+    rb_define_method(rb_cString, "putF64", putF64, 1);
 
-    rb_define_module_function(cCompactEncoder, "putF64", putF64, 1);
+    rb_define_method(rb_cString, "putBool", putBool, 1);
 
-    rb_define_module_function(cCompactEncoder, "putBool", putBool, 1);
+    rb_define_method(rb_cString, "putString", putString, 1);
+    rb_define_method(rb_cString, "putBinary", putBinary, 1);
+    rb_define_method(rb_cString, "putFixed", putFixed, 1);
+    rb_define_method(rb_cString, "putFixedOptional", putFixedOptional, 1);
 
-    rb_define_module_function(cCompactEncoder, "putString", putString, 1);
-    rb_define_module_function(cCompactEncoder, "putBinary", putBinary, 1);
-    rb_define_module_function(cCompactEncoder, "putFixed", putFixed, 1);
-    rb_define_module_function(cCompactEncoder, "putFixedOptional", putFixedOptional, 1);
+    rb_define_method(rb_cString, "getU8!", getU8, 0);
+    rb_define_method(rb_cString, "getU16!", getU16, 0);
+    rb_define_method(rb_cString, "getU32!", getU32, 0);
+    rb_define_method(rb_cString, "getU64!", getU64, 0);
+    rb_define_method(rb_cString, "getI8!", getI8, 0);
+    rb_define_method(rb_cString, "getI16!", getI16, 0);
+    rb_define_method(rb_cString, "getI32!", getI32, 0);
+    rb_define_method(rb_cString, "getI64!", getI64, 0);
 
-    rb_define_module_function(cCompactEncoder, "getU8!", getU8, 1);
-    rb_define_module_function(cCompactEncoder, "getU16!", getU16, 1);
-    rb_define_module_function(cCompactEncoder, "getU32!", getU32, 1);
-    rb_define_module_function(cCompactEncoder, "getU64!", getU64, 1);
-    rb_define_module_function(cCompactEncoder, "getI8!", getI8, 1);
-    rb_define_module_function(cCompactEncoder, "getI16!", getI16, 1);
-    rb_define_module_function(cCompactEncoder, "getI32!", getI32, 1);
-    rb_define_module_function(cCompactEncoder, "getI64!", getI64, 1);
+    rb_define_method(rb_cString, "getF64!", getF64, 0);
 
-    rb_define_module_function(cCompactEncoder, "getF64!", getF64, 1);
+    rb_define_method(rb_cString, "getBool!", getBool, 0);
 
-    rb_define_module_function(cCompactEncoder, "getBool!", getBool, 1);
-
-    rb_define_module_function(cCompactEncoder, "getString!", getString, 1);    
-    rb_define_module_function(cCompactEncoder, "getBinary!", getBinary, 1);    
-    rb_define_module_function(cCompactEncoder, "getFixed!", getFixed, 2);    
-    rb_define_module_function(cCompactEncoder, "getFixedOptional!", getFixedOptional, 2);    
+    rb_define_method(rb_cString, "getString!", getString, 0);    
+    rb_define_method(rb_cString, "getBinary!", getBinary, 0);    
+    rb_define_method(rb_cString, "getFixed!", getFixed, 1);    
+    rb_define_method(rb_cString, "getFixedOptional!", getFixedOptional, 1);    
 }
 
 /* static functions ***************************************************/
 
 static VALUE putU8(VALUE self, VALUE val)
 {
-    return putInt(val, 0, MAXU8, false);
+    return putInt(self, val, 0, MAXU8, false);
 }
-
 static VALUE putU16(VALUE self, VALUE val)
 {
-    return putInt(val, 0, MAXU16, false);
+    return putInt(self, val, 0, MAXU16, false);
 }
 static VALUE putU32(VALUE self, VALUE val)
 {
-    return putInt(val, 0, MAXU32, false);
+    return putInt(self, val, 0, MAXU32, false);
 }
 static VALUE putU64(VALUE self, VALUE val)
 {
-    return putInt(val, 0, MAXU64, false);
+    return putInt(self, val, 0, MAXU64, false);
 }
 static VALUE putI8(VALUE self, VALUE val)
 {
-    return putInt(val, MIN8, MAX8, true);
+    return putInt(self, val, MIN8, MAX8, true);
 }
 static VALUE putI16(VALUE self, VALUE val)
 {
-    return putInt(val, MIN16, MAX16, true);
+    return putInt(self, val, MIN16, MAX16, true);
 }
 static VALUE putI32(VALUE self, VALUE val)
 {
-    return putInt(val, MIN32, MAX32, true);
+    return putInt(self, val, MIN32, MAX32, true);
 }
 static VALUE putI64(VALUE self, VALUE val)
 {
-    return putInt(val, MIN64, MAX64, true);
+    return putInt(self, val, MIN64, MAX64, true);
 }
 static VALUE putF64(VALUE self, VALUE val)
 {    
@@ -191,7 +187,7 @@ static VALUE putF64(VALUE self, VALUE val)
     else{
 
         double value = NUM2DBL(val);
-        retval = rb_str_new((const char *)out, BLINK_putVLC(*((uint64_t *)(&value)), false, out, sizeof(out)));
+        retval = rb_str_buf_cat(self, (const char *)out, BLINK_putVLC(*((uint64_t *)(&value)), false, out, sizeof(out)));
     }
 
     return retval;
@@ -216,7 +212,7 @@ static VALUE putBool(VALUE self, VALUE val)
 static VALUE putNull(VALUE self)
 {
     uint8_t str[] = {0xc0};
-    return rb_str_new((const char *)str, sizeof(str));
+    return rb_str_buf_cat(self, (const char *)str, sizeof(str));
 }
 
 static VALUE putPresent(VALUE self, VALUE val)
@@ -230,7 +226,7 @@ static VALUE putPresent(VALUE self, VALUE val)
     else{
 
         uint8_t str[] = {0x1};
-        retval = rb_str_new((const char *)str, sizeof(str));
+        retval = rb_str_buf_cat(self, (const char *)str, sizeof(str));
     }
 
     return retval;
@@ -247,7 +243,8 @@ static VALUE putBinary(VALUE self, VALUE val)
     else{
 
         retval = putU32(self, UINT2NUM(RSTRING_LEN(val)));
-        rb_str_concat(retval, val);        
+        retval = rb_str_concat(retval, val);        
+
     }
 
     return retval;
@@ -282,14 +279,14 @@ static VALUE putFixed(VALUE self, VALUE val)
     return rb_str_dup(val);
 }
 
-static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned)
+static VALUE putInt(VALUE self, VALUE val, int64_t min, int64_t max, bool isSigned)
 {
     uint8_t out[10U];
     VALUE retval;
 
     if(val == Qnil){
 
-        retval = putNull(Qnil);
+        retval = putNull(self);
     }
     else{
 
@@ -302,7 +299,7 @@ static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned)
                 rb_raise(cError, "out of range");
             }
 
-            retval = rb_str_new((const char *)out, BLINK_putVLC((uint64_t)value, true, out, sizeof(out)));
+            retval = rb_str_buf_cat(self, (const char *)out, BLINK_putVLC((uint64_t)value, true, out, sizeof(out)));
         }
         else{
 
@@ -313,65 +310,65 @@ static VALUE putInt(VALUE val, int64_t min, int64_t max, bool isSigned)
                 rb_raise(cError, "out of range");
             }
 
-            retval = rb_str_new((const char *)out, BLINK_putVLC(value, false, out, sizeof(out)));
+            retval = rb_str_buf_cat(self, (const char *)out, BLINK_putVLC(value, false, out, sizeof(out)));
         }
     }
 
     return retval;
 }
 
-static VALUE getU8(VALUE self, VALUE input)
+static VALUE getU8(VALUE self)
 {
-    return getInt(input, 0, MAXU8, false);
+    return getInt(self, 0, MAXU8, false);
 }
 
-static VALUE getU16(VALUE self, VALUE input)
+static VALUE getU16(VALUE self)
 {
-    return getInt(input, 0, MAXU16, false);
+    return getInt(self, 0, MAXU16, false);
 }
 
-static VALUE getU32(VALUE self, VALUE input)
+static VALUE getU32(VALUE self)
 {
-    return getInt(input, 0, MAXU32, false);
+    return getInt(self, 0, MAXU32, false);
 }
 
-static VALUE getU64(VALUE self, VALUE input)
+static VALUE getU64(VALUE self)
 {
-    return getInt(input, 0, MAXU64, false);
+    return getInt(self, 0, MAXU64, false);
 }
 
-static VALUE getI8(VALUE self, VALUE input)
+static VALUE getI8(VALUE self)
 {
-    return getInt(input, MIN8, MAX8, true);
+    return getInt(self, MIN8, MAX8, true);
 }
 
-static VALUE getI16(VALUE self, VALUE input)
+static VALUE getI16(VALUE self)
 {
-    return getInt(input, MIN16, MAX16, true);
+    return getInt(self, MIN16, MAX16, true);
 }
 
-static VALUE getI32(VALUE self, VALUE input)
+static VALUE getI32(VALUE self)
 {
-    return getInt(input, MIN32, MAX32, true);
+    return getInt(self, MIN32, MAX32, true);
 }
 
-static VALUE getI64(VALUE self, VALUE input)
+static VALUE getI64(VALUE self)
 {
-    return getInt(input, MIN64, MAX64, true);
+    return getInt(self, MIN64, MAX64, true);
 }
 
-static VALUE getF64(VALUE self, VALUE input)
+static VALUE getF64(VALUE self)
 {
     bool isNull;
     double out;
     uint32_t ret;
     VALUE retval = Qnil;
 
-    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(input), RSTRING_LEN(input), false, (uint64_t *)&out, &isNull);
+    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(self), RSTRING_LEN(self), false, (uint64_t *)&out, &isNull);
 
     if(ret > 0){
 
-        rb_str_drop_bytes(input, ret);
+        rb_str_drop_bytes(self, ret);
         if(!isNull){
 
             retval = rb_float_new(out);
@@ -385,9 +382,9 @@ static VALUE getF64(VALUE self, VALUE input)
     return retval;
 }
 
-static VALUE getPresent(VALUE self, VALUE input)
+static VALUE getPresent(VALUE self)
 {
-    VALUE retval = getInt(input, 0, 1, false);
+    VALUE retval = getInt(self, 0, 1, false);
 
     if(retval != Qnil){
 
@@ -397,10 +394,10 @@ static VALUE getPresent(VALUE self, VALUE input)
     return retval;    
 }
 
-static VALUE getBool(VALUE self, VALUE input)
+static VALUE getBool(VALUE self)
 {
     VALUE retval;
-    VALUE value = getInt(input, 0, MAXU8, false);
+    VALUE value = getInt(self, 0, MAXU8, false);
 
     if(value == UINT2NUM(0)){
 
@@ -418,31 +415,27 @@ static VALUE getBool(VALUE self, VALUE input)
     return retval;
 }
 
-static VALUE getBinary(VALUE self, VALUE input)
+static VALUE getBinary(VALUE self)
 {
     VALUE retval = Qnil;
-    VALUE size = getInt(input, 0, MAXU32, false);
+    VALUE size = getInt(self, 0, MAXU32, false);
 
     if(size != Qnil){
 
-        retval = rb_str_substr(input, 0, NUM2UINT(size));
-
-        assert(retval != Qnil);
-
-        if(RSTRING_LEN(retval) != NUM2UINT(size)){
-
+        if(NUM2UINT(size) > RSTRING_LEN(self)){
             rb_raise(cError, "S1");
         }
-        
-        rb_str_drop_bytes(input, NUM2UINT(size));
+
+        retval = rb_str_substr(self, 0, NUM2UINT(size));
+        rb_str_drop_bytes(self, NUM2UINT(size));
     }
 
     return retval;
 }
 
-static VALUE getString(VALUE self, VALUE input)
+static VALUE getString(VALUE self)
 {
-    VALUE retval = getBinary(self, input);
+    VALUE retval = getBinary(self);
 
     if(retval != Qnil){
 
@@ -452,34 +445,33 @@ static VALUE getString(VALUE self, VALUE input)
     return retval;
 }
 
-static VALUE getFixed(VALUE self, VALUE input, VALUE size)
+static VALUE getFixed(VALUE self, VALUE size)
 {
     VALUE retval;
 
-    retval = rb_str_substr(input, 0, NUM2UINT(size));
-
-    if(RSTRING_LEN(retval) != NUM2UINT(size)){
+    if(NUM2UINT(size) > RSTRING_LEN(self)){
 
         rb_raise(cError, "S1");
     }
 
-    rb_str_drop_bytes(input, NUM2UINT(size));
+    retval = rb_str_substr(self, 0, NUM2UINT(size));
+    rb_str_drop_bytes(self, NUM2UINT(size));
 
     return retval;
 }
 
-static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size)
+static VALUE getFixedOptional(VALUE self, VALUE size)
 {
     VALUE retval = Qnil;
     uint32_t ret;
     bool isNull;
     uint64_t present;
 
-    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(input), RSTRING_LEN(input), false, (uint64_t *)&present, &isNull);
+    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(self), RSTRING_LEN(self), false, (uint64_t *)&present, &isNull);
 
     if(ret > 0){
 
-        rb_str_drop_bytes(input, ret);
+        rb_str_drop_bytes(self, ret);
 
         if(isNull){
 
@@ -487,14 +479,14 @@ static VALUE getFixedOptional(VALUE self, VALUE input, VALUE size)
         }
         else if(present == 0x01){
 
-            retval = rb_str_substr(input, 0, NUM2UINT(size));
+            retval = rb_str_substr(self, 0, NUM2UINT(size));
 
             if(RSTRING_LEN(retval) != NUM2UINT(size)){
 
                 rb_raise(cError, "S1");
             }
 
-            rb_str_drop_bytes(input, NUM2UINT(size));
+            rb_str_drop_bytes(self, NUM2UINT(size));
         }
         else{
 

@@ -21,21 +21,15 @@ module SlowBlink::Message
 
     module ENUMERATION
 
-        
-
         module CLASS
 
-            include SlowBlink::CompactEncoder
-
             def from_compact!(input)
-                self.new(getU32!(input))
+                self.new(input.getU32!)
             end
 
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             # @param v [String]
             def set(value)
@@ -64,8 +58,8 @@ module SlowBlink::Message
                 end                
             end
             
-            def to_compact
-                putU32(@value ? self.class.symbols[@value] : nil)
+            def to_compact(out)
+                out.putU32(@value ? self.class.symbols[@value] : nil)
             end
 
         end

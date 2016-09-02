@@ -21,21 +21,17 @@ module SlowBlink::Message
 
     module MILLI_TIME
 
-        
-
         module CLASS
 
-            include SlowBlink::CompactEncoder
-
             def from_compact!(input)
-                self.new(getI64(input))
+                self.new(input.getI64!)
             end
 
         end
 
         module INSTANCE
 
-            include SlowBlink::CompactEncoder
+            
 
             def set(value)
                 if value
@@ -59,8 +55,8 @@ module SlowBlink::Message
                 end
             end
 
-            def to_compact
-                putI64(@value)
+            def to_compact(out)
+                out.putI64(@value)
             end
 
         end
@@ -68,15 +64,14 @@ module SlowBlink::Message
     end
 
     module NANO_TIME
-
         
         module CLASS
-            include SlowBlink::CompactEncoder
+            
             include SlowBlink::Message::MILLI_TIME::CLASS
         end
 
         module INSTANCE
-            include SlowBlink::CompactEncoder
+            
             include SlowBlink::Message::MILLI_TIME::INSTANCE
         end
     

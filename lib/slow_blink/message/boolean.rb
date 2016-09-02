@@ -23,17 +23,13 @@ module SlowBlink::Message
 
         module CLASS
 
-            include SlowBlink::CompactEncoder
-
             def from_compact!(input)
-                self.new(getBool!(input))
+                self.new(input.getBool!)
             end
 
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             def set(value)
                 if value
@@ -61,8 +57,8 @@ module SlowBlink::Message
                 end
             end
 
-            def to_compact
-                putBool(@value)
+            def to_compact(out)
+                out.putBool(@value)
             end
 
         end

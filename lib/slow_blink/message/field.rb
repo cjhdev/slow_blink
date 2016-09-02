@@ -44,11 +44,27 @@ module SlowBlink::Message
 
             def from_compact!(input)
                 @type.from_compact!(input)
-            end            
+            end
 
         end
 
         module INSTANCE
+
+            def initialize(value)
+                @value = self.class.type.new(value)            
+            end
+
+            def set(value)
+                @value.set(value)            
+            end
+
+            def get
+                @value.get
+            end
+
+            def to_compact(out)
+                @value.to_compact(out)
+            end
 
         end
 

@@ -207,21 +207,23 @@ groupDef:
     nameWithId ':' qName
     {
         VALUE refArgs[] = {$qName, Qfalse, newLocation(filename, &@qName)};
-        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF), rb_ary_new(), newLocation(filename, &@$)};        
+        VALUE ref = rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF);
+        VALUE args[] = {$nameWithId, ref, rb_ary_new(), newLocation(filename, &@$)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     |
     nameWithId ':' qName RIGHT_ARROW fields
     {
         VALUE refArgs[] = {$qName, Qfalse, newLocation(filename, &@qName)};
-        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF), $fields, newLocation(filename, &@$)};        
+        VALUE ref = rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF);
+        VALUE args[] = {$nameWithId, ref, $fields, newLocation(filename, &@$)};        
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
     |
     nameWithId RIGHT_ARROW fields
     {
         VALUE args[] = {$nameWithId, Qnil, $fields, newLocation(filename, &@$)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
+        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cGroup);
     }
     ;
 
@@ -229,7 +231,7 @@ fields:
     field
     {
         $$ = rb_ary_new();
-        rb_ary_push($$, $field);
+        rb_ary_push($$, $field);        
     }
     |
     fields ',' field
@@ -531,7 +533,7 @@ annotList:
 annot:
     '@' qNameOrKeyword '=' literal
     {
-        VALUE args[] = {$qNameOrKeyword, $literal, newLocation(filename, &@$)};
+        VALUE args[] = {$qNameOrKeyword, $literal, newLocation(filename, &@qNameOrKeyword)};
         $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cAnnotation);
     }
     ;
@@ -644,117 +646,117 @@ qNameOrKeyword:
 keyword:
     I8
     {
-        $$ = rb_str_new_cstr("i8");
+        $$ = rb_str_new2("i8");
     }
     |
     I16
     {
-        $$ = rb_str_new_cstr("i16");
+        $$ = rb_str_new2("i16");
     }
     |
     I32
     {
-        $$ = rb_str_new_cstr("i32");
+        $$ = rb_str_new2("i32");
     }
     |
     I64
     {
-        $$ = rb_str_new_cstr("i64");
+        $$ = rb_str_new2("i64");
     }
     |
     U8
     {
-        $$ = rb_str_new_cstr("u8");
+        $$ = rb_str_new2("u8");
     }
     |
     U16
     {
-        $$ = rb_str_new_cstr("u16");
+        $$ = rb_str_new2("u16");
     }
     |
     U32
     {
-        $$ = rb_str_new_cstr("u32");
+        $$ = rb_str_new2("u32");
     }
     |
     U64
     {
-        $$ = rb_str_new_cstr("u64");
+        $$ = rb_str_new2("u64");
     }
     |
     F64
     {
-        $$ = rb_str_new_cstr("f64");
+        $$ = rb_str_new2("f64");
     }
     |
     DECIMAL
     {
-        $$ = rb_str_new_cstr("decimal");
+        $$ = rb_str_new2("decimal");
     }
     |
     DATE
     {
-        $$ = rb_str_new_cstr("date");
+        $$ = rb_str_new2("date");
     }
     |
     TIME_OF_DAY_MILLI
     {
-        $$ = rb_str_new_cstr("timeOfDayMilli");
+        $$ = rb_str_new2("timeOfDayMilli");
     }
     |
     TIME_OF_DAY_NANO
     {
-        $$ = rb_str_new_cstr("timeOfDayNano");
+        $$ = rb_str_new2("timeOfDayNano");
     }
     |
     NANO_TIME
     {
-        $$ = rb_str_new_cstr("nanoTime");
+        $$ = rb_str_new2("nanoTime");
     }
     |
     MILLI_TIME
     {
-        $$ = rb_str_new_cstr("milliTime");
+        $$ = rb_str_new2("milliTime");
     }
     |
     BOOLEAN
     {
-        $$ = rb_str_new_cstr("boolean");
+        $$ = rb_str_new2("boolean");
     }
     |
     STRING
     {
-        $$ = rb_str_new_cstr("string");
+        $$ = rb_str_new2("string");
     }
     |
     BINARY
     {
-        $$ = rb_str_new_cstr("binary");
+        $$ = rb_str_new2("binary");
     }
     |
     FIXED
     {
-        $$ = rb_str_new_cstr("fixed");
+        $$ = rb_str_new2("fixed");
     }
     |
     OBJECT
     {
-        $$ = rb_str_new_cstr("object");
+        $$ = rb_str_new2("object");
     }
     |
     NAMESPACE
     {
-        $$ = rb_str_new_cstr("namespace");
+        $$ = rb_str_new2("namespace");
     }
     |
     TYPE
     {
-        $$ = rb_str_new_cstr("type");
+        $$ = rb_str_new2("type");
     }
     |
     SCHEMA
     {
-        $$ = rb_str_new_cstr("schema");
+        $$ = rb_str_new2("schema");
     }
     ;    
 
@@ -809,17 +811,16 @@ void Init_ext_schema_parser(void)
 {
     cSlowBlink = rb_define_module("SlowBlink");
 
-    cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
-    
     cNamespace = rb_const_get(cSlowBlink, rb_intern("Namespace"));
     cGroup = rb_const_get(cSlowBlink, rb_intern("Group"));
     cField = rb_const_get(cSlowBlink, rb_intern("Field"));
-    cDefinition = rb_const_get(cSlowBlink, rb_intern("Field"));
+    cDefinition = rb_const_get(cSlowBlink, rb_intern("Definition"));
 
+    cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
+    
     cAnnotation = rb_const_get(cSlowBlink, rb_intern("Annotation"));
     cIncrementalAnnotation = rb_const_get(cSlowBlink, rb_intern("IncrementalAnnotation"));
 
-    cDefinition = rb_const_get(cSlowBlink, rb_intern("Definition"));
     cENUMERATION = rb_const_get(cSlowBlink, rb_intern("ENUMERATION"));
     cSym = rb_const_get(cSlowBlink, rb_intern("Sym"));
 
@@ -929,15 +930,17 @@ static VALUE newLocation(VALUE filename, const YYLTYPE *location)
 {
     char msg[500];    
     int len = 0;
-
+#if 0
     if(filename != Qnil){
 
         len = snprintf(msg, sizeof(msg), "%s:%i:%i:", (const char *)RSTRING_PTR(filename), location->first_line, location->first_column);
     }
     else{
-
+#endif
         len = snprintf(msg, sizeof(msg), "%i:%i:", location->first_line, location->first_column);
+#if 0
     }
+#endif    
     
     return rb_str_new(msg, len);
 }

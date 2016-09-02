@@ -41,7 +41,7 @@ module SlowBlink
         # - These groups are of interest to message code generators
         #
         # @return [Array<Group>]
-        attr_reader :taggedGroups
+        attr_reader :groups
 
         # @return [Array<Namespace>]
         attr_reader :ns
@@ -59,7 +59,7 @@ module SlowBlink
             end
 
             @ns = {}
-            @taggedGroups = {}
+            @groups = {}
             
             errors = 0            
 
@@ -87,11 +87,11 @@ module SlowBlink
             @ns.each do |name, ns|
                 ns.groups.each do |g|
                     if g.nameWithID.id
-                        if @taggedGroups[g.nameWithID.id]
+                        if @groups[g.nameWithID.id]
                             puts "error: duplicate group id"
                             errors += 1
                         else
-                            @taggedGroups[g.nameWithID.id] = g
+                            @groups[g.nameWithID.id] = g
                         end
                     end
                 end
@@ -129,7 +129,6 @@ require 'slow_blink/schema_buffer'
 require 'slow_blink/annotatable'
 require 'slow_blink/namespace'
 require 'slow_blink/error'
-require 'slow_blink/compact_encoder'
 require 'slow_blink/ext_compact_encoder'
 require 'slow_blink/version'
 require 'slow_blink/annotation'

@@ -23,7 +23,9 @@ module SlowBlink::Message
 
         module CLASS
 
-            include SlowBlink::CompactEncoder
+            def name
+                @name
+            end
 
             def opt?
                 @opt
@@ -36,8 +38,6 @@ module SlowBlink::Message
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             def set(value)
                 if value
@@ -78,14 +78,14 @@ module SlowBlink::Message
         module CLASS    
             include SlowBlink::Message::INTEGER::CLASS
             def from_compact!(input)
-                self.new(getU8!(input))
+                self.new(input.getU8!)
             end
         end
 
         module INSTANCE
             include SlowBlink::Message::INTEGER::INSTANCE
-            def to_compact
-                putU8(@value)
+            def to_compact(out)
+                out.putU8(@value)
             end
         end
         
@@ -96,14 +96,14 @@ module SlowBlink::Message
         module CLASS
             include SlowBlink::Message::INTEGER::CLASS
             def from_compact!(input)
-                self.new(getU16!(input))
+                self.new(input.getU16!)
             end
         end
 
         module INSTANCE
             include SlowBlink::Message::INTEGER::INSTANCE
-            def to_compact
-                putU16(@value)
+            def to_compact(out)
+                out.putU16(@value)
             end
         end
     end
@@ -113,14 +113,14 @@ module SlowBlink::Message
         module CLASS            
             include SlowBlink::Message::INTEGER::CLASS
             def from_compact!(input)
-                self.new(getU32!(input))
+                self.new(input.getU32!)
             end
         end
 
         module INSTANCE
             include SlowBlink::Message::INTEGER::INSTANCE
-            def to_compact
-                putU32(@value)
+            def to_compact(out)
+                out.putU32(@value)
             end
         end
         
@@ -131,14 +131,14 @@ module SlowBlink::Message
         module CLASS
             include SlowBlink::Message::INTEGER::CLASS
             def from_compact!(input)
-                self.new(getU64!(input))
+                self.new(input.getU64!)
             end
         end
 
         module INSTANCE
             include SlowBlink::Message::INTEGER::INSTANCE
-            def to_compact
-                putU64(@value)
+            def to_compact(out)
+                out.putU64(@value)
             end
         end
         
@@ -149,14 +149,14 @@ module SlowBlink::Message
         module CLASS
             include SlowBlink::Message::INTEGER::CLASS
             def from_compact!(input)
-                self.new(getI8!(input))
+                self.new(input.getI8!)
             end
         end
 
         module INSTANCE
             include SlowBlink::Message::INTEGER::INSTANCE
-            def to_compact
-                putI8(@value)
+            def to_compact(out)
+                out.putI8(@value)
             end
         end
         
@@ -166,14 +166,14 @@ module SlowBlink::Message
         module CLASS
             include SlowBlink::Message::INTEGER::CLASS
             def from_compact!(input)
-                self.new(getI16!(input))
+                self.new(input.getI16!)
             end
         end
 
         module INSTANCE
             include SlowBlink::Message::INTEGER::INSTANCE
-            def to_compact
-                putI16(@value)
+            def to_compact(out)
+                out.putI16(@value)
             end
         end
         
@@ -184,14 +184,14 @@ module SlowBlink::Message
         module CLASS
             include SlowBlink::Message::INTEGER::CLASS
             def from_compact!(input)
-                self.new(getI32!(input))
+                self.new(input.getI32!)
             end
         end
 
         module INSTANCE
             include INTEGER::INSTANCE
-            def to_compact
-                putI32(@value)
+            def to_compact(out)
+                out.putI32(@value)
             end
         end
         
@@ -202,14 +202,14 @@ module SlowBlink::Message
         module CLASS
             include SlowBlink::Message::INTEGER::CLASS
             def from_compact!(input)
-                self.new(getI64!(input))
+                self.new(input.getI64!)
             end
         end
             
         module INSTANCE
             include SlowBlink::Message::INTEGER::INSTANCE
-            def to_compact
-                putI64(@value)
+            def to_compact(out)
+                out.putI64(@value)
             end
         end
     end

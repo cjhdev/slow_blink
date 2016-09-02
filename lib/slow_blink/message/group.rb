@@ -21,11 +21,7 @@ module SlowBlink::Message
 
     module StaticGroup
 
-        
-
         module CLASS
-
-            include SlowBlink::CompactEncoder
 
             def fields
                 @fields
@@ -35,21 +31,30 @@ module SlowBlink::Message
                 @opt
             end
 
+            def id
+                @id
+            end
+
+            def name
+                @name
+            end
+
             def from_compact!(input)
-                fields = {"$type".freeze => @name}
                 if @opt
-                    if getPresent!(input)
-                        @fields.each do |f|
-                            fields[f.name] = f.from_compact!(input)
+                    if input.getPresent!
+                        fields = {}
+                        @fields.each do |f|                    
+                            fields[f.name] = f.from_compact!(input)                            
                         end
                         self.new(fields)
                     else
                         self.new(nil)
                     end
                 else
-                    @fields.each do |f|                        
-                        fields[f.name] = f.from_compact!(input)
-                    end
+                    fields = {}
+                    @fields.each do |f|
+                        fields[f.name] = f.from_compact!(input)                        
+                    end                
                     self.new(fields)
                 end            
             end
@@ -57,8 +62,6 @@ module SlowBlink::Message
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             def set(value)
                 if value
@@ -83,8 +86,8 @@ module SlowBlink::Message
                     set(fields)            
                 else
                     @value = {}
-                    self.class.fields.each do |f|
-                        @value[f.name] = f.type.new(nil)
+                    self.class.fields.each do |f|                        
+                        @value[f.name] = f.new(nil)
                     end                
                 end                
             end
@@ -93,19 +96,22 @@ module SlowBlink::Message
                 @value[name]
             end
 
-            def to_compact
+            def to_compact(out)
                 if @value
                     if self.class.opt?
-                        @fields.inject(putPresent(true)) do |acc, f|
-                            acc << f.to_compact
+                        out.putPresent
+                        self.class.fields.each do |f|
+                            @value[f.name].to_compact(out)
                         end
+                        out                    
                     else
-                        @value.inject("") do |out, f|
-                            out << f.to_compact
+                        self.class.fields.each do |f|
+                            @value[f.name].to_compact(out)
                         end
+                        out                                        
                     end
                 else
-                    putPresent(false)
+                    out.putPresent(false)
                 end
             end
 
@@ -114,35 +120,69 @@ module SlowBlink::Message
     end
 
     # methods that act on a dynamic group class
-    module DynamicGroupClass
+    module DynamicGroup
 
-        include SlowBlink::CompactEncoder
+        module CLASS
 
-        def groups
-            @groups
-        end
-
-        def permitted
-            @permitted
-        end
-
-        def group(id)
-            if @permitted.include? id
-                @groups[id]
+            def groups
+                @groups
             end
+
+            def permitted
+                @permitted
+            end
+
+            def opt?
+                @opt
+            end
+
+            def from_compact!(input)
+                buf = input.getBinary!
+                if buf.size > 0
+                    id = buf.getU64!
+                    group = @groups[id]
+                    if group
+                        if @permitted.include? group.id
+                            self.new(group.from_compact!(buf))
+                        else
+                            raise Error.new "W15: group is known but unexpected"
+                        end
+                    else
+                        raise Error.new "W2: group is unknown"
+                    end
+                else
+                    if self == ModelInstance
+                        raise Error.new "W1: top level group cannot be null"
+                    elsif @opt
+                        self.new(nil)
+                    else
+                        raise Error.new "W5: unexpected null group reference"
+                    end                
+                end
+            end
+            
         end
 
-        def from_compact!(input)
-            groupBuf = getBinary(input)
-            if groupBuf.size == 0
-                raise Error.new "W1"    # size of zero
+        module INSTANCE
+
+            def field(name)
+                @value.field(name)
             end
-            group = self.group(getU64(input))
-            if group
-                self.new(group.from_compact!(groupBuf))
-            else
-                raise Error.new "W2"    # type identifier not know to decoder
+
+            def initialize(value)
+                @value = value
+            end
+
+            def to_compact(out)
+                if @value
+                    group = @value.to_compact("".putU64(@value.id))
+                    out.putU32(group.size)
+                    out << group                
+                else
+                    out.putU32(nil)
+                end
             end            
+
         end
 
     end

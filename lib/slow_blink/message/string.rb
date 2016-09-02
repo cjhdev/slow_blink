@@ -23,14 +23,16 @@ module SlowBlink::Message
 
         module CLASS
 
-            include SlowBlink::CompactEncoder
+            def name
+                @name
+            end
 
             def opt?
                 @opt
             end
 
             def from_compact!(input)
-                self.new(getString!(input))
+                self.new(input.getString!)
             end
 
             def size
@@ -40,8 +42,6 @@ module SlowBlink::Message
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             def get
                 @value
@@ -73,8 +73,8 @@ module SlowBlink::Message
                 end                    
             end
 
-            def to_compact
-                putString(@value)
+            def to_compact(out)
+                out.putString(@value)
             end
 
         end

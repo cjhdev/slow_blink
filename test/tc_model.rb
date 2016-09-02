@@ -53,13 +53,14 @@ class TestModel < Test::Unit::TestCase
 
     def test_new
         model = Message::Model.new(@schema)        
+        
         message = model.new do
             group "OrderExecuted" do
                 field("Symbol").set "hey"
                 field("OrderId").set 42 
                 field("Price").set 42 
                 field("Qty").set 42 
-                field("MatchId").set 42 
+                field("MatchId").set 42
             end
         end
 

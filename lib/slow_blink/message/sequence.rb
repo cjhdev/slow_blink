@@ -21,15 +21,11 @@ module SlowBlink::Message
 
     module SEQUENCE
 
-        
-
         module CLASS
-
-            include SlowBlink::CompactEncoder
-
+        
             def from_compact!(input)
                 value = []
-                size = getU32!(input)
+                size = input.getU32!
                 if size
                     while out.size < size do
                         value << @type.from_compact!(input)
@@ -43,8 +39,6 @@ module SlowBlink::Message
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             # @param v [Array,nil]
             def set(value)
@@ -74,13 +68,13 @@ module SlowBlink::Message
                 end
             end
 
-            def to_compact
+            def to_compact(out)
                 if @value                
-                    @value.inject(putU32(@value.size)) do |out, v|
+                    @value.inject(out.putU32(@value.size)) do |out, v|
                         out << v.to_compact
                     end
                 else
-                    putU32(nil)
+                    out.putU32(nil)
                 end                
             end
 

@@ -23,8 +23,6 @@ module SlowBlink::Message
 
         module CLASS
 
-            include SlowBlink::CompactEncoder
-
             def opt?
                 @opt
             end
@@ -40,8 +38,6 @@ module SlowBlink::Message
         end
 
         module INSTANCE
-
-            include SlowBlink::CompactEncoder
 
             def set(value)
                 if value
