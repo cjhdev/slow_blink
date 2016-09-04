@@ -109,7 +109,7 @@ module SlowBlink
         # @param superGroup [Group]
         # @return [true,false]
         def group_kind_of?(superGroup)
-            (self == superGroup) or (@superGroup and @superGroup.group_kind_of?(superGroup))            
+            (self == superGroup) or (@superGroup and @superGroup.ref.group_kind_of?(superGroup))            
         end
 
     end

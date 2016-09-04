@@ -32,7 +32,23 @@ module SlowBlink::Message
         module INSTANCE
 
             def set(value)
-                @value = value
+                if value
+                    if value.kind_of? Integer
+                        if value < 86400000
+                            @value = value                            
+                        else
+                            raise Error.new "input out of range"
+                        end
+                    elsif value.kind_of? Time
+                        @value = value.to_i
+                    else
+                        raise "what is this?"                        
+                    end         
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise
+                end
             end
 
             def get
@@ -48,20 +64,11 @@ module SlowBlink::Message
             end
 
             # @private
-            def to_compact(out, input, **opts)
-                if input.kind_of? Integer
-                    if input < 86400000
-                        out.putU32(input)
-                    else
-                        raise Error.new "input out of range"
-                    end
-                elsif input.kind_of? Time
-                    out.putU32(input.to_i)
-                elsif opts[:optional] and input.nil?
-                    out.putU32(nil)
-                else
-                    raise Error.new "expecting time of day in milliseconds, got #{input}"
-                end                
+            def to_compact(out)
+                out.putU32(@value)
+                
+            
+       
             end        
         
         end
@@ -73,7 +80,7 @@ module SlowBlink::Message
         module CLASS
             
             def from_compact!(input)
-                self.new(input.getU32!)
+                self.new(input.getU64!)
             end
             
         end
@@ -82,7 +89,23 @@ module SlowBlink::Message
 
         
             def set(value)
-                @value = value
+                if value
+                    if value.kind_of? Integer
+                        if value < 86400000000000
+                            @value = value                            
+                        else
+                            raise Error.new "input out of range"
+                        end
+                    elsif value.kind_of? Time
+                        @value = value.to_i
+                    else
+                        raise "what is this?"                        
+                    end         
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise
+                end
             end
 
             def get
@@ -98,20 +121,8 @@ module SlowBlink::Message
             end
 
             # @private
-            def to_compact(out, input, **opts)
-                if input.kind_of? Integer
-                    if input < 86400000000000
-                        out.putU64(input)
-                    else
-                        raise Error.new "input out of range"
-                    end
-                elsif input.kind_of? Time
-                    out.putU64(input.to_i)
-                elsif opts[:optional] and input.nil?
-                    out.putU64(nil)
-                else
-                    raise Error.new "expecting time of day in nanoseconds, got #{input}"
-                end                
+            def to_compact(out)
+                out.putU64(@value) 
             end        
         
         end

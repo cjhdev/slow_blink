@@ -37,12 +37,12 @@ module SlowBlink::Message
                     if self.symbols[value]
                         @value = self.class.symbols[value]
                     else
-                        raise Error.new "W10"
+                        raise Error.new "symbol '#{value}' not defined in enumeration"
                     end                    
                 elsif self.class.opt?
                     @value = nil
                 else
-                    raise Error
+                    raise Error.new "field may not be null"
                 end
             end
 

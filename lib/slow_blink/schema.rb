@@ -40,12 +40,12 @@ module SlowBlink
         #
         # - These groups are of interest to message code generators
         #
-        # @return [Array<Group>]
-        attr_reader :groups
+        # @return [Hash]
+        attr_reader :tagged
 
         # @return [Array<Namespace>]
         attr_reader :ns
-    
+
         # @param buffer [Array<SchemaBuffer>]
         def initialize(*buffer)
 
@@ -59,7 +59,7 @@ module SlowBlink
             end
 
             @ns = {}
-            @groups = {}
+            @tagged = {}
             
             errors = 0            
 
@@ -87,11 +87,11 @@ module SlowBlink
             @ns.each do |name, ns|
                 ns.groups.each do |g|
                     if g.nameWithID.id
-                        if @groups[g.nameWithID.id]
+                        if @tagged[g.nameWithID.id]
                             puts "error: duplicate group id"
                             errors += 1
                         else
-                            @groups[g.nameWithID.id] = g
+                            @tagged[g.nameWithID.id] = g
                         end
                     end
                 end

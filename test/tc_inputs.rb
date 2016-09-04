@@ -23,23 +23,21 @@ testClass = Class.new(Test::Unit::TestCase) do
             output = nil
 
             # run and intercept stderr output
-            #err = capture_stderr do
+            err = capture_stderr do
 
-                output = SlowBlink::Schema.new(SlowBlink::SchemaBuffer.new(inputs[__method__][:buffer], filename: inputs[__method__][:fileName]))
+                SlowBlink::Schema.new(SlowBlink::SchemaBuffer.new(inputs[__method__][:buffer], filename: inputs[__method__][:fileName]))
             
-            #end
+            end
 
             # there should have been no messages to stderr
-            #assert_equal("", err.string, "unexpected error messages")
+            assert_equal("", err.string, "unexpected error messages")
 
             # if there were messages, forward them to stderr
-            #if err.string != ""
+            if err.string != ""
 
-                #STDERR.puts err.string
+                STDERR.puts err.string
 
-            #end
-
-            #puts output.to_s
+            end
 
         end
 

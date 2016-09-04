@@ -45,7 +45,7 @@ module SlowBlink
             def initialize(schema, **opts)
                 @schema = schema
                 @groups = {}                
-                schema.groups.each do |id, g|
+                schema.tagged.each do |id, g|
                     @groups[id] = _model_group(false, g)                    
                 end                
                 groups = @groups
@@ -136,7 +136,7 @@ module SlowBlink
                 case type.class
                 when SlowBlink::OBJECT
                     groups = @groups
-                    permitted = @schema.groups.keys
+                    permitted = @schema.tagged.keys
                     klass = Class.new do
                         @opt = field.opt?
                         
@@ -149,8 +149,8 @@ module SlowBlink
                     if type.ref.kind_of? Group
                         if type.dynamic?
                             groups = @groups
-                            permitted = @schema.groups.keys
-                            @schema.groups.each do |id, g|
+                            permitted = @schema.tagged.keys
+                            @schema.tagged.each do |id, g|
                                 if g.group_kind_of?(type)
                                     permitted << id
                                 end

@@ -49,6 +49,8 @@ module SlowBlink
             super(location)
         end
 
+        
+
         # @private
         # 
         # @macro common_link
