@@ -28,11 +28,22 @@ module SlowBlink::Message
             end
 
             def from_compact!(input)
-                self.new(getBinary!(input))
+                value = input.getBinary!
+                if value
+                    if !@size or value.size <= @size
+                        self.new(value)
+                    else
+                        raise Error.new "W8: Binary value exceeds maximum size"
+                    end
+                elsif @opt
+                    self.new(nil)
+                else
+                    raise Error.new "W5: Value cannot be null"
+                end
             end
 
             def size
-                @schema.size
+                @type.size
             end
 
         end
@@ -45,15 +56,15 @@ module SlowBlink::Message
                         if !self.class.size or value.size <= self.class.size
                             @value = value
                         else
-                            raise Error.new "W8"
+                            raise Error.new "string cannot be larger than #{self.class.size} bytes"
                         end
                     else
-                        raise "expecting binary"
+                        raise Error.new "expecting a string type"
                     end
                 elsif self.class.opt?
                     @value = nil
                 else
-                    raise Error.new "value unacceptable"
+                    raise Error.new "string cannot be null"
                 end
             end
 
@@ -62,15 +73,11 @@ module SlowBlink::Message
             end
 
             def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
-                end
+                set(value)                
             end
 
-            def to_compact
-                putBinary(@value)
+            def to_compact(out)
+                out.putBinary(@value)
             end
 
         end

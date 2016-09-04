@@ -32,6 +32,7 @@ module SlowBlink::Message
         module INSTANCE
 
             def set(value)
+                @value = value
             end
 
             def get
@@ -81,6 +82,7 @@ module SlowBlink::Message
 
         
             def set(value)
+                @value = value
             end
 
             def get

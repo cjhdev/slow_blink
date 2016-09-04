@@ -24,7 +24,7 @@ class TestModel < Test::Unit::TestCase
 
     include SlowBlink
 
-    def setup
+    def test_think_blink
         rawSchema = <<-eos
         OrderExecuted/0x4c ->
             string Symbol,
@@ -33,49 +33,33 @@ class TestModel < Test::Unit::TestCase
             u32 Qty,
             u8 MatchId
         eos
-        @schema = Schema.new(SchemaBuffer.new(rawSchema))
-    end
-
-    def test_init        
-        model = Message::Model.new(@schema)
+        schema = Schema.new(SchemaBuffer.new(rawSchema))        
+        model = Message::Model.new(schema)
     end
 
     def test_from_compact
+        rawSchema = <<-eos
+        OrderExecuted/0x4c ->
+            string Symbol,
+            u64 OrderId,
+            u32 Price,
+            u32 Qty,
+            u8 MatchId
+        eos
+        schema = Schema.new(SchemaBuffer.new(rawSchema))
+    
         input = "\x0b\x4c\x05hello\x00\x01\x02\x03"
-        model = Message::Model.new(@schema)
-        message = model.from_compact(input)
-        assert_equal("hello", message.field("Symbol").get)
-        assert_equal(0, message.field("OrderId").get)
-        assert_equal(1, message.field("Price").get)
-        assert_equal(2, message.field("Qty").get)
-        assert_equal(3, message.field("MatchId").get)        
-    end
-
-    def test_new
-        model = Message::Model.new(@schema)        
+        model = Message::Model.new(schema)
         
-        message = model.new do
-            group "OrderExecuted" do
-                field("Symbol").set "hey"
-                field("OrderId").set 42 
-                field("Price").set 42 
-                field("Qty").set 42 
-                field("MatchId").set 42
-            end
-        end
-
-        assert_equal("hey", message.field("Symbol").get)
-        assert_equal(42, message.field("OrderId").get)
-        assert_equal(42, message.field("Price").get)
-        assert_equal(42, message.field("Qty").get)
-        assert_equal(42, message.field("MatchId").get)
-
-        expected = "\x09\x4c\x03hey\x2a\x2a\x2a\x2a"
-
-        output = message.to_compact
-
-        assert_equal(expected, output)
-
+        message = model.decode_compact(input)
+        
+        assert_equal("hello", message["Symbol"])
+        assert_equal(0, message["OrderId"])
+        assert_equal(1, message["Price"])
+        assert_equal(2, message["Qty"])
+        assert_equal(3, message["MatchId"])        
     end
+
+
 
 end

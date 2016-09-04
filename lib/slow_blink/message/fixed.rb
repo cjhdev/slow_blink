@@ -26,13 +26,13 @@ module SlowBlink::Message
             def from_compact!(input)
                 if opt?
                     self.new(input.getFixedOptional!)
-                else
+                else                    
                     self.new(input.getFixed!)
                 end
             end
 
             def size
-                @schema.size
+                @type.size
             end
 
         end

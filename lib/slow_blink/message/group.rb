@@ -19,6 +19,8 @@
 
 module SlowBlink::Message
 
+    TYPE_KEY = "$type".freeze
+
     module StaticGroup
 
         module CLASS
@@ -63,17 +65,32 @@ module SlowBlink::Message
 
         module INSTANCE
 
-            def set(value)
+            def []=(name, value)
+                if @value[name]
+                    @value[name].set(value)
+                else
+                    raise "field #{name} is not defined in this group"
+                end                    
+            end
+
+            def [](name)
+                if @value[name]
+                    @value[name].get
+                else
+                    raise "field #{name} is not defined in this group"
+                end
+            end
+
+            def set(value)            
                 if value
-                    if value.kind_of? Hash
-                        @value = value
-                    else
-                        raise
-                    end
+                    @value = {}
+                    self.class.fields.each do |f|
+                        @value[f.name] = value[f.name]
+                    end                    
                 elsif self.class.opt?                
                     @value = nil
                 else
-                    raise
+                    raise "this group cannot be NULL"
                 end
             end
 
@@ -92,8 +109,8 @@ module SlowBlink::Message
                 end                
             end
 
-            def field(name)
-                @value[name]
+            def fields
+                @value
             end
 
             def to_compact(out)
@@ -119,7 +136,6 @@ module SlowBlink::Message
 
     end
 
-    # methods that act on a dynamic group class
     module DynamicGroup
 
         module CLASS
@@ -145,39 +161,93 @@ module SlowBlink::Message
                         if @permitted.include? group.id
                             self.new(group.from_compact!(buf))
                         else
-                            raise Error.new "W15: group is known but unexpected"
+                            raise Error.new "W15: Group is known but unexpected"
                         end
                     else
-                        raise Error.new "W2: group is unknown"
+                        raise Error.new "W2: Group id #{group.id} is unknown"
                     end
                 else
                     if self == ModelInstance
-                        raise Error.new "W1: top level group cannot be null"
+                        raise Error.new "W1: Top level group cannot be null"
                     elsif @opt
                         self.new(nil)
                     else
-                        raise Error.new "W5: unexpected null group reference"
+                        raise Error.new "W5: Value cannot be null"
                     end                
                 end
             end
-            
+
         end
 
         module INSTANCE
 
-            def field(name)
-                @value.field(name)
+            def []=(name, value)
+                if @value
+                    @value[name] = value
+                else
+                    raise "undefined dynamic group"
+                end
+            end
+
+            def [](name)
+                if @value
+                    @value[name]
+                else
+                    raise "undefined dynamic group"
+                end
+            end
+
+            def extension(&group)
+                # define extension
+                # this is an array of OBJECTs
+                # extension do
+                #   group "name" do |g|
+                #       g["field"] = "value"
+                #   end
+                #   group "name" do |g|
+                #       g["field"] = "value"
+                #   end
+                #   ...
+                # end
+                #
+                raise                
+            end
+
+            def set(value)
+                if value
+                    if self.class.groups.values.include? value.class
+                        if self.class.permitted.include? value.class.id
+                            @value = value
+                        else
+                            raise "group is not a permitted group"
+                        end
+                    else
+                        raise "value is not a group instance"
+                    end
+                elsif self.class.opt?
+                    @value = nil
+                else
+                    raise
+                end        
+            end
+
+            def get
+                @value
             end
 
             def initialize(value)
-                @value = value
-            end
+                if value
+                    set(value)
+                else
+                    @value = nil
+                end
+            end               
 
             def to_compact(out="")
                 if @value
                     group = @value.to_compact("".putU64(@value.class.id))
                     out.putU32(group.size)
-                    out << group                
+                    out << group                    
                 else
                     out.putU32(nil)
                 end

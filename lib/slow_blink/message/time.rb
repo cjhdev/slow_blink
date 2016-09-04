@@ -31,8 +31,6 @@ module SlowBlink::Message
 
         module INSTANCE
 
-            
-
             def set(value)
                 if value
                     raise

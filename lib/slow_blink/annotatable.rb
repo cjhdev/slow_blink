@@ -37,7 +37,7 @@ module SlowBlink
                     if @nameWithID.id
                         puts "#{a.location}: warning: overriding previous id"
                     end
-                    @nameWithID.id = a                    
+                    @nameWithID.id = a.to_i             
                 end
             end
         end

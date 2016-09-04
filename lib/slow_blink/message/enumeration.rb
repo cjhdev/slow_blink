@@ -55,7 +55,7 @@ module SlowBlink::Message
                     set(value)
                 else
                     @value = nil
-                end                
+                end
             end
             
             def to_compact(out)

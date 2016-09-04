@@ -32,11 +32,22 @@ module SlowBlink::Message
             end
 
             def from_compact!(input)
-                self.new(input.getString!)
+                value = input.getString!
+                if value
+                    if !@type.size or value.size <= @type.size
+                        self.new(value)
+                    else
+                        raise Error.new "W7: String value exceeds maximum size"
+                    end
+                elsif @opt
+                    self.new(nil)
+                else
+                    raise Error.new "W5: Value cannot be null"
+                end
             end
 
             def size
-                @schema.size
+                @type.size
             end
 
         end
@@ -53,24 +64,24 @@ module SlowBlink::Message
                         if !self.class.size or value.size <= self.class.size
                             @value = value
                         else
-                            raise Error.new "W7"
+                            raise Error.new "string cannot be larger than #{self.class.size} bytes"
                         end
                     else
-                        raise "expecting string"
+                        raise Error.new "expecting a string type"
                     end
                 elsif self.class.opt?
                     @value = nil
                 else
-                    raise Error.new "value unacceptable"
+                    raise Error.new "string cannot be null"
                 end
             end
-            
+
             def initialize(value)
                 if value
                     set(value)
                 else
                     @value = nil
-                end                    
+                end
             end
 
             def to_compact(out)

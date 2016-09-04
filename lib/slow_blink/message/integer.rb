@@ -32,7 +32,7 @@ module SlowBlink::Message
             end
 
             def in_range?(value)
-                @schema.class::RANGE.cover? value
+                @type.class::RANGE.cover? value
             end
 
         end
