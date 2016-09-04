@@ -24,17 +24,4 @@ class TestIncrAnnote < Test::Unit::TestCase
 
     include SlowBlink
 
-    def test_u8_annote
-        input = "test -> u8 test test <- @note='test'"
-        Schema.new(SchemaBuffer.new(input))
-    end
-    def test_u8_value
-        input = "test -> u8 test test <- 1"
-        Schema.new(SchemaBuffer.new(input))
-    end
-    def test_u8_annote_and_value
-        input = "test -> u8 test test <- @note='test' <- 1"
-        Schema.new(SchemaBuffer.new(input))
-    end
-
 end

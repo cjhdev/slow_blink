@@ -22,15 +22,15 @@ module SlowBlink
 
         attr_reader :location
         attr_reader :id
-        attr_reader :literal
+        attr_reader :value
         
         # @param id [String] any string
-        # @param literal [String] any string
+        # @param value [String] any string
         # @param location [String]
-        def initialize(id,literal,location)
+        def initialize(id,value,location)
             @id = id
-            @literal = literal
-            @location = location
+            @value = value
+            @location = value
         end
 
     end
