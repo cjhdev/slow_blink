@@ -90,7 +90,7 @@ module SlowBlink
         def merge!(namespace)
             if namespace.name == @name
                 @incrAnnotations.concat(namespace.incrAnnotations)
-                definitions.each do |d|
+                namespace.definitions.each do |d|
                     if @definitions[d.nameWithID.name]
                         puts "#{d.location} error: duplicate definition name"
                         puts "info: name first defined at #{definitions[d.nameWithID.name].location}"

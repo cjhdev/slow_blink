@@ -30,6 +30,9 @@ module SlowBlink
             @dynamic
         end
 
+        # @return [String]
+        attr_reader :qname
+
         # @private
         #
         # @param qname [String] 
@@ -48,8 +51,6 @@ module SlowBlink
             @ref = nil
             super(location)
         end
-
-        
 
         # @private
         # 
@@ -74,13 +75,13 @@ module SlowBlink
                         end
                     end
                     if @dynamic and !ref.kind_of? Group
-                        puts "#{@location}: error: '#{@qname} *' must resolve to a Group"
+                        puts "#{@location} error: '#{@qname}' must resolve to a tagged group"
                     else
                         @ref = ref
                         @schema = schema
                     end
                 else                    
-                    puts "#{@location}: error: '#{@qname}' is not defined in schema"
+                    puts "#{@location} error: '#{@qname}' is not defined in schema"
                 end                
             end
             @schema

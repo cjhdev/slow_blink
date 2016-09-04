@@ -105,4 +105,14 @@ class TestGroup < Test::Unit::TestCase
         assert_true(schema.ns[nil].group("Test").field("three") != nil)
     end
 
+    def test_supergroup_not_group
+        input = "Test : Thing Thing = u8"        
+        schema = Schema.new(SchemaBuffer.new(input))
+    end
+
+    def test_supergroup_unresolved
+        input = "Test : Thing"        
+        schema = Schema.new(SchemaBuffer.new(input))
+    end
+
 end

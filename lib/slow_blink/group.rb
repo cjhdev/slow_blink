@@ -90,7 +90,7 @@ module SlowBlink
                             @schema = schema
                         end
                     else
-                        puts "#{@superGroup.location} error: superGroup must resolve to a group definition"
+                        puts "#{@superGroup.location} error: superGroup '#{@superGroup.qname}' must resolve to a group definition"
                     end
                 end
             end
