@@ -68,6 +68,9 @@ class TestGroup < Test::Unit::TestCase
         schema = Schema.new(SchemaBuffer.new(input))
         assert_equal(3, schema.ns[nil].group("Test").fields.size)
         assert_true(schema.ns[nil].group("Test").group_kind_of? schema.ns[nil].group("Super"))
+        assert_true(schema.ns[nil].group("Test").field("one") != nil)
+        assert_true(schema.ns[nil].group("Test").field("two") != nil)
+        assert_true(schema.ns[nil].group("Test").field("three") != nil)
     end
 
     def test_without_supergroup
@@ -75,6 +78,9 @@ class TestGroup < Test::Unit::TestCase
         schema = Schema.new(SchemaBuffer.new(input))
         assert_equal(0, schema.ns[nil].group("Test").fields.size)
         assert_true(!schema.ns[nil].group("Test").group_kind_of?(schema.ns[nil].group("Super")))
+        assert_true(schema.ns[nil].group("Test").field("one") == nil)
+        assert_true(schema.ns[nil].group("Test").field("two") == nil)
+        assert_true(schema.ns[nil].group("Test").field("three") == nil)
     end
 
     def test_with_multiple_supergroup
@@ -83,7 +89,10 @@ class TestGroup < Test::Unit::TestCase
         schema = Schema.new(SchemaBuffer.new(input))
         assert_equal(3, schema.ns[nil].group("Test").fields.size)
         assert_true(schema.ns[nil].group("Test").group_kind_of? schema.ns[nil].group("Super"))
-        assert_true(schema.ns[nil].group("Test").group_kind_of? schema.ns[nil].group("SuperSuper"))        
+        assert_true(schema.ns[nil].group("Test").group_kind_of? schema.ns[nil].group("SuperSuper"))
+        assert_true(schema.ns[nil].group("Test").field("one") != nil)
+        assert_true(schema.ns[nil].group("Test").field("two") != nil)
+        assert_true(schema.ns[nil].group("Test").field("three") != nil)
     end
 
     def test_with_mixed_supergroup
@@ -91,6 +100,9 @@ class TestGroup < Test::Unit::TestCase
         schema = Schema.new(SchemaBuffer.new(input))
         assert_equal(3, schema.ns[nil].group("Test").fields.size)
         assert_true(schema.ns[nil].group("Test").group_kind_of? schema.ns[nil].group("Super"))
+        assert_true(schema.ns[nil].group("Test").field("one") != nil)
+        assert_true(schema.ns[nil].group("Test").field("two") != nil)
+        assert_true(schema.ns[nil].group("Test").field("three") != nil)
     end
 
 end
