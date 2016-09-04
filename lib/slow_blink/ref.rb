@@ -75,13 +75,13 @@ module SlowBlink
                         end
                     end
                     if @dynamic and !ref.kind_of? Group
-                        puts "#{@location} error: '#{@qname}' must resolve to a tagged group"
+                        puts "#{@location}: error: '#{@qname}' must resolve to a group with an ID"
                     else
                         @ref = ref
                         @schema = schema
                     end
                 else                    
-                    puts "#{@location} error: '#{@qname}' is not defined in schema"
+                    puts "#{@location}: error: '#{@qname}' is not defined in schema"
                 end                
             end
             @schema

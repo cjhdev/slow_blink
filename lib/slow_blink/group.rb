@@ -76,7 +76,7 @@ module SlowBlink
                         end
                         @rawFields.each do |f|
                             if @fields[f.nameWithID.name]
-                                puts "#{f.location} error: field with duplicate name '#{f.nameWithID.name}'"
+                                puts "#{f.location}: error: duplicate field name '#{f.nameWithID.name}' (first defined at #{@fields[f.nameWithID.name].location})"
                                 errors += 1
                             else
                                 if f.link(schema, @ns, stack.dup << self)
@@ -90,7 +90,7 @@ module SlowBlink
                             @schema = schema
                         end
                     else
-                        puts "#{@superGroup.location} error: superGroup '#{@superGroup.qname}' must resolve to a group definition"
+                        puts "#{@superGroup.location}: error: superGroup '#{@superGroup.qname}' must resolve to a group definition"
                     end
                 end
             end

@@ -3847,17 +3847,15 @@ static VALUE newLocation(VALUE filename, const YYLTYPE *location)
 {
     char msg[500];    
     int len = 0;
-#if 0
+
     if(filename != Qnil){
 
-        len = snprintf(msg, sizeof(msg), "%s:%i:%i:", (const char *)RSTRING_PTR(filename), location->first_line, location->first_column);
+        len = snprintf(msg, sizeof(msg), "%s:%i:%i", (const char *)RSTRING_PTR(filename), location->first_line, location->first_column);
     }
     else{
-#endif
-        len = snprintf(msg, sizeof(msg), "%i:%i:", location->first_line, location->first_column);
-#if 0
+
+        len = snprintf(msg, sizeof(msg), "%i:%i", location->first_line, location->first_column);
     }
-#endif    
     
     return rb_str_new(msg, len);
 }

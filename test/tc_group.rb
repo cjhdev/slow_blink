@@ -106,13 +106,17 @@ class TestGroup < Test::Unit::TestCase
     end
 
     def test_supergroup_not_group
-        input = "Test : Thing Thing = u8"        
-        schema = Schema.new(SchemaBuffer.new(input))
+        input = "Test : Thing Thing = u8"
+        assert_raise do
+            Schema.new(SchemaBuffer.new(input))
+        end
     end
 
     def test_supergroup_unresolved
-        input = "Test : Thing"        
-        schema = Schema.new(SchemaBuffer.new(input))
+        input = "Test : Thing"
+        assert_raise do
+            Schema.new(SchemaBuffer.new(input))
+        end
     end
 
 end

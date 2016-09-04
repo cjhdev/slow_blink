@@ -37,7 +37,7 @@ We want to serialise a group containing a single string type field
 require 'slow_blink'
 
 # create a schema from Blink syntax
-buffer = SlowBlink::SchemaBuffer.new("Hello/0 -> string size(42) greeting")
+buffer = SlowBlink::SchemaBuffer.new("Hello/0 -> string (42) greeting")
 schema = SlowBlink::Schema.new(buffer)
 
 # generate a message model from the schema

@@ -44,13 +44,12 @@ module SlowBlink
                 @syms = {}                        
                 @rawSyms.each do |s|
                     if @syms[s.name]
-                        puts "#{s.location} error: duplicate name"
-                        puts "info: name first defined at #{@syms[s.name].location}"
+                        puts "#{s.location}: error: duplicate name '#{s.name}' (first defined at #{@syms[s.name].location})"
                         errors += 1
                     else
                         if s.val
                             if @syms.values.include? s.val
-                                puts "#{s.location} error: duplicate value"
+                                puts "#{s.location}: error: duplicate value"
                                 errors += 1
                             else
                                 value = s.val + 1

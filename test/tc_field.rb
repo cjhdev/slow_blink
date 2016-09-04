@@ -42,4 +42,12 @@ class TestField < Test::Unit::TestCase
         assert_true(schema.ns[nil].group("Test").field("one").type.ref.is_a? U8)
     end
 
+    def test_duplicate_name
+        input = "Ref = u8 Test -> Ref one, Ref one"
+        
+        assert_raise do
+            Schema.new(SchemaBuffer.new(input))
+        end
+    end
+
 end

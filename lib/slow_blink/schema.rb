@@ -99,7 +99,9 @@ module SlowBlink
 
             # resolve all references
             @ns.each do |name, ns|
-                ns.link(self)
+                if !ns.link(self)
+                    errors += 1
+                end
             end
 
             if errors > 0

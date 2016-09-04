@@ -183,7 +183,9 @@ class TestTypes < Test::Unit::TestCase
 
     def test_dynamic_not_group
         input = "thing = u8 one test -> thing * one, string two"
-        schema = Schema.new(SchemaBuffer.new(input))
+        assert_raise do
+           Schema.new(SchemaBuffer.new(input))
+        end
     end
 
     def test_any_group

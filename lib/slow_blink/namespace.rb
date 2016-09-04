@@ -67,8 +67,7 @@ module SlowBlink
                     @incrAnnotations << d
                 else
                     if @definitions[d.nameWithID.name]
-                        puts "#{d.location} error: duplicate definition name"
-                        puts "info: name first defined at #{definitions[d.nameWithID.name].location}"
+                        puts "#{d.location}: error: duplicate definition name '#{d.nameWithID.name}' (first defined at #{definitions[d.nameWithID.name].location})"
                         errors += 1
                     else
                         @definitions[d.nameWithID.name] = d
@@ -92,8 +91,7 @@ module SlowBlink
                 @incrAnnotations.concat(namespace.incrAnnotations)
                 namespace.definitions.each do |d|
                     if @definitions[d.nameWithID.name]
-                        puts "#{d.location} error: duplicate definition name"
-                        puts "info: name first defined at #{definitions[d.nameWithID.name].location}"
+                        puts "#{d.location}: error: duplicate definition name '#{d.nameWithID.name}' (first defined at #{definitions[d.nameWithID.name].location})"
                         errors += 1
                     else
                         @definitions[d.nameWithID.name] = d
