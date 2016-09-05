@@ -25,9 +25,11 @@ gem install slow_blink
 ~~~
 
 
-## Example Usage
+## Examples
 
-We want to serialise a group containing a single string type field
+### Serialise a String
+
+We want to serialise a group containing a single string type field.
 
 - The group shall be named 'Hello' and shall be serialisable as type '0'
 - The single field shall be named 'greeting' and shall be a string no larger than 42 bytes
@@ -52,9 +54,6 @@ end
 
 # serialise the message instance
 compact_form = message.to_compact
-
-# convert compact_form back to message instance
-decoded_message = model.from_compact(compact_form)
 
 ~~~
 

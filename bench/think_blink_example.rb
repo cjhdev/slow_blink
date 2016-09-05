@@ -21,12 +21,12 @@ model = Message::Model.new(Schema.new(SchemaBuffer.new(rawSchema)))
 
 CYCLES = 1000000
 
-output = model.group("OrderExecuted") do
-    field("Symbol").set "SPY"
-    field("OrderId").set 4467995
-    field("Price").set 13548
-    field("Qty").set 100
-    field("MatchId").set 6911
+output = model.group("OrderExecuted") do |g|
+    g["Symbol"] = "SPY"
+    g["OrderId"] = 4467995
+    g["Price"] = 13548
+    g["Qty"] = 100
+    g["MatchId"] = 6911
 end
 
 input = "\x0e\x4c\x03\x53\x50\x59\x82\x90\xda\x1b\xe9\x6c\x64\xb5\x7f"
@@ -38,7 +38,7 @@ puts output.to_compact("").bytes.map{ |c| sprintf("\\x%02X",c) }.join
 
 Benchmark.bm do |x|
     x.report("to_compact") { CYCLES.times { output.to_compact("") } }
-    x.report("to_compact") { CYCLES.times { model.from_compact!(input) } }
+    x.report("to_compact") { CYCLES.times { model.decode_compact(input) } }
 end
 
 =begin
