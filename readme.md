@@ -53,7 +53,7 @@ message = model.new do
 end
 
 # serialise the message instance
-compact_form = message.to_compact
+compact_form = message.encode_compact
 
 ~~~
 
