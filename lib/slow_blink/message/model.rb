@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -93,7 +95,7 @@ module SlowBlink
             # @return [Class] anonymous class extending {StaticGroup::CLASS} and including {StaticGroup::INSTANCE}            
             def _model_group(opt, group)
                 this = self
-                klass = Class.new do
+                Class.new do
                     @name = group.nameWithID.name
                     @id = group.nameWithID.id
                     @opt = opt
@@ -114,7 +116,7 @@ module SlowBlink
             # @return [Class] anonymous class extending {Field::CLASS} and including {Field::INSTANCE}            
             def _model_field(field)
                 this = self
-                klass = Class.new do
+                Class.new do
                     @opt = field.opt?
                     @name = field.nameWithID.name
                     @id = field.nameWithID.id
@@ -138,8 +140,7 @@ module SlowBlink
                     groups = @groups
                     permitted = @schema.tagged.keys
                     klass = Class.new do
-                        @opt = field.opt?
-                        
+                        @opt = field.opt?                        
                         @groups = groups
                         @permitted = permitted
                         extend DynamicGroup::CLASS

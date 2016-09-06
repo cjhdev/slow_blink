@@ -30,29 +30,27 @@ module SlowBlink
         # @param type [Type] repeating type
         # @param location [String]    
         def initialize(type, location)
-            @type = nil
-            @rawType = type
+            @type = type
             super(location)
         end
 
         # @private
         #
-        # @macro common_link
-        def link(schema, stack=[])
-            if @schema.nil?
-                case @rawType.class
-                when REF
-                    schema.definition(@rawType)
-                when SEQUENCE
-                    Log.error "error: sequence of sequence is not permitted"
-                else
-                    @type = @rawType
-                    @schema = schema
-                end
-            end
-            @schema
+        # Resolve references, enforce constraints, and detect cycles
+        #
+        # @param schema [Schema] schema this definition belongs to
+        # @param namespace [Namespace] namespace this definition belongs to
+        # @param stack [nil, Array] objects that depend on this object
+        # @param [true,false] linked?
+        def link(schema, ns, stack=[])            
+            if stack.detect{|sf| sf.is_a? SEQUENCE}
+                Log.error "#{@location}: error: a sequence type specifier must not specify a sequence as the item type"
+                false
+            else
+                @type.link(schema, ns, stack << self)            
+            end                    
         end
-
+           
     end
 
 end

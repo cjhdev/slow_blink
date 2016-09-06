@@ -48,40 +48,42 @@ module SlowBlink
         # @param location [String]
         def initialize(nameWithID, type, location)
             @annotes = {}
-            @schema = nil
             @type = type
             @location = location
             @nameWithID = nameWithID
             @ns = nil
         end
 
+        # Resolve references, enforce constraints, and detect cycles
+        #
+        # @param schema [Schema] schema this definition belongs to
+        # @param stack [nil, Array] objects that depend on this object
+        # @param [true,false] linked?
         def link(schema, stack=[])
-            if @schema.nil?                
-                # a definition can resolve to a definition only if there is a dynamic
-                # link somewhere in the chain
-                sf = stack.each
-                begin
-                    loop do
-                        if sf.next == self
-                            loop do
-                                begin
-                                    f = sf.next
-                                    if f.respond_to? "dynamic?".to_sym and f.dynamic?
-                                        return schema
-                                    end
-                                rescue StopIteration
-                                    raise Error.new "#{self.location}: error: invalid cycle detected"
-                                end                                   
-                            end
+                     
+            # a definition can resolve to a definition only if there is a dynamic
+            # link somewhere in the chain
+            sf = stack.each
+            begin
+                loop do
+                    if sf.next == self
+                        loop do
+                            begin
+                                f = sf.next
+                                if f.respond_to? "dynamic?".to_sym and f.dynamic?
+                                    return schema
+                                end
+                            rescue StopIteration
+                                raise Error.new "#{self.location}: error: invalid cycle detected"
+                            end                                   
                         end
                     end
-                rescue StopIteration
                 end
-
-                @schema = @type.link(schema, @ns, stack << self)
-                                
+            rescue StopIteration
             end
-            @schema
+
+            @type.link(schema, @ns, stack << self)
+            
         end
 
     end

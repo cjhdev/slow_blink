@@ -59,10 +59,14 @@ module SlowBlink
             @nameWithID = nameWithID
             @ns = nil
         end
-        
+
         # @private
         #
-        # @macro common_link
+        # Resolve references, enforce constraints, and detect cycles
+        #
+        # @param schema [Schema] schema this definition belongs to
+        # @param stack [nil, Array] objects that depend on this object
+        # @param [true,false] linked?
         def link(schema,stack=[])
             
             if @schema.nil?
@@ -140,8 +144,6 @@ module SlowBlink
             @fields[name]
         end
 
-        # Is this group a sub group of the super group?
-        #
         # @param superGroup [Group]
         # @return [true,false]
         def group_kind_of?(superGroup)

@@ -216,4 +216,22 @@ class TestTypes < Test::Unit::TestCase
         end        
     end
 
+    def test_sequence_sequence
+        input = "test -> i32 [] test"
+        Schema.new(SchemaBuffer.new(input))        
+    end
+
+    def test_sequence_sequence_direct
+        input =  <<-eos
+            intermediate = u32 []
+            test ->
+                intermediate [] test            
+        eos
+
+        assert_raise do
+            Schema.new(SchemaBuffer.new(input))
+        end
+        
+    end
+
 end

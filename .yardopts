@@ -1,0 +1,4 @@
+--no-private
+--title "SlowBlink: Blink Protocol for Ruby"
+lib/**/*.rb -
+readme.md license

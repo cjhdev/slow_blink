@@ -72,6 +72,8 @@ static VALUE cFieldTypeRef;
 
 static VALUE cLog;
 
+static VALUE cError;
+
 /* generated **********************************************************/
 
 %}
@@ -857,6 +859,8 @@ void Init_ext_schema_parser(void)
 
     cLog = rb_const_get(cSlowBlink, rb_intern("Log"));
 
+    cError = rb_const_get(cSlowBlink, rb_intern("Error"));
+
     rb_define_singleton_method(cNamespace, "parse", parseFileBuffer, -1);
 }
 
@@ -877,6 +881,7 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
     VALUE buffer;
     VALUE opts;
     VALUE filename;
+    int retval;
 
     rb_scan_args(argc, argv, "10:", &buffer, &opts);
 
@@ -888,12 +893,30 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
 
     if(yylex_init(&scanner) == 0){
 
-            if(yy_scan_bytes((const char *)RSTRING_PTR(buffer), RSTRING_LEN(buffer), scanner)){
+        if(yy_scan_bytes((const char *)RSTRING_PTR(buffer), RSTRING_LEN(buffer), scanner)){
 
-            yyparse(scanner, filename, &tree);
+            retval = yyparse(scanner, filename, &tree);
+
+            yylex_destroy(scanner);
+
+            switch(retval){
+            case 0:
+                break;
+            case 1:
+                rb_raise(cError, "parse error");
+                break;
+            case 2:
+                rb_bug("yyparse: bison parser reports memory exhaustion");
+                break;
+            default:
+                rb_bug("yyparse: unknown return code");
+                break;
+            }
         }
+        else{
 
-        yylex_destroy(scanner);
+            yylex_destroy(scanner);
+        }
     }
 
     return tree;

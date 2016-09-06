@@ -72,7 +72,6 @@ module SlowBlink
                         @ns[ns.name].merge!(ns)
                     rescue
                         raise
-                        error true
                     end
                 else
                     @ns[ns.name] = ns

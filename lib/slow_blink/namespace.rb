@@ -37,6 +37,8 @@ module SlowBlink
 
         # @!method self.parse(input, **opts)
         #
+        #   @private
+        #
         #   @param input [String] Blink Schema
         #   @param opts [Hash] options
         #   @option opts [String] :fileName filename to append to error message strings
@@ -85,9 +87,10 @@ module SlowBlink
             
         end
 
+        # @private
+        #
         # @param namespace [Namespace]
         def merge!(namespace)
-                  
             @incrAnnotations.concat(namespace.incrAnnotations)
             namespace.definitions.each do |d|
                 if @definitions[d.nameWithID.name]
@@ -99,25 +102,24 @@ module SlowBlink
                         @groups << d
                     end                        
                 end                    
-            end
-                
+            end                
         end
 
-        # @param schema [Schema] common schema
-        # @param stack [Array] used to detect cycles
-        def link(schema, stack=[])
-            if @schema.nil?
-                errors = 0
-                @definitions.each do |name, d|
-                    if !d.link(schema, stack.dup << self)
-                        errors += 1
-                    end                    
-                end
-                if errors == 0
-                    @schema = schema
-                end
+        # @private
+        #
+        # Resolve references, enforce constraints, and detect cycles
+        #
+        # @param schema [Schema] schema this definition belongs to
+        # @param stack [nil, Array] objects that depend on this object
+        # @param [true,false] linked?
+        def link(schema, stack=[])            
+            errors = 0
+            @definitions.each do |name, d|
+                if !d.link(schema, stack.dup << self)
+                    errors += 1
+                end                    
             end
-            @schema
+            errors == 0    
         end
 
         # @param name [String] unqualified name
