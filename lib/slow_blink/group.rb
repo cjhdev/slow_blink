@@ -81,8 +81,6 @@ module SlowBlink
                                     end
                                 rescue StopIteration
                                     raise Error.new "#{self.location}: error: invalid cycle detected"
-                                    #Log.error "#{self.location}: error: invalid cycle detected"
-                                    #return nil
                                 end
                             end
                         end
@@ -96,7 +94,7 @@ module SlowBlink
                     if !@superGroup or @superGroup.ref.is_a?(Group)
                         if @superGroup
                             if @superGroup.dynamic_reference?
-                                Log.error "#{@superGroup.location}: error: dynamic supergroup reference"
+                                Log.error "#{@superGroup.location}: error: reference to supergroup must not be dynamic"
                                 error = true                                
                             else
                                 @superGroup.ref.fields.each do |f|
@@ -107,7 +105,7 @@ module SlowBlink
                         if !error
                             @rawFields.each do |f|
                                 if @fields[f.nameWithID.name]
-                                    Log.error "#{f.location}: error: duplicate field name ('#{f.nameWithID.name}' first defined at #{@fields[f.nameWithID.name].location})"
+                                    Log.error "#{f.location}: error: field names must be unique within a group ('#{f.nameWithID.name}' first appears at #{@fields[f.nameWithID.name].location})"
                                     error = true
                                 else
                                     if f.link(schema, @ns, stack.dup << self)                                    
@@ -119,7 +117,7 @@ module SlowBlink
                             end
                         end
                     else
-                        Log.error "#{@superGroup.location}: error: supergroup reference must resolve to group definition"
+                        Log.error "#{@superGroup.location}: error: reference to supergroup must resolve to group definition"
                         error = true
                     end
                 else

@@ -91,7 +91,7 @@ module SlowBlink
                 ns.groups.each do |g|
                     if g.nameWithID.id
                         if @tagged[g.nameWithID.id]
-                            Log.error "error: duplicate group id"
+                            Log.error "error: groups that have identifiers must have unique identifiers ('#{@g.nameWithID.id}' was first assigned to '#{@tagged[g.nameWithID.id].nameWithID.name}' at #{@tagged[g.nameWithID.id].location}"
                             error = true
                         else
                             @tagged[g.nameWithID.id] = g

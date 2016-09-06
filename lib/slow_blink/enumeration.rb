@@ -44,12 +44,12 @@ module SlowBlink
                 @schema = schema
                 @rawSyms.each do |s|
                     if @syms[s.name]
-                        Log.error "#{s.location}: error: duplicate name '#{s.name}' (first defined at #{@syms[s.name].location})"
+                        Log.error "#{s.location}: error: symbols within an enumeration must have unique names ('#{s.name}' first appears at #{@syms[s.name].location})"
                         @schema = nil
                     else
                         if s.val
                             if @syms.values.include? s.val
-                                Log.error "#{s.location}: error: duplicate value"
+                                Log.error "#{s.location}: error: values of symbols must be distinct ('#{s.val}' first appears at #{@syms[s.val].location})"
                                 @schema = nil
                             else
                                 value = s.val + 1

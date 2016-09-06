@@ -88,13 +88,13 @@ module SlowBlink
                     end
                                 
                     if @dynamic and !ref.kind_of? Group
-                        Log.error "#{@location}: error: a dynamic reference must resolve to a group with an ID"
+                        Log.error "#{@location}: error: a dynamic reference must resolve to a group that has an identifier"
                     else
                         @ref = ref
                         @schema = schema
                     end
                 else                    
-                    Log.error "#{@location}: error: undefined reference ('#{@qname}' does not appear as either a group or a definition)"
+                    Log.error "#{@location}: error: unresolved reference ('#{@qname}' is not defined as a group, type, or enum)"
                 end                
             end
             @schema

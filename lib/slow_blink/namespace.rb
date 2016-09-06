@@ -67,7 +67,7 @@ module SlowBlink
                     @incrAnnotations << d
                 else
                     if @definitions[d.nameWithID.name]
-                        Log.error "#{d.location}: error: duplicate definition name ('#{d.nameWithID.name}' first defined at #{definitions[d.nameWithID.name].location})"
+                        Log.error "#{d.location}: error: definitions must have unique names ('#{d.nameWithID.name}' first appears at #{definitions[d.nameWithID.name].location})"
                         error = true
                     else
                         @definitions[d.nameWithID.name] = d
@@ -87,25 +87,20 @@ module SlowBlink
 
         # @param namespace [Namespace]
         def merge!(namespace)
-            error = false
-            if namespace.name == @name
-                @incrAnnotations.concat(namespace.incrAnnotations)
-                namespace.definitions.each do |d|
-                    if @definitions[d.nameWithID.name]
-                        Log.error "#{d.location}: error: duplicate definition name ('#{d.nameWithID.name}' first defined at #{definitions[d.nameWithID.name].location})"                        
-                    else
-                        @definitions[d.nameWithID.name] = d
-                        if d.is_a? Group
-                            @groups << d
-                        end                        
-                    end                    
-                end
-                if error
+                  
+            @incrAnnotations.concat(namespace.incrAnnotations)
+            namespace.definitions.each do |d|
+                if @definitions[d.nameWithID.name]
+                    Log.error "#{d.location}: error: definitions must have unique names ('#{d.nameWithID.name}' first appears at #{definitions[d.nameWithID.name].location})"
                     raise
-                end
-            else
-                raise "error: cannot merge different namespaces"
+                else
+                    @definitions[d.nameWithID.name] = d
+                    if d.is_a? Group
+                        @groups << d
+                    end                        
+                end                    
             end
+                
         end
 
         # @param schema [Schema] common schema

@@ -71,8 +71,6 @@ module SlowBlink
                                     end
                                 rescue StopIteration
                                     raise Error.new "#{self.location}: error: invalid cycle detected"
-                                    #Log.error "#{self.location}: error: invalid cycle detected"
-                                    #return nil
                                 end                                   
                             end
                         end
