@@ -43,18 +43,17 @@ module SlowBlink
             # Initialise a message model from a schema
             #
             # @param schema [Schema]
-            # @param opts [Hash]
-            def initialize(schema, **opts)
+            def initialize(schema)
                 @schema = schema
-                @groups = {}                
+                @taggedGroups = {}                
                 schema.tagged.each do |id, g|
-                    @groups[id] = _model_group(false, g)                    
+                    @taggedGroups[id] = _model_group(false, g)                    
                 end                
-                groups = @groups
+                taggedGroups = @taggedGroups
                 @top = Class.new do
                     @opt = false
-                    @groups = groups
-                    @permitted = groups.keys
+                    @groups = taggedGroups
+                    @permitted = taggedGroups.keys
                     extend DynamicGroup::CLASS
                     include DynamicGroup::INSTANCE
                 end                
@@ -64,10 +63,8 @@ module SlowBlink
                 @top.from_compact!(input.dup)
             end
 
-            def encode_compact(input)
-                @top.from_compact!(input)
-            end
-
+            # create an instance of group
+            #
             def group(name, &block)
                 group = @top.groups.values.detect{|g|g.name == name}
                 if group                    

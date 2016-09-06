@@ -885,6 +885,10 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
 
     rb_scan_args(argc, argv, "10:", &buffer, &opts);
 
+    if(buffer == Qnil){
+        rb_raise(cError, "error: input must be a string");
+    }
+
     if(opts == Qnil){
         opts = rb_hash_new();
     }

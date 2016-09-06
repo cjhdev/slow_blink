@@ -24,7 +24,7 @@ class TestModel < Test::Unit::TestCase
 
     include SlowBlink
 
-    def test_think_blink
+    def setup
         rawSchema = <<-eos
         OrderExecuted/0x4c ->
             string Symbol,
@@ -34,45 +34,12 @@ class TestModel < Test::Unit::TestCase
             u8 MatchId
         eos
         schema = Schema.new(SchemaBuffer.new(rawSchema))        
-        model = Message::Model.new(schema)
+        @model = Message::Model.new(schema)
     end
 
-    def test_decode_compact
-        rawSchema = <<-eos
-        OrderExecuted/0x4c ->
-            string Symbol,
-            u64 OrderId,
-            u32 Price,
-            u32 Qty,
-            u8 MatchId
-        eos
-        schema = Schema.new(SchemaBuffer.new(rawSchema))
-    
-        input = "\x0b\x4c\x05hello\x00\x01\x02\x03"
-        model = Message::Model.new(schema)
-        
-        message = model.decode_compact(input)
-        
-        assert_equal("hello", message["Symbol"])
-        assert_equal(0, message["OrderId"])
-        assert_equal(1, message["Price"])
-        assert_equal(2, message["Qty"])
-        assert_equal(3, message["MatchId"])        
-    end
+    def test_set_individual
 
-    def test_encode_compact
-        rawSchema = <<-eos
-        OrderExecuted/0x4c ->
-            string Symbol,
-            u64 OrderId,
-            u32 Price,
-            u32 Qty,
-            u8 MatchId
-        eos
-        schema = Schema.new(SchemaBuffer.new(rawSchema))        
-    
-        model = Message::Model.new(schema)                
-        message = model.new do
+        message = @model.new do
             group "OrderExecuted" do |g|
                 g["Symbol"] = "hey"
                 g["OrderId"] = 42 
@@ -86,7 +53,21 @@ class TestModel < Test::Unit::TestCase
         assert_equal(42, message["OrderId"])
         assert_equal(42, message["Price"])
         assert_equal(42, message["Qty"])
-        assert_equal(42, message["MatchId"])
+        assert_equal(42, message["MatchId"])        
+    
+    end
+
+    def test_encode_compact
+        
+        message = @model.new do
+            group "OrderExecuted" do |g|
+                g["Symbol"] = "hey"
+                g["OrderId"] = 42 
+                g["Price"] = 42 
+                g["Qty"] = 42 
+                g["MatchId"] = 42                
+            end            
+        end
 
         output = message.to_compact
         
@@ -96,6 +77,17 @@ class TestModel < Test::Unit::TestCase
 
     end
 
-
+    def test_decode_compact
+        
+        input = "\x0b\x4c\x05hello\x00\x01\x02\x03"
+        
+        message = @model.decode_compact(input)
+        
+        assert_equal("hello", message["Symbol"])
+        assert_equal(0, message["OrderId"])
+        assert_equal(1, message["Price"])
+        assert_equal(2, message["Qty"])
+        assert_equal(3, message["MatchId"])        
+    end
 
 end
