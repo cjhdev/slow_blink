@@ -40,17 +40,17 @@ module SlowBlink
         def link(schema, ns, stack=[])
             if @schema.nil?
                 value = 0
-                errors = 0
-                @syms = {}                        
+                @syms = {}
+                @schema = schema
                 @rawSyms.each do |s|
                     if @syms[s.name]
-                        puts "#{s.location}: error: duplicate name '#{s.name}' (first defined at #{@syms[s.name].location})"
-                        errors += 1
+                        Log.error "#{s.location}: error: duplicate name '#{s.name}' (first defined at #{@syms[s.name].location})"
+                        @schema = nil
                     else
                         if s.val
                             if @syms.values.include? s.val
-                                puts "#{s.location}: error: duplicate value"
-                                errors += 1
+                                Log.error "#{s.location}: error: duplicate value"
+                                @schema = nil
                             else
                                 value = s.val + 1
                             end                        
@@ -60,10 +60,7 @@ module SlowBlink
                         end
                         @syms[s.name] = s
                     end
-                end
-                if errors == 0
-                    @schema = schema
-                end
+                end                
             end
             @schema            
         end

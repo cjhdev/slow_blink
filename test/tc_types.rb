@@ -195,4 +195,25 @@ class TestTypes < Test::Unit::TestCase
         assert_equal(OBJECT, schema.ns[nil].group("test").field("one").type.class)        
     end
 
+    def test_type_direct_reference_cycle
+        input =  <<-eos
+            thing = thingref
+            thingref = thing
+        eos
+        assert_raise do
+           Schema.new(SchemaBuffer.new(input))
+        end        
+    end
+
+    def test_type_inderect_reference_cycle
+        input =  <<-eos
+            thing = intermediate
+            intermediate = thingref
+            thingref = thing
+        eos
+        assert_raise do
+           Schema.new(SchemaBuffer.new(input))
+        end        
+    end
+
 end

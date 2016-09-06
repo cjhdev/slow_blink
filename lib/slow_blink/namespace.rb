@@ -57,7 +57,7 @@ module SlowBlink
             @name = name
             @schema = nil
             
-            errors = 0
+            error = false
             
             # populate table of definitions
             # gather list of groups and incrAnnotations
@@ -67,8 +67,8 @@ module SlowBlink
                     @incrAnnotations << d
                 else
                     if @definitions[d.nameWithID.name]
-                        puts "#{d.location}: error: duplicate definition name '#{d.nameWithID.name}' (first defined at #{definitions[d.nameWithID.name].location})"
-                        errors += 1
+                        Log.error "#{d.location}: error: duplicate definition name ('#{d.nameWithID.name}' first defined at #{definitions[d.nameWithID.name].location})"
+                        error = true
                     else
                         @definitions[d.nameWithID.name] = d
                         if d.is_a? Group
@@ -79,7 +79,7 @@ module SlowBlink
                 end
             end
 
-            if errors > 0
+            if error
                 raise
             end
             
@@ -87,18 +87,21 @@ module SlowBlink
 
         # @param namespace [Namespace]
         def merge!(namespace)
+            error = false
             if namespace.name == @name
                 @incrAnnotations.concat(namespace.incrAnnotations)
                 namespace.definitions.each do |d|
                     if @definitions[d.nameWithID.name]
-                        puts "#{d.location}: error: duplicate definition name '#{d.nameWithID.name}' (first defined at #{definitions[d.nameWithID.name].location})"
-                        errors += 1
+                        Log.error "#{d.location}: error: duplicate definition name ('#{d.nameWithID.name}' first defined at #{definitions[d.nameWithID.name].location})"                        
                     else
                         @definitions[d.nameWithID.name] = d
                         if d.is_a? Group
                             @groups << d
                         end                        
                     end                    
+                end
+                if error
+                    raise
                 end
             else
                 raise "error: cannot merge different namespaces"

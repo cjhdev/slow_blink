@@ -70,7 +70,7 @@ module SlowBlink
                 group = @top.groups.values.detect{|g|g.name == name}
                 if group                    
                     top = @top.new(group.new(nil))
-                    top.instance_exec(top, &block)
+                    self.instance_exec(top, &block)
                     top
                 else
                     raise

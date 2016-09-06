@@ -119,4 +119,15 @@ class TestGroup < Test::Unit::TestCase
         end
     end
 
+    def test_supergroup_dynamic_reference
+        input =  <<-eos
+            Super
+            Intermediate = Super *
+            Test : Intermediate
+        eos
+        assert_raise do
+            Schema.new(SchemaBuffer.new(input))
+        end        
+    end
+
 end

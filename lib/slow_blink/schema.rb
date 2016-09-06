@@ -17,6 +17,8 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+require 'slow_blink/log'
+
 module SlowBlink
 
     class Schema
@@ -61,7 +63,7 @@ module SlowBlink
             @ns = {}
             @tagged = {}
             
-            errors = 0            
+            error = false          
 
             # gather and merge namespaces
             namespace.each do |ns|
@@ -69,7 +71,8 @@ module SlowBlink
                     begin
                         @ns[ns.name].merge!(ns)
                     rescue
-                        errors += 1
+                        raise
+                        error true
                     end
                 else
                     @ns[ns.name] = ns
@@ -88,8 +91,8 @@ module SlowBlink
                 ns.groups.each do |g|
                     if g.nameWithID.id
                         if @tagged[g.nameWithID.id]
-                            puts "error: duplicate group id"
-                            errors += 1
+                            Log.error "error: duplicate group id"
+                            error = true
                         else
                             @tagged[g.nameWithID.id] = g
                         end
@@ -100,12 +103,12 @@ module SlowBlink
             # resolve all references
             @ns.each do |name, ns|
                 if !ns.link(self)
-                    errors += 1
+                    error = true
                 end
             end
 
-            if errors > 0
-                raise Error.new "#{errors} errors"
+            if error
+                raise
             end
             
         end

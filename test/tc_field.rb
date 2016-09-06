@@ -50,4 +50,45 @@ class TestField < Test::Unit::TestCase
         end
     end
 
+    def test_field_direct_cycle
+        input =  <<-eos
+            test ->
+                test field
+        eos
+        assert_raise do
+            Schema.new(SchemaBuffer.new(input))
+        end    
+    end
+
+    def test_field_direct_dynamic_cycle
+        input =  <<-eos
+            test ->
+                test * field
+        eos
+        
+        Schema.new(SchemaBuffer.new(input))
+        
+    end
+
+    def test_field_indirect_cycle
+        input =  <<-eos
+            intermediate = test
+            test ->
+                intermediate field
+        eos
+        assert_raise do
+            Schema.new(SchemaBuffer.new(input))
+        end    
+    end
+
+    def test_field_indirect_dynamic_cycle
+        input =  <<-eos
+            intermediate = test *
+            test ->
+                intermediate field
+        eos
+        
+        Schema.new(SchemaBuffer.new(input))
+    end
+
 end

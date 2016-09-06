@@ -70,6 +70,8 @@ static VALUE cDefinitionTypeRef;
 static VALUE cFieldRef;
 static VALUE cFieldTypeRef;
 
+static VALUE cLog;
+
 /* generated **********************************************************/
 
 %}
@@ -853,47 +855,17 @@ void Init_ext_schema_parser(void)
     cFieldRef = rb_const_get(cSlowBlink, rb_intern("FieldRef"));
     cFieldTypeRef = rb_const_get(cSlowBlink, rb_intern("FieldTypeRef"));
 
+    cLog = rb_const_get(cSlowBlink, rb_intern("Log"));
+
     rb_define_singleton_method(cNamespace, "parse", parseFileBuffer, -1);
 }
 
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... )
 {
-    int retval;
-    VALUE rbString;
-    char error[500];
-
-    int hdrLen;
-
-    if(filename != Qnil){
-    
-        hdrLen = snprintf(error, sizeof(error), "%s:%i:%i: error: ", (const char *)RSTRING_PTR(filename), locp->first_line, locp->first_column);
-    }
-    else{
-
-        hdrLen = snprintf(error, sizeof(error), "%i:%i: error: ", locp->first_line, locp->first_column);
-    }
-
-    if((hdrLen > 0) && (hdrLen <= sizeof(error))){
-
-        va_list argptr;
-        va_start(argptr, msg);
-        retval = vsnprintf(&error[hdrLen], sizeof(error) - hdrLen, msg, argptr);
-        va_end(argptr);
-
-        if((retval > 0) && ((hdrLen + retval) <= sizeof(error))){
-
-            rbString = rb_str_new((const char *)error, (hdrLen + retval));
-            rb_io_puts(1, &rbString, rb_stderr);            
-        }
-        else{
-
-            rb_bug("yyerror buffer is too short to contain error message");
-        }
-    }
-    else{
-
-        rb_bug("yyerror buffer is too short to contain error message");
-    }
+    VALUE message = newLocation(filename, locp);
+    rb_str_append(message, rb_str_new2(": error: "));
+    rb_str_append(message, rb_str_new2(msg));
+    rb_funcall(cLog, rb_intern("error"), 1, message);
 }
 
 /* static functions ***************************************************/
@@ -904,6 +876,7 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
     VALUE tree = Qnil;
     VALUE buffer;
     VALUE opts;
+    VALUE filename;
 
     rb_scan_args(argc, argv, "10:", &buffer, &opts);
 
@@ -911,7 +884,7 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
         opts = rb_hash_new();
     }
 
-    VALUE filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
+    filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
 
     if(yylex_init(&scanner) == 0){
 

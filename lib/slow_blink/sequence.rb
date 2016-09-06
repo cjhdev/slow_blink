@@ -44,7 +44,7 @@ module SlowBlink
                 when REF
                     schema.definition(@rawType)
                 when SEQUENCE
-                    puts "error: sequence of sequence is not permitted"
+                    Log.error "error: sequence of sequence is not permitted"
                 else
                     @type = @rawType
                     @schema = schema

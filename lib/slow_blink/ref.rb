@@ -30,6 +30,13 @@ module SlowBlink
             @dynamic
         end
 
+        # Either this reference is dynamic or an intermediate reference is dynamic
+        #
+        # @return [true,false]
+        def dynamic_reference?
+            @dynamic or @dynamic_reference                           
+        end
+
         # @return [String]
         attr_reader :qname
 
@@ -49,6 +56,7 @@ module SlowBlink
             end
             @dynamic = dynamic
             @ref = nil
+            @dynamic_reference = false
             super(location)
         end
 
@@ -63,25 +71,30 @@ module SlowBlink
                     ref = ns.resolve(@name) or schema.resolve(@namespace, @name)
                 end
                 if ref and ref.link(schema, stack << self)
-                    # follow reference to get type
+                    # follow reference
                     loop do
-                        if ref.kind_of? Definition and ref.type.kind_of? REF
-                            ref = ref.type.ref
-                        else
-                            if !ref.kind_of? Group
+                        if ref.kind_of? Definition
+                            if ref.type.kind_of? REF
+                                if ref.type.dynamic?
+                                    @dynamic_reference = true
+                                end
+                                ref = ref.type.ref                                
+                                next
+                            else
                                 ref = ref.type
                             end
-                            break
                         end
+                        break
                     end
+                                
                     if @dynamic and !ref.kind_of? Group
-                        puts "#{@location}: error: '#{@qname}' must resolve to a group with an ID"
+                        Log.error "#{@location}: error: a dynamic reference must resolve to a group with an ID"
                     else
                         @ref = ref
                         @schema = schema
                     end
                 else                    
-                    puts "#{@location}: error: '#{@qname}' is not defined in schema"
+                    Log.error "#{@location}: error: undefined reference ('#{@qname}' does not appear as either a group or a definition)"
                 end                
             end
             @schema

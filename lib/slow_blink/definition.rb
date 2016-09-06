@@ -56,8 +56,32 @@ module SlowBlink
         end
 
         def link(schema, stack=[])
-            if @schema.nil?
+            if @schema.nil?                
+                # a definition can resolve to a definition only if there is a dynamic
+                # link somewhere in the chain
+                sf = stack.each
+                begin
+                    loop do
+                        if sf.next == self
+                            loop do
+                                begin
+                                    f = sf.next
+                                    if f.respond_to? "dynamic?".to_sym and f.dynamic?
+                                        return schema
+                                    end
+                                rescue StopIteration
+                                    raise Error.new "#{self.location}: error: invalid cycle detected"
+                                    #Log.error "#{self.location}: error: invalid cycle detected"
+                                    #return nil
+                                end                                   
+                            end
+                        end
+                    end
+                rescue StopIteration
+                end
+
                 @schema = @type.link(schema, @ns, stack << self)
+                                
             end
             @schema
         end

@@ -197,6 +197,10 @@ module SlowBlink::Message
                 end
             end
 
+            def group(&block)
+                
+            end
+
             def extension(&group)
                 # define extension
                 # this is an array of OBJECTs

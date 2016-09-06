@@ -118,10 +118,12 @@ static VALUE cDefinitionTypeRef;
 static VALUE cFieldRef;
 static VALUE cFieldTypeRef;
 
+static VALUE cLog;
+
 /* generated **********************************************************/
 
 
-#line 125 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:207  */
+#line 127 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:207  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -154,7 +156,7 @@ static YYLTYPE yyloc_default
 
 /* Copy the second part of user declarations.  */
 
-#line 158 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:230  */
+#line 160 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:230  */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -323,19 +325,19 @@ static const unsigned char yytranslate[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const unsigned short int yyrline[] =
 {
-       0,   127,   127,   134,   140,   148,   153,   157,   163,   170,
-     176,   182,   186,   193,   201,   207,   215,   223,   231,   237,
-     244,   255,   260,   267,   269,   273,   275,   277,   279,   281,
-     283,   285,   291,   299,   307,   313,   321,   327,   335,   343,
-     348,   355,   361,   369,   375,   381,   387,   393,   399,   405,
-     411,   417,   423,   431,   437,   443,   449,   455,   464,   470,
-     477,   483,   490,   499,   501,   506,   513,   518,   522,   528,
-     534,   542,   544,   551,   559,   561,   566,   573,   581,   586,
-     592,   598,   604,   612,   618,   625,   627,   629,   631,   635,
-     637,   641,   643,   647,   652,   657,   662,   667,   672,   677,
-     682,   687,   692,   697,   702,   707,   712,   717,   722,   727,
-     732,   737,   742,   747,   752,   757,   764,   768,   770,   774,
-     781,   785,   787,   791,   795,   799
+       0,   129,   129,   136,   142,   150,   155,   159,   165,   172,
+     178,   184,   188,   195,   203,   209,   217,   225,   233,   239,
+     246,   257,   262,   269,   271,   275,   277,   279,   281,   283,
+     285,   287,   293,   301,   309,   315,   323,   329,   337,   345,
+     350,   357,   363,   371,   377,   383,   389,   395,   401,   407,
+     413,   419,   425,   433,   439,   445,   451,   457,   466,   472,
+     479,   485,   492,   501,   503,   508,   515,   520,   524,   530,
+     536,   544,   546,   553,   561,   563,   568,   575,   583,   588,
+     594,   600,   606,   614,   620,   627,   629,   631,   633,   637,
+     639,   643,   645,   649,   654,   659,   664,   669,   674,   679,
+     684,   689,   694,   699,   704,   709,   714,   719,   724,   729,
+     734,   739,   744,   749,   754,   759,   766,   770,   772,   776,
+     783,   787,   789,   793,   797,   801
 };
 #endif
 
@@ -1134,152 +1136,152 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
   switch (yyn)
     {
         case 2:
-#line 128 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 130 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         *tree = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
-#line 1142 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1144 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 3:
-#line 135 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 137 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {filename, Qnil, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cNamespace);            
     }
-#line 1151 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1153 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 4:
-#line 141 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 143 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {filename, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cNamespace);            
     }
-#line 1160 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1162 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 5:
-#line 149 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 151 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
     }
-#line 1168 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1170 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 7:
-#line 158 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 160 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1177 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1179 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 8:
-#line 164 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 166 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1185 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1187 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 9:
-#line 171 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 173 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
         rb_funcall(((*yyvalp)), rb_intern("annote"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval));
     }
-#line 1194 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1196 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 10:
-#line 177 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 179 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
         rb_funcall(((*yyvalp)), rb_intern("annote"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval));
     }
-#line 1203 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1205 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 12:
-#line 187 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 189 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE enumArgs[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};        
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cENUMERATION), newLocation(filename, &(*yylocp))};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinition);        
     }
-#line 1213 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1215 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 13:
-#line 194 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 196 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(*yylocp))};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
     }
-#line 1222 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1224 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 14:
-#line 202 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 204 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), Qnil, rb_ary_new(), newLocation(filename, &(*yylocp))};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
-#line 1231 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1233 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 15:
-#line 208 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 210 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE refArgs[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), Qfalse, newLocation(filename, &(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yyloc))};
         VALUE ref = rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF);
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), ref, rb_ary_new(), newLocation(filename, &(*yylocp))};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
-#line 1242 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1244 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 16:
-#line 216 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 218 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE refArgs[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), Qfalse, newLocation(filename, &(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yyloc))};
         VALUE ref = rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF);
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval), ref, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(*yylocp))};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
     }
-#line 1253 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1255 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 17:
-#line 224 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 226 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), Qnil, (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(*yylocp))};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cGroup);
     }
-#line 1262 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1264 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 18:
-#line 232 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 234 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));        
     }
-#line 1271 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1273 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 19:
-#line 238 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 240 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1279 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1281 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 20:
-#line 245 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 247 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(((yyGLRStackItem const *)yyvsp)[YYFILL (-3)].yystate.yyloc))};        
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
@@ -1287,665 +1289,665 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
         rb_funcall(((*yyvalp)), rb_intern("annote"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval));
         rb_funcall((((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), rb_intern("annote"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval));
     }
-#line 1291 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1293 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 21:
-#line 256 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 258 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = Qfalse;
     }
-#line 1299 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1301 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 22:
-#line 261 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 263 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = Qtrue;
     }
-#line 1307 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1309 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 31:
-#line 286 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 288 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBOOLEAN);
     }
-#line 1316 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1318 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 32:
-#line 292 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 294 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cOBJECT);
     }
-#line 1325 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1327 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 33:
-#line 300 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 302 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), newLocation(filename, &(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yyloc))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSEQUENCE);
     }
-#line 1334 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1336 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 34:
-#line 308 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 310 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {Qnil, newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
     }
-#line 1343 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1345 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 35:
-#line 314 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 316 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
     }
-#line 1352 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1354 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 36:
-#line 322 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 324 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {Qnil, newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
     }
-#line 1361 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1363 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 37:
-#line 328 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 330 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
     }
-#line 1370 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1372 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 38:
-#line 336 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 338 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFIXED);
     }
-#line 1379 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1381 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 39:
-#line 344 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 346 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval);
     }
-#line 1387 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1389 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 40:
-#line 349 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 351 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval);
     }
-#line 1395 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1397 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 41:
-#line 356 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 358 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), Qfalse, newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
-#line 1404 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1406 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 42:
-#line 362 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 364 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), Qtrue, newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
     }
-#line 1413 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1415 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 43:
-#line 370 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 372 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI8);
     }
-#line 1422 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1424 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 44:
-#line 376 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 378 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI16);
     }
-#line 1431 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1433 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 45:
-#line 382 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 384 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI32);
     }
-#line 1440 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1442 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 46:
-#line 388 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 390 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI64);
     }
-#line 1449 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1451 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 47:
-#line 394 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 396 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU8);
     }
-#line 1458 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1460 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 48:
-#line 400 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 402 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU16);
     }
-#line 1467 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1469 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 49:
-#line 406 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 408 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU32);
     }
-#line 1476 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1478 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 50:
-#line 412 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 414 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU64);
     }
-#line 1485 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1487 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 51:
-#line 418 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 420 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFLOATING_POINT);
     }
-#line 1494 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1496 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 52:
-#line 424 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 426 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDECIMAL);
     }
-#line 1503 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1505 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 53:
-#line 432 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 434 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDATE);
     }
-#line 1512 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1514 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 54:
-#line 438 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 440 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cTIME_OF_DAY_MILLI);
     }
-#line 1521 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1523 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 55:
-#line 444 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 446 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cTIME_OF_DAY_NANO);
     }
-#line 1530 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1532 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 56:
-#line 450 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 452 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cNANO_TIME);
     }
-#line 1539 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1541 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 57:
-#line 456 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 458 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cMILLI_TIME);
     }
-#line 1548 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1550 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 58:
-#line 465 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 467 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1557 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1559 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 59:
-#line 471 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 473 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1565 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1567 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 60:
-#line 478 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 480 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1574 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1576 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 61:
-#line 484 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 486 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1582 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1584 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 62:
-#line 491 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 493 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yyloc))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSym);
         rb_funcall(((*yyvalp)), rb_intern("annote"), 1, (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval));        
     }
-#line 1592 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1594 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 64:
-#line 502 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 504 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
-#line 1600 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1602 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 65:
-#line 507 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 509 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
-#line 1608 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1610 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 66:
-#line 514 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 516 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
     }
-#line 1616 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1618 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 68:
-#line 523 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 525 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));        
     }
-#line 1625 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1627 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 69:
-#line 529 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 531 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1633 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1635 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 70:
-#line 535 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 537 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yyloc))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cAnnotation);
     }
-#line 1642 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1644 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 72:
-#line 545 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 547 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         rb_str_append(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1650 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1652 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 73:
-#line 552 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 554 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cNameWithID);
     }
-#line 1659 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1661 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 75:
-#line 562 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 564 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
-#line 1667 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1669 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 76:
-#line 567 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 569 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
-#line 1675 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1677 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 77:
-#line 574 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 576 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-1)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval), newLocation(filename, &(*yylocp))};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cIncrementalAnnotation);
     }
-#line 1684 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1686 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 78:
-#line 582 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 584 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_class_new_instance(0, NULL, cSchemaRef);        
     }
-#line 1692 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1694 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 79:
-#line 587 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 589 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionRef);        
     }
-#line 1701 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1703 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 80:
-#line 593 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 595 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval)};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionTypeRef);        
     }
-#line 1710 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1712 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 81:
-#line 599 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 601 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval)};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldRef);        
     }
-#line 1719 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1721 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 82:
-#line 605 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 607 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         VALUE args[] = {(((yyGLRStackItem const *)yyvsp)[YYFILL (-4)].yystate.yysemantics.yysval), (((yyGLRStackItem const *)yyvsp)[YYFILL (-2)].yystate.yysemantics.yysval)};
         ((*yyvalp)) = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldTypeRef);        
     }
-#line 1728 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1730 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 83:
-#line 613 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 615 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_ary_new();
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1737 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1739 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 84:
-#line 619 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 621 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         rb_ary_push(((*yyvalp)), (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval));
     }
-#line 1745 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1747 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 93:
-#line 648 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 650 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("i8");
     }
-#line 1753 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1755 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 94:
-#line 653 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 655 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("i16");
     }
-#line 1761 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1763 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 95:
-#line 658 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 660 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("i32");
     }
-#line 1769 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1771 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 96:
-#line 663 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 665 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("i64");
     }
-#line 1777 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1779 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 97:
-#line 668 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 670 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("u8");
     }
-#line 1785 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1787 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 98:
-#line 673 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 675 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("u16");
     }
-#line 1793 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1795 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 99:
-#line 678 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 680 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("u32");
     }
-#line 1801 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1803 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 100:
-#line 683 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 685 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("u64");
     }
-#line 1809 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1811 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 101:
-#line 688 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 690 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("f64");
     }
-#line 1817 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1819 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 102:
-#line 693 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 695 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("decimal");
     }
-#line 1825 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1827 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 103:
-#line 698 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 700 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("date");
     }
-#line 1833 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1835 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 104:
-#line 703 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 705 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("timeOfDayMilli");
     }
-#line 1841 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1843 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 105:
-#line 708 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 710 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("timeOfDayNano");
     }
-#line 1849 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1851 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 106:
-#line 713 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 715 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("nanoTime");
     }
-#line 1857 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1859 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 107:
-#line 718 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 720 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("milliTime");
     }
-#line 1865 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1867 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 108:
-#line 723 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 725 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("boolean");
     }
-#line 1873 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1875 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 109:
-#line 728 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 730 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("string");
     }
-#line 1881 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1883 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 110:
-#line 733 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 735 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("binary");
     }
-#line 1889 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1891 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 111:
-#line 738 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 740 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("fixed");
     }
-#line 1897 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1899 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 112:
-#line 743 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 745 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("object");
     }
-#line 1905 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1907 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 113:
-#line 748 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 750 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("namespace");
     }
-#line 1913 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1915 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 114:
-#line 753 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 755 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("type");
     }
-#line 1921 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1923 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 115:
-#line 758 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 760 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = rb_str_new2("schema");
     }
-#line 1929 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1931 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 119:
-#line 775 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 777 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = (((yyGLRStackItem const *)yyvsp)[YYFILL (0)].yystate.yysemantics.yysval);
     }
-#line 1937 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1939 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
   case 125:
-#line 800 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
+#line 802 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:783  */
     {
         ((*yyvalp)) = Qnil;
     }
-#line 1945 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1947 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
     break;
 
 
-#line 1949 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
+#line 1951 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:783  */
       default: break;
     }
 
@@ -3718,7 +3720,7 @@ yypdumpstack (yyGLRStack* yystackp)
 
 
 
-#line 805 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:2551  */
+#line 807 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:2551  */
 
 
 /* functions **********************************************************/
@@ -3770,47 +3772,17 @@ void Init_ext_schema_parser(void)
     cFieldRef = rb_const_get(cSlowBlink, rb_intern("FieldRef"));
     cFieldTypeRef = rb_const_get(cSlowBlink, rb_intern("FieldTypeRef"));
 
+    cLog = rb_const_get(cSlowBlink, rb_intern("Log"));
+
     rb_define_singleton_method(cNamespace, "parse", parseFileBuffer, -1);
 }
 
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... )
 {
-    int retval;
-    VALUE rbString;
-    char error[500];
-
-    int hdrLen;
-
-    if(filename != Qnil){
-    
-        hdrLen = snprintf(error, sizeof(error), "%s:%i:%i: error: ", (const char *)RSTRING_PTR(filename), locp->first_line, locp->first_column);
-    }
-    else{
-
-        hdrLen = snprintf(error, sizeof(error), "%i:%i: error: ", locp->first_line, locp->first_column);
-    }
-
-    if((hdrLen > 0) && (hdrLen <= sizeof(error))){
-
-        va_list argptr;
-        va_start(argptr, msg);
-        retval = vsnprintf(&error[hdrLen], sizeof(error) - hdrLen, msg, argptr);
-        va_end(argptr);
-
-        if((retval > 0) && ((hdrLen + retval) <= sizeof(error))){
-
-            rbString = rb_str_new((const char *)error, (hdrLen + retval));
-            rb_io_puts(1, &rbString, rb_stderr);            
-        }
-        else{
-
-            rb_bug("yyerror buffer is too short to contain error message");
-        }
-    }
-    else{
-
-        rb_bug("yyerror buffer is too short to contain error message");
-    }
+    VALUE message = newLocation(filename, locp);
+    rb_str_append(message, rb_str_new2(": error: "));
+    rb_str_append(message, rb_str_new2(msg));
+    rb_funcall(cLog, rb_intern("error"), 1, message);
 }
 
 /* static functions ***************************************************/
@@ -3821,6 +3793,7 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
     VALUE tree = Qnil;
     VALUE buffer;
     VALUE opts;
+    VALUE filename;
 
     rb_scan_args(argc, argv, "10:", &buffer, &opts);
 
@@ -3828,7 +3801,7 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
         opts = rb_hash_new();
     }
 
-    VALUE filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
+    filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
 
     if(yylex_init(&scanner) == 0){
 

@@ -64,37 +64,75 @@ module SlowBlink
         #
         # @macro common_link
         def link(schema,stack=[])
+            
             if @schema.nil?
-                errors = 0
+
+                # a definition can resolve to a definition only if there is a dynamic
+                # link somewhere in the chain
+                sf = stack.each
+                begin
+                    loop do
+                        if sf.next == self
+                            loop do
+                                begin
+                                    f = sf.next
+                                    if f.respond_to? "dynamic?".to_sym and f.dynamic?
+                                        return schema
+                                    end
+                                rescue StopIteration
+                                    raise Error.new "#{self.location}: error: invalid cycle detected"
+                                    #Log.error "#{self.location}: error: invalid cycle detected"
+                                    #return nil
+                                end
+                            end
+                        end
+                    end
+                rescue StopIteration
+                end
+
+                error = false
                 @fields = {}
                 if !@superGroup or (@superGroup and @superGroup.link(schema, @ns, stack << self))                    
                     if !@superGroup or @superGroup.ref.is_a?(Group)
                         if @superGroup
-                            @superGroup.ref.fields.each do |f|
-                                 @fields[f.nameWithID.name] = f
-                            end
-                        end
-                        @rawFields.each do |f|
-                            if @fields[f.nameWithID.name]
-                                puts "#{f.location}: error: duplicate field name '#{f.nameWithID.name}' (first defined at #{@fields[f.nameWithID.name].location})"
-                                errors += 1
+                            if @superGroup.dynamic_reference?
+                                Log.error "#{@superGroup.location}: error: dynamic supergroup reference"
+                                error = true                                
                             else
-                                if f.link(schema, @ns, stack.dup << self)
+                                @superGroup.ref.fields.each do |f|
                                     @fields[f.nameWithID.name] = f
-                                else
-                                    errors += 1
                                 end
                             end
                         end
-                        if errors == 0
-                            @schema = schema
+                        if !error
+                            @rawFields.each do |f|
+                                if @fields[f.nameWithID.name]
+                                    Log.error "#{f.location}: error: duplicate field name ('#{f.nameWithID.name}' first defined at #{@fields[f.nameWithID.name].location})"
+                                    error = true
+                                else
+                                    if f.link(schema, @ns, stack.dup << self)                                    
+                                        @fields[f.nameWithID.name] = f
+                                    else
+                                        error = true
+                                    end
+                                end
+                            end
                         end
                     else
-                        puts "#{@superGroup.location}: error: superGroup '#{@superGroup.qname}' must resolve to a group definition"
+                        Log.error "#{@superGroup.location}: error: supergroup reference must resolve to group definition"
+                        error = true
                     end
+                else
+                    error = true
                 end
+
+                if !error
+                    @schema = schema
+                end
+                
             end
-            @schema            
+            
+            @schema
         end
 
         # @param name [String] name of field
