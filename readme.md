@@ -52,7 +52,10 @@ end
 
 # serialise the message instance
 compact_form = message.encode_compact
+~~~
 
+~~~shell
+test
 ~~~
 
 ## Documentation
