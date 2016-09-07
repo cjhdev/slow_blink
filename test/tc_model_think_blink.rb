@@ -39,16 +39,14 @@ class TestModelThinkBlink < Test::Unit::TestCase
 
     def test_set_individual
 
-        message = @model.new do
-            group "OrderExecuted" do |g|
-                g["Symbol"] = "hey"
-                g["OrderId"] = 42 
-                g["Price"] = 42 
-                g["Qty"] = 42 
-                g["MatchId"] = 42                
-            end            
-        end
-
+        message = @model.group "OrderExecuted" do |g|
+            g["Symbol"] = "hey"
+            g["OrderId"] = 42 
+            g["Price"] = 42 
+            g["Qty"] = 42 
+            g["MatchId"] = 42                
+        end            
+        
         assert_equal("hey", message["Symbol"])
         assert_equal(42, message["OrderId"])
         assert_equal(42, message["Price"])
@@ -59,15 +57,14 @@ class TestModelThinkBlink < Test::Unit::TestCase
 
     def test_set_bulk
 
-        message = @model.new do
-            group "OrderExecuted", {
-                "Symbol" => "hey",
-                "OrderId" => 42, 
-                "Price" => 42, 
-                "Qty" => 42, 
-                "MatchId" => 42                
-            }   
-        end
+        message = @model.group "OrderExecuted", {
+            "Symbol" => "hey",
+            "OrderId" => 42, 
+            "Price" => 42, 
+            "Qty" => 42, 
+            "MatchId" => 42                
+        }   
+        
 
         assert_equal("hey", message["Symbol"])
         assert_equal(42, message["OrderId"])
@@ -79,15 +76,13 @@ class TestModelThinkBlink < Test::Unit::TestCase
 
     def test_encode_compact
         
-        message = @model.new do
-            group "OrderExecuted" do |g|
-                g["Symbol"] = "hey"
-                g["OrderId"] = 42 
-                g["Price"] = 42 
-                g["Qty"] = 42 
-                g["MatchId"] = 42                
-            end            
-        end
+        message = @model.group "OrderExecuted" do |g|
+            g["Symbol"] = "hey"
+            g["OrderId"] = 42 
+            g["Price"] = 42 
+            g["Qty"] = 42 
+            g["MatchId"] = 42                
+        end            
 
         output = message.to_compact
         

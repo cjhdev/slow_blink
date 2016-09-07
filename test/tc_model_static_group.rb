@@ -46,17 +46,15 @@ class TestModelStaticGroup < Test::Unit::TestCase
 
     def test_init_individual
 
-        message = @model.new do
-            group "Test" do |g|
-                g["one"] = "hello"
-                g["two"] = 42
-                g["three"] = 42
-                g["four"]["one"] = "world"
-                g["four"]["two"] = 42
-                g["four"]["three"] = 42
-            end
+        message = @model.group "Test" do |g|
+            g["one"] = "hello"
+            g["two"] = 42
+            g["three"] = 42
+            g["four"]["one"] = "world"
+            g["four"]["two"] = 42
+            g["four"]["three"] = 42
         end
-
+        
         assert_equal("hello", message["one"])
         assert_equal(42, message["two"])
         assert_equal(42, message["three"])
@@ -68,19 +66,17 @@ class TestModelStaticGroup < Test::Unit::TestCase
     
     def test_init_part_bulk
 
-        message = @model.new do
-            group "Test" do |g|
-                g["one"] = "hello"
-                g["two"] = 42
-                g["three"] = 42
-                g["four"] = {
-                    "one" => "world",
-                    "two" => 42,
-                    "three" => 42
-                }
-            end
+        message = @model.group "Test" do |g|
+            g["one"] = "hello"
+            g["two"] = 42
+            g["three"] = 42
+            g["four"] = {
+                "one" => "world",
+                "two" => 42,
+                "three" => 42
+            }
         end
-
+        
         assert_equal("hello", message["one"])
         assert_equal(42, message["two"])
         assert_equal(42, message["three"])
@@ -92,21 +88,17 @@ class TestModelStaticGroup < Test::Unit::TestCase
 
     def test_init_bulk
 
-        message = @model.new do
-            group "Test", {                
-                "one" => "hello",
+        message = @model.group "Test", {                
+            "one" => "hello",
+            "two" => 42,
+            "three" => 42,
+            "four" => {
+                "one" => "world",
                 "two" => 42,
-                "three" => 42,
-                "four" => {
-                    "one" => "world",
-                    "two" => 42,
-                    "three" => 42
-                }
+                "three" => 42
             }
-        end
-
+        }
         
-
         assert_equal("hello", message["one"])
         assert_equal(42, message["two"])
         assert_equal(42, message["three"])
