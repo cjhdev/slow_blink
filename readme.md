@@ -46,10 +46,8 @@ schema = SlowBlink::Schema.new(buffer)
 model = SlowBlink::Message::Model.new(schema)
 
 # create a message instance using the message model
-message = model.new do
-    group "Hello" do |g|
-        g["greeting"] = "hello"
-    end
+message = model.group "Hello" do |g|
+    g["greeting"] = "hello"
 end
 
 # serialise the message instance
