@@ -83,9 +83,8 @@ module SlowBlink::Message
 
             def set(value)            
                 if value
-                    @value = {}
                     self.class.fields.each do |f|
-                        @value[f.name] = value[f.name]
+                        @value[f.name].set(value[f.name])
                     end                    
                 elsif self.class.opt?                
                     @value = nil
@@ -99,14 +98,13 @@ module SlowBlink::Message
             end
 
             def initialize(fields)
+                @value = {}
+                self.class.fields.each do |f|                        
+                    @value[f.name] = f.new(nil)
+                end                            
                 if fields
                     set(fields)            
-                else
-                    @value = {}
-                    self.class.fields.each do |f|                        
-                        @value[f.name] = f.new(nil)
-                    end                
-                end                
+                end
             end
 
             def fields

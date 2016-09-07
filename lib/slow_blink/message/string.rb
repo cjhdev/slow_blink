@@ -77,10 +77,9 @@ module SlowBlink::Message
             end
 
             def initialize(value)
+                @value = nil
                 if value
                     set(value)
-                else
-                    @value = nil
                 end
             end
 

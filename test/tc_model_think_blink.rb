@@ -20,7 +20,7 @@
 require "test/unit"
 require 'slow_blink'
 
-class TestModel < Test::Unit::TestCase
+class TestModelThinkBlink < Test::Unit::TestCase
 
     include SlowBlink
 
@@ -47,6 +47,26 @@ class TestModel < Test::Unit::TestCase
                 g["Qty"] = 42 
                 g["MatchId"] = 42                
             end            
+        end
+
+        assert_equal("hey", message["Symbol"])
+        assert_equal(42, message["OrderId"])
+        assert_equal(42, message["Price"])
+        assert_equal(42, message["Qty"])
+        assert_equal(42, message["MatchId"])        
+    
+    end
+
+    def test_set_bulk
+
+        message = @model.new do
+            group "OrderExecuted", {
+                "Symbol" => "hey",
+                "OrderId" => 42, 
+                "Price" => 42, 
+                "Qty" => 42, 
+                "MatchId" => 42                
+            }   
         end
 
         assert_equal("hey", message["Symbol"])

@@ -65,11 +65,13 @@ module SlowBlink
 
             # create an instance of group
             #
-            def group(name, &block)
+            def group(name, data=nil, &block)
                 group = @top.groups.values.detect{|g|g.name == name}
                 if group                    
-                    top = @top.new(group.new(nil))
-                    self.instance_exec(top, &block)
+                    top = @top.new(group.new(data))
+                    if block
+                        self.instance_exec(top, &block)
+                    end
                     top
                 else
                     raise

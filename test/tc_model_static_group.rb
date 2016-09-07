@@ -65,5 +65,58 @@ class TestModelStaticGroup < Test::Unit::TestCase
         assert_equal(42, message["four"]["three"])        
 
     end
+    
+    def test_init_part_bulk
+
+        message = @model.new do
+            group "Test" do |g|
+                g["one"] = "hello"
+                g["two"] = 42
+                g["three"] = 42
+                g["four"] = {
+                    "one" => "world",
+                    "two" => 42,
+                    "three" => 42
+                }
+            end
+        end
+
+        assert_equal("hello", message["one"])
+        assert_equal(42, message["two"])
+        assert_equal(42, message["three"])
+        assert_equal("world", message["four"]["one"])
+        assert_equal(42, message["four"]["two"])        
+        assert_equal(42, message["four"]["three"])        
+
+    end
+
+    def test_init_bulk
+
+        message = @model.new do
+            group "Test", {                
+                "one" => "hello",
+                "two" => 42,
+                "three" => 42,
+                "four" => {
+                    "one" => "world",
+                    "two" => 42,
+                    "three" => 42
+                }
+            }
+        end
+
+        
+
+        assert_equal("hello", message["one"])
+        assert_equal(42, message["two"])
+        assert_equal(42, message["three"])
+        assert_equal("world", message["four"]["one"])
+        assert_equal(42, message["four"]["two"])        
+        assert_equal(42, message["four"]["three"])        
+
+    end
+
+
+    
 
 end
