@@ -36,7 +36,7 @@ module SlowBlink
             @id = id            
         end
 
-        # @private
+        # @api private
         # @param value [Integer]        
         def id=(value)
             @id = id

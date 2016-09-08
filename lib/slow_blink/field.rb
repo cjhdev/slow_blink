@@ -51,14 +51,14 @@ module SlowBlink
             @nameWithID = nameWithID
         end
 
-        # @private
+        # @api private
         #
         # Resolve references, enforce constraints, and detect cycles
         #
         # @param schema [Schema] schema this definition belongs to
-        # @param namespace [Namespace] namespace this definition belongs to
+        # @param ns [Namespace] namespace this definition belongs to
         # @param stack [nil, Array] objects that depend on this object
-        # @param [true,false] linked?
+        # @return [true,false] linked?
         def link(schema,ns, stack=[])
             if @schema.nil?
                 @schema = @type.link(schema, ns, stack << self)

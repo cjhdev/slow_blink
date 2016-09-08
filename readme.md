@@ -33,7 +33,7 @@ gem install slow_blink
 require 'slow_blink'
 
 # create a schema from Blink syntax
-buffer = SlowBlink::SchemaBuffer.new("Hello/0 -> string (42) greeting")
+buffer = SlowBlink::SchemaBuffer.new("Hello/0 -> string greeting")
 schema = SlowBlink::Schema.new(buffer)
 
 # generate a message model from the schema

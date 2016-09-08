@@ -1,5 +1,3 @@
-# @!visibility private
-#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -28,7 +26,9 @@ module SlowBlink
 
         class Model
 
-            # Initialise a message model from a schema
+            # @api user
+            #
+            # Create a Model from a {Schema}
             #
             # @param schema [SlowBlink::Schema]
             def initialize(schema)
@@ -45,6 +45,8 @@ module SlowBlink
                 end                
             end
 
+            # @api user
+            #
             # Initialise a message model instance with a compact form string
             #
             # @note return value will be an *anonymous* *subclass* *instance* of {DynamicGroup}
@@ -56,6 +58,8 @@ module SlowBlink
                 @top.from_compact!(input.dup)
             end
 
+            # @api user
+            #
             # Create an instance of a group subclass
             #
             # @note return value will be an *anonymous* *subclass* *instance* of {DynamicGroup} or {StaticGroup}
@@ -86,13 +90,13 @@ module SlowBlink
                 end
             end
 
-            # @private
+            # @api private
             #
             # Create a model for a Group
             #
             # @param opt [true,false] this group is allowed to be optional
             # @param group [SlowBlink::Group] group definition
-            # @return [Class] anonymous class extending {StaticGroup::CLASS} and including {StaticGroup::INSTANCE}            
+            # @return [Class] anonymous subclass of {StaticGroup}
             def _model_group(opt, group)
                 this = self
                 Class.new(StaticGroup) do
@@ -108,12 +112,12 @@ module SlowBlink
             end
 
 
-            # @private
+            # @api private
             #
             # Create a model for a Field
             #
             # @param field [SlowBlink::Field] field definition
-            # @return [Class] anonymous class extending {Field::CLASS} and including {Field::INSTANCE}            
+            # @return [Class] anonymous subclass of {Field}
             def _model_field(field)
                 this = self
                 Class.new(Field) do
@@ -125,12 +129,12 @@ module SlowBlink
                 end                
             end
 
-            # @private
+            # @api private
             #
             # Create a model for a type
             #
             # @param field [SlowBlink::Field] field definition (containing type)
-            # @return [Class] anonymous class extending {Field::CLASS} and including {Field::INSTANCE}      
+            # @return [Class] anonymous subclass
             def _model_type(field)
                 type = field.type
                 name = field.nameWithID.name    

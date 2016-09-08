@@ -37,7 +37,7 @@ module SlowBlink
 
         # @!method self.parse(input, **opts)
         #
-        #   @private
+        #   @api private
         #
         #   @param input [String] Blink Schema
         #   @param opts [Hash] options
@@ -85,7 +85,7 @@ module SlowBlink
             
         end
 
-        # @private
+        # @api private
         #
         # @param namespace [Namespace]
         def merge!(namespace)
@@ -103,13 +103,13 @@ module SlowBlink
             end                
         end
 
-        # @private
+        # @api private
         #
         # Resolve references, enforce constraints, and detect cycles
         #
         # @param schema [Schema] schema this definition belongs to
         # @param stack [nil, Array] objects that depend on this object
-        # @param [true,false] linked?
+        # @return [true,false] linked?
         def link(schema, stack=[])            
             errors = 0
             @definitions.each do |name, d|

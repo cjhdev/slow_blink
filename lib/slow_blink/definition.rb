@@ -1,3 +1,4 @@
+
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -52,12 +53,12 @@ module SlowBlink
             @ns = nil
         end
 
-        # @private
+        # @api private
         # Resolve references, enforce constraints, and detect cycles
         #
         # @param schema [Schema] schema this definition belongs to
         # @param stack [nil, Array] objects that depend on this object
-        # @param [true,false] linked?
+        # @return [true,false] linked?
         def link(schema, stack=[])
                      
             # a definition can resolve to a definition only if there is a dynamic

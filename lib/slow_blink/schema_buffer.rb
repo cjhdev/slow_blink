@@ -19,6 +19,16 @@
 
 module SlowBlink
 
+    # Use schema buffer when you want to deal with schemas in-memory
+    # rather than loading from files.
+    #
+    # It combines the schema string with an optional filename string.
+    #
+    # e.g:
+    #
+    #       anonBuffer = SchemaBuffer.new("Hello/0 -> string greeting")
+    #       namedBuffer = SchemaBuffer.new("Hello/0 -> string greeting", "nameThatWillAppearInErrorMessage.txt")
+    #
     class SchemaBuffer
 
         # @return [String]
@@ -27,6 +37,10 @@ module SlowBlink
         # @return [String]
         attr_reader :filename
         
+        # @api user
+        #
+        # Create a SchemaBuffer
+        #
         # @param buffer [String] the contents of the file
         # @param filename [String] name of the file (for error reporting)
         def initialize(buffer, filename=nil)

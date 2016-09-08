@@ -41,7 +41,7 @@ module SlowBlink
             @schema = nil
         end
 
-        # @private
+        # @api private
         #
         # Apply annotes to targets
         #

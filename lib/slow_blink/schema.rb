@@ -28,7 +28,10 @@ module SlowBlink
     
     class Schema
 
-        # Initialise a Schema from one or more Blink Schema files
+        # @api user
+        #
+        # Create a Schema from one or more Blink Schema files that are evaluated
+        # in the order they appear.
         #
         # @param filename [Array<String>]
         # @return [Schema]
@@ -54,6 +57,11 @@ module SlowBlink
         # @return [Array<Namespace>]
         attr_reader :ns
 
+        # @api user
+        #
+        # Create a Schema from one or more SchemaBuffers that are evaluated
+        # in the order they appear.
+        #
         # @param buffer [Array<SchemaBuffer>]
         def initialize(*buffer)
 
@@ -118,7 +126,7 @@ module SlowBlink
             
         end
 
-        # resolve a name to a definition in any namespace
+        # Resolve a name to a definition in any namespace
         #
         # @param namespace [String,nil]
         # @param name [String]

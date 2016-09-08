@@ -1,5 +1,3 @@
-# @!visibility private
-#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -190,26 +188,6 @@ module SlowBlink::Message
             end
         end
 
-        def group(&block)
-            
-        end
-
-        def extension(&group)
-            # define extension
-            # this is an array of OBJECTs
-            # extension do
-            #   group "name" do |g|
-            #       g["field"] = "value"
-            #   end
-            #   group "name" do |g|
-            #       g["field"] = "value"
-            #   end
-            #   ...
-            # end
-            #
-            raise                
-        end
-
         def set(value)
             if value
                 if self.class.groups.values.include? value.class
@@ -248,7 +226,17 @@ module SlowBlink::Message
             else
                 out.putU32(nil)
             end
-        end            
+        end
+
+        # @api user
+        #
+        # Encode {Group} as Blink compact form
+        #
+        # @return [String]
+        #
+        def encode_compact
+            to_compact
+        end        
 
     end
 
