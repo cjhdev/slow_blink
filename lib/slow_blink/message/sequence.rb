@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,65 +21,57 @@
 
 module SlowBlink::Message
 
-    module SEQUENCE
-
-        module CLASS
-        
-            def from_compact!(input)
-                value = []
-                size = input.getU32!
-                if size
-                    while out.size < size do
-                        value << @type.from_compact!(input)
-                    end
-                    self.new(value)
-                else
-                    self.new
+    class SEQUENCE
+            
+        def self.from_compact!(input)
+            value = []
+            size = input.getU32!
+            if size
+                while out.size < size do
+                    value << @type.from_compact!(input)
                 end
+                self.new(value)
+            else
+                self.new
             end
-
         end
 
-        module INSTANCE
-
-            # @param v [Array,nil]
-            def set(value)
-                if value
-                    if value.kind_of? Array
-                        @value = v
-                    else
-                        raise Error.new "bad type"
-                    end
-                elsif self.class.opt?
-                    @value = nil
+        # @param v [Array,nil]
+        def set(value)
+            if value
+                if value.kind_of? Array
+                    @value = v
                 else
-                    raise Error.new "value unacceptable"
+                    raise Error.new "bad type"
                 end
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise Error.new "value unacceptable"
             end
+        end
 
-            def get
-                @value
+        def get
+            @value
+        end
+
+        # @param value [Array]
+        def initialize(value)
+            if value
+                set(value)
+            else
+                @value = nil
             end
+        end
 
-            # @param value [Array]
-            def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
+        def to_compact(out)
+            if @value                
+                @value.inject(out.putU32(@value.size)) do |out, v|
+                    out << v.to_compact
                 end
-            end
-
-            def to_compact(out)
-                if @value                
-                    @value.inject(out.putU32(@value.size)) do |out, v|
-                        out << v.to_compact
-                    end
-                else
-                    out.putU32(nil)
-                end                
-            end
-
+            else
+                out.putU32(nil)
+            end                
         end
 
     end

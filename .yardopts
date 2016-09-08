@@ -1,4 +1,5 @@
 --no-private
 --title "SlowBlink: Blink Protocol for Ruby"
+lib/slow_blink/schema.rb
 lib/**/*.rb -
 readme.md

@@ -28,21 +28,9 @@ module SlowBlink
 
         class Model
 
-            # @param nameOrID [String,Integer] name or id of top-level group
-            # @return [Class] anonymous class extending {DynamicGroup::CLASS} and including {DynamicGroup::INSTANCE}            
-            def [](nameOrID)
-                if nameOrID.kind_of? Integer
-                    @top.new(@top.groups.values.detect{|g|g.name == nameOrID})
-                else
-                    @top.new(@top.groups[nameOrID])
-                end                    
-            end
-
-            attr_reader :top
-
             # Initialise a message model from a schema
             #
-            # @param schema [Schema]
+            # @param schema [SlowBlink::Schema]
             def initialize(schema)
                 @schema = schema
                 @taggedGroups = {}                
@@ -50,20 +38,39 @@ module SlowBlink
                     @taggedGroups[id] = _model_group(false, g)                    
                 end                
                 taggedGroups = @taggedGroups
-                @top = Class.new do
+                @top = Class.new(DynamicGroup) do
                     @opt = false
                     @groups = taggedGroups
-                    @permitted = taggedGroups.keys
-                    extend DynamicGroup::CLASS
-                    include DynamicGroup::INSTANCE
+                    @permitted = taggedGroups.keys                    
                 end                
             end
 
+            # Initialise a message model instance with a compact form string
+            #
+            # @note return value will be an *anonymous* *subclass* *instance* of {DynamicGroup}
+            #
+            # @param [String] Blink Protocol compact form
+            # @return [DynamicGroup] group instance
+            #
             def decode_compact(input)
                 @top.from_compact!(input.dup)
             end
 
-            # create an instance of group
+            # Create an instance of a group subclass
+            #
+            # @note return value will be an *anonymous* *subclass* *instance* of {DynamicGroup} or {StaticGroup}
+            #
+            # @overload group(name, data)
+            #           
+            #   @param name [String] name of group
+            #   @param data [Hash] bulk initialisation data
+            #   @return [StaticGroup,DynamicGroup] group instance
+            #
+            # @overload group(name)
+            #   
+            #   @param name [String] name of group
+            #   @yield [Group] group instance to initalise
+            #   @return [StaticGroup,DynamicGroup] group instance            
             #
             def group(name, data=nil, &block)
                 group = @top.groups.values.detect{|g|g.name == name}
@@ -71,19 +78,13 @@ module SlowBlink
                     top = @top.new(group.new(data))
                     if block
                         self.instance_exec(top, &block)
+                        # validate optional constraint here
                     end
                     top
                 else
                     raise
                 end
             end
-
-            def new(&block)
-                if block.nil?
-                    raise                    
-                end
-                result = self.instance_exec(&block)
-            end    
 
             # @private
             #
@@ -94,15 +95,15 @@ module SlowBlink
             # @return [Class] anonymous class extending {StaticGroup::CLASS} and including {StaticGroup::INSTANCE}            
             def _model_group(opt, group)
                 this = self
-                Class.new do
+                Class.new(StaticGroup) do
+                    @implements = group.class
                     @name = group.nameWithID.name
                     @id = group.nameWithID.id
                     @opt = opt
                     @fields = group.fields.inject([]) do |fields, f|
                         fields << this._model_field(f)                        
                     end
-                    extend StaticGroup::CLASS
-                    include StaticGroup::INSTANCE
+                    
                 end            
             end
 
@@ -115,13 +116,12 @@ module SlowBlink
             # @return [Class] anonymous class extending {Field::CLASS} and including {Field::INSTANCE}            
             def _model_field(field)
                 this = self
-                Class.new do
+                Class.new(Field) do
+                    @implements = field.class
                     @opt = field.opt?
                     @name = field.nameWithID.name
                     @id = field.nameWithID.id
                     @type = this._model_type(field)
-                    include Field::INSTANCE
-                    extend Field::CLASS
                 end                
             end
 
@@ -138,12 +138,11 @@ module SlowBlink
                 when SlowBlink::OBJECT
                     groups = @groups
                     permitted = @schema.tagged.keys
-                    klass = Class.new do
+                    klass = Class.new(DynamicGroup) do
+                        @implements = type.class
                         @opt = field.opt?                        
                         @groups = groups
-                        @permitted = permitted
-                        extend DynamicGroup::CLASS
-                        include DynamicGroup::INSTANCE
+                        @permitted = permitted                        
                     end                               
                 when SlowBlink::REF
                     if type.ref.kind_of? Group
@@ -155,13 +154,12 @@ module SlowBlink
                                     permitted << id
                                 end
                             end
-                            klass = Class.new do
+                            Class.new(DynamicGroup) do
+                                @implements = type.class
                                 @name = name
                                 @opt = field.opt?
                                 @groups = groups
                                 @permitted = permitted
-                                extend DynamicGroup::CLASS
-                                include DynamicGroup::INSTANCE
                             end                               
                         else
                             _model_group(field.opt?, type.ref)
@@ -170,12 +168,11 @@ module SlowBlink
                         _model_type(opt, type.ref)
                     end
                 else                        
-                    return Class.new do
+                    Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
+                        klass = 
                         @opt = field.opt?
                         @name = name
-                        @type = type
-                        extend SlowBlink::Message.const_get(type.class.name.split('::').last + "::CLASS")
-                        include SlowBlink::Message.const_get(type.class.name.split('::').last + "::INSTANCE")
+                        @type = type                        
                     end                    
                 end
             end

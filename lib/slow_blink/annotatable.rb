@@ -18,13 +18,12 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
+
     module Annotatable
 
         # @return [Array<Annotation>]
         attr_reader :annotes
 
-        # @private
-        #
         # @param annotes [Array<Annotation,Integer>]
         def annote(annotes)
             annotes.each do |a|

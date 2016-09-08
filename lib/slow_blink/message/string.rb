@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,75 +21,69 @@
 
 module SlowBlink::Message
 
-    module STRING
+    class STRING
 
-        module CLASS
-
-            def name
-                @name
-            end
-
-            def opt?
-                @opt
-            end
-
-            def from_compact!(input)
-                value = input.getString!
-                if value
-                    if !@type.size or value.size <= @type.size
-                        self.new(value)
-                    else
-                        raise Error.new "W7: String value exceeds maximum size"
-                    end
-                elsif @opt
-                    self.new(nil)
-                else
-                    raise Error.new "W5: Value cannot be null"
-                end
-            end
-
-            def size
-                @type.size
-            end
-
+        def self.name
+            @name
         end
 
-        module INSTANCE
+        def self.opt?
+            @opt
+        end
 
-            def get
-                @value
-            end
-
-            def set(value)
-                if value
-                    if value.kind_of? String
-                        if !self.class.size or value.size <= self.class.size
-                            @value = value
-                        else
-                            raise Error.new "string cannot be larger than #{self.class.size} bytes"
-                        end
-                    else
-                        raise Error.new "expecting a string type"
-                    end
-                elsif self.class.opt?
-                    @value = nil
+        def self.from_compact!(input)
+            value = input.getString!
+            if value
+                if !@type.size or value.size <= @type.size
+                    self.new(value)
                 else
-                    raise Error.new "string cannot be null"
+                    raise Error.new "W7: String value exceeds maximum size"
                 end
+            elsif @opt
+                self.new(nil)
+            else
+                raise Error.new "W5: Value cannot be null"
             end
+        end
 
-            def initialize(value)
+        def self.size
+            @type.size
+        end
+
+        def get
+            @value
+        end
+
+        def set(value)
+            if value
+                if value.kind_of? String
+                    if !self.class.size or value.size <= self.class.size
+                        @value = value
+                    else
+                        raise Error.new "string cannot be larger than #{self.class.size} bytes"
+                    end
+                else
+                    raise Error.new "expecting a string type"
+                end
+            elsif self.class.opt?
                 @value = nil
-                if value
-                    set(value)
-                end
+            else
+                raise Error.new "string cannot be null"
             end
-
-            def to_compact(out)
-                out.putString(@value)
-            end
-
         end
+
+        def initialize(value)
+            @value = nil
+            if value
+                set(value)
+            end
+        end
+
+        def to_compact(out)
+            out.putString(@value)
+        end
+
+        
         
     end
 

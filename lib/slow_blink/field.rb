@@ -23,7 +23,7 @@ module SlowBlink
         
         include Annotatable
 
-        # @return [String]
+        # @macro location
         attr_reader :location
 
         # @return [Type]
@@ -38,8 +38,6 @@ module SlowBlink
             @opt
         end
 
-        # @private
-        #
         # @param nameWithID [NameWithID]
         # @param type   [Type]
         # @param opt    [true,false] field is optional?

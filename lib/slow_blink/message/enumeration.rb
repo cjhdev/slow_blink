@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,49 +21,45 @@
 
 module SlowBlink::Message
 
-    module ENUMERATION
+    class ENUMERATION
 
-        module CLASS
+        
 
-            def from_compact!(input)
-                self.new(input.getU32!)
-            end
-
+        def self.from_compact!(input)
+            self.new(input.getU32!)
         end
 
-        module INSTANCE
+    
 
-            # @param v [String]
-            def set(value)
-                if value
-                    if self.symbols[value]
-                        @value = self.class.symbols[value]
-                    else
-                        raise Error.new "symbol '#{value}' not defined in enumeration"
-                    end                    
-                elsif self.class.opt?
-                    @value = nil
+        # @param v [String]
+        def set(value)
+            if value
+                if self.symbols[value]
+                    @value = self.class.symbols[value]
                 else
-                    raise Error.new "field may not be null"
-                end
+                    raise Error.new "symbol '#{value}' not defined in enumeration"
+                end                    
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise Error.new "field may not be null"
             end
+        end
 
-            def get
-                @value
-            end
+        def get
+            @value
+        end
 
-            def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
-                end
+        def initialize(value)
+            if value
+                set(value)
+            else
+                @value = nil
             end
-            
-            def to_compact(out)
-                out.putU32(@value ? self.class.symbols[@value] : nil)
-            end
-
+        end
+        
+        def to_compact(out)
+            out.putU32(@value ? self.class.symbols[@value] : nil)
         end
     
     end

@@ -22,14 +22,17 @@ module SlowBlink
     # Blink Specification 7.3
     class IncrementalAnnotation
 
+        # @return [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef]
         attr_reader :componentReference
+
+        # @return [Array<Integer,Annotation>]
         attr_reader :annotes
+
+        # @macro location
         attr_reader :location
 
-        # @private
-        #
         # @param componentReference [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef] annotation target
-        # @param annotations [Array<Integer,Annotation>]
+        # @param annotes [Array<Integer,Annotation>]
         # @param location [String]    
         def initialize(componentReference, annotes, location)
             @componentReference = componentReference

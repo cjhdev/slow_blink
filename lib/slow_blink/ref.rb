@@ -40,8 +40,6 @@ module SlowBlink
         # @return [String]
         attr_reader :qname
 
-        # @private
-        #
         # @param qname [String] 
         # @param dynamic [true,false]
         # @param location [String]    
@@ -61,8 +59,13 @@ module SlowBlink
         end
 
         # @private
-        # 
-        # @macro common_link
+        #
+        # Resolve references, enforce constraints, and detect cycles
+        #
+        # @param schema [Schema] schema this definition belongs to
+        # @param namespace [Namespace] namespace this definition belongs to
+        # @param stack [nil, Array] objects that depend on this object
+        # @param [true,false] linked?
         def link(schema, ns, stack=[])
             if @schema.nil?
                 if @namespace

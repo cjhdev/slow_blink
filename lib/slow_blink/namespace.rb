@@ -44,8 +44,6 @@ module SlowBlink
         #   @option opts [String] :fileName filename to append to error message strings
         #   @return [Namespace]
 
-        # @private
-        #
         # @param filename [nil,String]
         # @param name [nil,String]
         # @param defs [Array<Definition,Group>]
@@ -128,6 +126,8 @@ module SlowBlink
             @definitions[name]
         end
 
+        # @param name [String]
+        # @return [Group,nil]
         def group(name)
             @groups.detect{|g|g.nameWithID.name == name}
         end

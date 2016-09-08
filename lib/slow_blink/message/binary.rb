@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,68 +21,62 @@
 
 module SlowBlink::Message
 
-    module BINARY
+    class BINARY
 
-        module CLASS
-
-            def opt?
-                @opt
-            end
-
-            def from_compact!(input)
-                value = input.getBinary!
-                if value
-                    if !@size or value.size <= @size
-                        self.new(value)
-                    else
-                        raise Error.new "W8: Binary value exceeds maximum size"
-                    end
-                elsif @opt
-                    self.new(nil)
-                else
-                    raise Error.new "W5: Value cannot be null"
-                end
-            end
-
-            def size
-                @type.size
-            end
-
+        def self.opt?
+            @opt
         end
 
-        module INSTANCE
-
-            def set(value)
-                if value
-                    if value.kind_of? String
-                        if !self.class.size or value.size <= self.class.size
-                            @value = value
-                        else
-                            raise Error.new "string cannot be larger than #{self.class.size} bytes"
-                        end
-                    else
-                        raise Error.new "expecting a string type"
-                    end
-                elsif self.class.opt?
-                    @value = nil
+        def self.from_compact!(input)
+            value = input.getBinary!
+            if value
+                if !@size or value.size <= @size
+                    self.new(value)
                 else
-                    raise Error.new "string cannot be null"
+                    raise Error.new "W8: Binary value exceeds maximum size"
                 end
+            elsif @opt
+                self.new(nil)
+            else
+                raise Error.new "W5: Value cannot be null"
             end
-
-            def get
-                @value
-            end
-
-            def initialize(value)
-                set(value)                
-            end
-
-            def to_compact(out)
-                out.putBinary(@value)
-            end
-
         end
+
+        def self.size
+            @type.size
+        end
+
+        def set(value)
+            if value
+                if value.kind_of? String
+                    if !self.class.size or value.size <= self.class.size
+                        @value = value
+                    else
+                        raise Error.new "string cannot be larger than #{self.class.size} bytes"
+                    end
+                else
+                    raise Error.new "expecting a string type"
+                end
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise Error.new "string cannot be null"
+            end
+        end
+
+        def get
+            @value
+        end
+
+        def initialize(value)
+            set(value)                
+        end
+
+        def to_compact(out)
+            out.putBinary(@value)
+        end
+
+        
         
     end
 

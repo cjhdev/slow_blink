@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,66 +21,58 @@
 
 module SlowBlink::Message
 
-    module FIXED
-
-        module CLASS
-
-            def from_compact!(input)
-                if opt?
-                    self.new(input.getFixedOptional!)
-                else                    
-                    self.new(input.getFixed!)
-                end
-            end
-
-            def size
-                @type.size
-            end
-
-        end
-
-        module INSTANCE
-
-            def set(value)
-                if value
-                    if value.kind_of? String
-                        if value.size == self.class.size
-                            @value = value
-                        else
-                            raise Error.new "must be #{@size} bytes"
-                        end
-                    else
-                        raise "expecting string"
-                    end
-                elsif self.class.opt?
-                    @value = nil
-                else
-                    raise Error.new "value unacceptable"
-                end
-            end
-
-            def get
-                @value
-            end
-
-            def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
-                end
-            end
-
-            def to_compact(out)
-                if self.opt?
-                    out.putFixedOptional(@value)
-                else
-                    out.putFixed(@value)
-                end
-            end
-
-        end
+    class FIXED
         
+        def self.from_compact!(input)
+            if opt?
+                self.new(input.getFixedOptional!)
+            else                    
+                self.new(input.getFixed!)
+            end
+        end
+
+        def self.size
+            @type.size
+        end
+
+        def set(value)
+            if value
+                if value.kind_of? String
+                    if value.size == self.class.size
+                        @value = value
+                    else
+                        raise Error.new "must be #{@size} bytes"
+                    end
+                else
+                    raise "expecting string"
+                end
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise Error.new "value unacceptable"
+            end
+        end
+
+        def get
+            @value
+        end
+
+        def initialize(value)
+            if value
+                set(value)
+            else
+                @value = nil
+            end
+        end
+
+        def to_compact(out)
+            if self.opt?
+                out.putFixedOptional(@value)
+            else
+                out.putFixed(@value)
+            end
+        end
+
     end
 
 end

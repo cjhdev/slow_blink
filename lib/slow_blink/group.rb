@@ -27,7 +27,7 @@ module SlowBlink
             self == other                
         end
 
-        # @return [String]
+        # @macro location
         attr_reader :location
 
         # @return [NameWithID]
@@ -43,8 +43,6 @@ module SlowBlink
             @ns = namespace
         end
 
-        # @private
-        #
         # @param nameWithID [NameWithID]
         # @param superGroup [REF, nil]
         # @param fields [Array<Field>]
@@ -144,6 +142,7 @@ module SlowBlink
             @fields[name]
         end
 
+        # @private
         # @param superGroup [Group]
         # @return [true,false]
         def group_kind_of?(superGroup)

@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,48 +21,40 @@
 
 module SlowBlink::Message
 
-    module FLOATING_POINT
+    class FLOATING_POINT
 
-        module CLASS
-
-            def from_compact!(input)
-                self.new(input.getF64!)
-            end
-
+        def self.from_compact!(input)
+            self.new(input.getF64!)
         end
 
-        module INSTANCE
-
-            def set(value)
-                if value
-                    if value.kind_of? Numeric
-                        @value = value
-                    else
-                        raise "expecting float"
-                    end
-                elsif self.class.opt?
-                    @value = nil
+        def set(value)
+            if value
+                if value.kind_of? Numeric
+                    @value = value
                 else
-                    raise Error.new "value unacceptable"
+                    raise "expecting float"
                 end
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise Error.new "value unacceptable"
             end
+        end
 
-            def get
-                @value
+        def get
+            @value
+        end
+
+        def initialize(value)
+            if value
+                set(value)
+            else
+                @value = nil
             end
+        end
 
-            def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
-                end
-            end
-
-            def to_compact(out)
-                out.putF64(@value)
-            end
-
+        def to_compact(out)
+            out.putF64(@value)
         end
 
     end

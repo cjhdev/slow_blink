@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,53 +21,45 @@
 
 module SlowBlink::Message
 
-    module Field
-
-        module CLASS
+    class Field
         
-            # @return [true,false] field is optional?
-            def opt?
-                @opt
-            end
-
-            # @return [String] field name
-            def name
-                @name
-            end
-
-            # @return [Integer,nil] field ID
-            def id
-                @id
-            end
-
-            def type
-                @type
-            end
-
-            def from_compact!(input)
-                @type.from_compact!(input)
-            end
-
+        # @return [true,false] field is optional?
+        def self.opt?
+            @opt
         end
 
-        module INSTANCE
+        # @return [String] field name
+        def self.name
+            @name
+        end
 
-            def initialize(value)
-                @value = self.class.type.new(value)            
-            end
+        # @return [Integer,nil] field ID
+        def self.id
+            @id
+        end
 
-            def set(value)
-                @value.set(value)            
-            end
+        def self.type
+            @type
+        end
 
-            def get
-                @value.get
-            end
+        def self.from_compact!(input)
+            @type.from_compact!(input)
+        end
 
-            def to_compact(out)
-                @value.to_compact(out)
-            end
+        def initialize(value)
+            @value = self.class.type.new(value)            
+        end
 
+        def set(value)
+            @value.set(value)            
+        end
+
+        def get
+            @value.get
+        end
+
+        def to_compact(out)
+            @value.to_compact(out)
         end
 
     end

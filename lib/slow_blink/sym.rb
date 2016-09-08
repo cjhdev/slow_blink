@@ -22,7 +22,7 @@ module SlowBlink
 
         include Annotatable
 
-        # @return [String]
+        # @macro location
         attr_reader :location
 
         # @return [String]
@@ -31,12 +31,11 @@ module SlowBlink
         # @return [Integer]
         attr_reader :val
 
+        # @private
         def val=(value)
             @val = value.to_i
         end
 
-        # @private
-        #
         # @param name [String]
         # @param val [nil,Integer] explicit value
         # @param location [String]
@@ -48,8 +47,11 @@ module SlowBlink
         end
 
         # @private
+        # Resolve references, enforce constraints, and detect cycles
         #
-        # @macro common_link
+        # @param schema [Schema] schema this definition belongs to
+        # @param stack [nil, Array] objects that depend on this object
+        # @param [true,false] linked?
         def link(schema, stack=[])
             @schema = schema
         end

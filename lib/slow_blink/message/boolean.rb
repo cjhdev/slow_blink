@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,50 +21,42 @@
 
 module SlowBlink::Message
 
-    module BOOLEAN
+    class BOOLEAN
 
-        module CLASS
-
-            def from_compact!(input)
-                self.new(input.getBool!)
-            end
-
+        def self.from_compact!(input)
+            self.new(input.getBool!)
         end
 
-        module INSTANCE
-
-            def set(value)
-                if value
-                    if value.kind_of? TrueClass or value.kind_of? FalseClass
-                        @value = value
-                    else
-                        raise "expecting true/false"
-                    end
-                elsif self.class.opt?
-                    @value = nil
+        def set(value)
+            if value
+                if value.kind_of? TrueClass or value.kind_of? FalseClass
+                    @value = value
                 else
-                    raise Error.new "value unacceptable"
+                    raise "expecting true/false"
                 end
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise Error.new "value unacceptable"
             end
-
-            def get
-                @value
-            end
-
-            def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
-                end
-            end
-
-            def to_compact(out)
-                out.putBool(@value)
-            end
-
         end
 
+        def get
+            @value
+        end
+
+        def initialize(value)
+            if value
+                set(value)
+            else
+                @value = nil
+            end
+        end
+
+        def to_compact(out)
+            out.putBool(@value)
+        end
+        
     end
 
 end

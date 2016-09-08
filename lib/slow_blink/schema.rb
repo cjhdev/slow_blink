@@ -21,11 +21,17 @@ require 'slow_blink/log'
 
 module SlowBlink
 
+    # @!macro location
+    #   Location string formatted as:
+    #       [ FILENAME, ':' ], LINE_NUMBER, ':', COLUMN_NUMBER
+    #   @return [String]
+    
     class Schema
 
         # Initialise a Schema from one or more Blink Schema files
         #
         # @param filename [Array<String>]
+        # @return [Schema]
         def self.read(*filename)
             input = []
             if filename.size > 0
@@ -42,7 +48,7 @@ module SlowBlink
         #
         # - These groups are of interest to message code generators
         #
-        # @return [Hash]
+        # @return [Hash<Group>]
         attr_reader :tagged
 
         # @return [Array<Namespace>]

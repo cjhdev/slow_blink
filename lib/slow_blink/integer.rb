@@ -22,7 +22,7 @@ module SlowBlink
     class INTEGER < Type
     end
 
-        # Blink Specification 3.1
+    # Blink Specification 3.1
     class I8 < INTEGER
         RANGE = Range.new(-128, 127)
     end

@@ -19,6 +19,7 @@
 
 module SlowBlink
 
+    # @private
     module CompactEncoder
 
         # @!method getU8(input)

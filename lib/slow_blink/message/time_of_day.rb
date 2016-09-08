@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,113 +21,100 @@
 
 module SlowBlink::Message
 
-    module TIME_OF_DAY_MILLI
+    class TIME_OF_DAY_MILLI
 
-        module CLASS
-
-            def from_compact!(input)
-                self.new(input.get32!)
-            end
-        
+        def self.from_compact!(input)
+            self.new(input.get32!)
         end
-
-        module INSTANCE
-
-            def set(value)
-                if value
-                    if value.kind_of? Integer
-                        if value < 86400000
-                            @value = value                            
-                        else
-                            raise Error.new "input out of range"
-                        end
-                    elsif value.kind_of? Time
-                        @value = value.to_i
+    
+        def set(value)
+            if value
+                if value.kind_of? Integer
+                    if value < 86400000
+                        @value = value                            
                     else
-                        raise "what is this?"                        
-                    end         
-                elsif self.class.opt?
-                    @value = nil
+                        raise Error.new "input out of range"
+                    end
+                elsif value.kind_of? Time
+                    @value = value.to_i
                 else
-                    raise
-                end
+                    raise "what is this?"                        
+                end         
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise
             end
-
-            def get
-                @value
-            end
-
-            def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
-                end
-            end
-
-            # @private
-            def to_compact(out)
-                out.putU32(@value)
-                
-            
-       
-            end        
-        
         end
+
+        def get
+            @value
+        end
+
+        def initialize(value)
+            if value
+                set(value)
+            else
+                @value = nil
+            end
+        end
+
+        # @private
+        def to_compact(out)
+            out.putU32(@value)
+            
+        
+   
+        end        
+    
+        
     
     end
 
-    module TIME_OF_DAY_NANO
+    class TIME_OF_DAY_NANO
+                    
+        def self.from_compact!(input)
+            self.new(input.getU64!)
+        end
     
-        module CLASS
-            
-            def from_compact!(input)
-                self.new(input.getU64!)
-            end
-            
-        end
-
-        module INSTANCE
-
-        
-            def set(value)
-                if value
-                    if value.kind_of? Integer
-                        if value < 86400000000000
-                            @value = value                            
-                        else
-                            raise Error.new "input out of range"
-                        end
-                    elsif value.kind_of? Time
-                        @value = value.to_i
+        def set(value)
+            if value
+                if value.kind_of? Integer
+                    if value < 86400000000000
+                        @value = value                            
                     else
-                        raise "what is this?"                        
-                    end         
-                elsif self.class.opt?
-                    @value = nil
+                        raise Error.new "input out of range"
+                    end
+                elsif value.kind_of? Time
+                    @value = value.to_i
                 else
-                    raise
-                end
+                    raise "what is this?"                        
+                end         
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise
             end
-
-            def get
-                @value
-            end
-        
-            def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
-                end
-            end
-
-            # @private
-            def to_compact(out)
-                out.putU64(@value) 
-            end        
-        
         end
+
+        def get
+            @value
+        end
+    
+        def initialize(value)
+            if value
+                set(value)
+            else
+                @value = nil
+            end
+        end
+
+        # @private
+        def to_compact(out)
+            out.putU64(@value) 
+        end        
+    
+    
         
     end
 

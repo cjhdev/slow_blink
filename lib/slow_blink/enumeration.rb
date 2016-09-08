@@ -28,7 +28,6 @@ module SlowBlink
         end
 
         # @private
-        #
         # @param syms [Array<Sym>] symbol list
         def initialize(syms)
             @annotes = {}

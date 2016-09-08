@@ -25,8 +25,6 @@ module SlowBlink
         # @return [Type]
         attr_reader :type
 
-        # @private
-        #
         # @param type [Type] repeating type
         # @param location [String]    
         def initialize(type, location)

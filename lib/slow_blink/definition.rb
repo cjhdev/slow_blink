@@ -18,6 +18,7 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
+
     class Definition
 
         include Annotatable
@@ -26,14 +27,13 @@ module SlowBlink
             self == other                
         end
 
-        # @return [String]
+        # @macro location
         attr_reader :location
 
-        # @return [String]
+        # @return [NameWithID]
         attr_reader :nameWithID
 
-        # @return [ENUMERATION]
-        # @return [Type]
+        # @return [Type,ENUMERATION]
         attr_reader :type
 
         # @param namespace [Namespace]
@@ -41,8 +41,6 @@ module SlowBlink
             @ns = namespace
         end
 
-        # @private
-        #
         # @param nameWithID [NameWithID]
         # @param type [ENUMERATION, Type]
         # @param location [String]
@@ -54,6 +52,7 @@ module SlowBlink
             @ns = nil
         end
 
+        # @private
         # Resolve references, enforce constraints, and detect cycles
         #
         # @param schema [Schema] schema this definition belongs to

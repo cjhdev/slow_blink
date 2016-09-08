@@ -1,3 +1,5 @@
+# @!visibility private
+#
 # Copyright (c) 2016 Cameron Harper
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
@@ -19,60 +21,45 @@
 
 module SlowBlink::Message
 
-    module MILLI_TIME
 
-        module CLASS
+    class MILLI_TIME
 
-            def from_compact!(input)
-                self.new(input.getI64!)
-            end
-
+        def self.from_compact!(input)
+            self.new(input.getI64!)
         end
 
-        module INSTANCE
-
-            def set(value)
-                if value
-                    raise
-                elsif self.class.opt?
-                    @value = nil
-                else
-                    raise 
-                end
+        def set(value)
+            if value
+                raise
+            elsif self.class.opt?
+                @value = nil
+            else
+                raise 
             end
-
-            def get
-                @value
-            end
-
-            def initialize(value)
-                if value
-                    set(value)
-                else
-                    @value = nil
-                end
-            end
-
-            def to_compact(out)
-                out.putI64(@value)
-            end
-
         end
+
+        def get
+            @value
+        end
+
+        def initialize(value)
+            if value
+                set(value)
+            else
+                @value = nil
+            end
+        end
+
+        def to_compact(out)
+            out.putI64(@value)
+        end
+
     
     end
 
-    module NANO_TIME
+    class NANO_TIME < MILLI_TIME
         
-        module CLASS
-            
-            include SlowBlink::Message::MILLI_TIME::CLASS
-        end
-
-        module INSTANCE
-            
-            include SlowBlink::Message::MILLI_TIME::INSTANCE
-        end
-    
+        
     end
 
 end

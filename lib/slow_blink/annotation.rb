@@ -18,12 +18,18 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
+
     class Annotation
 
+        # @macro location
         attr_reader :location
+
+        # @return [String]
         attr_reader :id
+
+        # @return [Integer]
         attr_reader :value
-        
+
         # @param id [String] any string
         # @param value [String] any string
         # @param location [String]
