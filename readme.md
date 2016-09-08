@@ -29,12 +29,6 @@ gem install slow_blink
 
 ### Serialise a String
 
-We want to serialise a group containing a single string type field.
-
-- The group shall be named 'Hello' and shall be serialisable as type '0'
-- The single field shall be named 'greeting' and shall be a string no larger than 42 bytes
-- The single field shall be mandatory
-
 ~~~ruby
 require 'slow_blink'
 
@@ -52,10 +46,6 @@ end
 
 # serialise the message instance
 compact_form = message.encode_compact
-~~~
-
-~~~shell
-test
 ~~~
 
 ## Documentation
