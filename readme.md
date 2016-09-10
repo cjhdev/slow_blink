@@ -100,7 +100,7 @@ require 'slow_blink'
 syntax = <<-eos
 Topgroup/0 ->
     string greeting,
-    Subgroup sub
+    Subgroup * sub
 
 Subgroup/1 ->
     string name,

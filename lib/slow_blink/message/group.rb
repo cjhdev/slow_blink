@@ -69,7 +69,6 @@ module SlowBlink::Message
         # @return [StaticGroup]
         def self.from_native(native)
             if native
-
                 if native.kind_of? Hash
                     fields = {}
                     native.each do |fn, f|
