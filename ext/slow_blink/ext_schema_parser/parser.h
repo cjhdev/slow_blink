@@ -67,18 +67,17 @@ extern int yydebug;
     TOK_TYPE = 277,
     TOK_SCHEMA = 278,
     TOK_BINARY = 279,
-    TOK_NUMBER = 280,
-    TOK_FIXED = 281,
-    TOK_LEFT_ARROW = 282,
-    TOK_RIGHT_ARROW = 283,
-    TOK_HEX = 284,
-    TOK_UINT = 285,
-    TOK_INT = 286,
-    TOK_NAME = 287,
-    TOK_NC_NAME = 288,
-    TOK_ESCAPED_NC_NAME = 289,
-    TOK_C_NAME = 290,
-    TOK_LITERAL = 291
+    TOK_FIXED = 280,
+    TOK_LEFT_ARROW = 281,
+    TOK_RIGHT_ARROW = 282,
+    TOK_HEX = 283,
+    TOK_UINT = 284,
+    TOK_INT = 285,
+    TOK_NAME = 286,
+    TOK_NC_NAME = 287,
+    TOK_ESCAPED_NC_NAME = 288,
+    TOK_C_NAME = 289,
+    TOK_LITERAL = 290
   };
 #endif
 

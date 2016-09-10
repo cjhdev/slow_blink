@@ -111,7 +111,6 @@ static VALUE cError;
     TYPE                "type" 
     SCHEMA              "schema"
     BINARY              "binary"
-    NUMBER              "number"
     FIXED               "fixed"
     LEFT_ARROW          "<-"
     RIGHT_ARROW         "->"

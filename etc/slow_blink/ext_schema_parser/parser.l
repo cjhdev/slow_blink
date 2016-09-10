@@ -96,7 +96,6 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 "namespace"         { return TOK_NAMESPACE; }
 "type"              { return TOK_TYPE; }
 "schema"            { return TOK_SCHEMA; }
-"number"            { return TOK_NUMBER; }
 "fixed"             { return TOK_FIXED; }
 "binary"            { return TOK_BINARY; }
 
