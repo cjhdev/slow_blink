@@ -36,26 +36,32 @@ module SlowBlink::Message
             @id
         end
 
+        # @return [Object] type contained by field
         def self.type
             @type
         end
 
+        # @param input [String] Blink compact form
+        # @param [Field] instance of anonymous subclass of Field
         def self.from_compact!(input)
             @type.from_compact!(input)
+        end
+
+        def self.from_native(native)
+            @type.from_native(native)
         end
 
         def initialize(value)
             @value = self.class.type.new(value)            
         end
 
-        def set(value)
-            @value.set(value)            
-        end
-
+        # @return [Object]
         def get
             @value.get
         end
 
+        # @param out [String] output appended to this string
+        # @return [String]
         def to_compact(out)
             @value.to_compact(out)
         end

@@ -21,16 +21,15 @@ module SlowBlink::Message
 
     class ENUMERATION
 
-        
-
         def self.from_compact!(input)
             self.new(input.getU32!)
         end
 
-    
+        def get
+            @value
+        end
 
-        # @param v [String]
-        def set(value)
+        def initialize(value)
             if value
                 if self.symbols[value]
                     @value = self.class.symbols[value]
@@ -41,18 +40,6 @@ module SlowBlink::Message
                 @value = nil
             else
                 raise Error.new "field may not be null"
-            end
-        end
-
-        def get
-            @value
-        end
-
-        def initialize(value)
-            if value
-                set(value)
-            else
-                @value = nil
             end
         end
         

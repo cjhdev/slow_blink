@@ -39,6 +39,7 @@ module SlowBlink
                 end                
                 taggedGroups = @taggedGroups
                 @top = Class.new(DynamicGroup) do
+                    @top = true
                     @opt = false
                     @groups = taggedGroups
                     @permitted = taggedGroups.keys                    
@@ -60,31 +61,19 @@ module SlowBlink
 
             # @api user
             #
-            # Create an instance of a group subclass
+            # Create an instance of a (tagged) group subclass
             #
-            # @note return value will be an *anonymous* *subclass* *instance* of {DynamicGroup} or {StaticGroup}
-            #
-            # @overload group(name, data)
+            # @note return value will be an *anonymous* *subclass* *instance* of {DynamicGroup}
             #           
-            #   @param name [String] name of group
-            #   @param data [Hash] bulk initialisation data
-            #   @return [StaticGroup,DynamicGroup] group instance
+            # @param name [String] name of group
+            # @param fields [Hash] 
+            # @param *extension [Array<DynamicGroup>] optional array of extensions
+            # @return [DynamicGroup] group instance
             #
-            # @overload group(name)
-            #   
-            #   @param name [String] name of group
-            #   @yield [Group] group instance to initalise
-            #   @return [StaticGroup,DynamicGroup] group instance            
-            #
-            def group(name, data=nil, &block)
+            def group(name, fields, *extension)
                 group = @top.groups.values.detect{|g|g.name == name}
-                if group                    
-                    top = @top.new(group.new(data))
-                    if block
-                        self.instance_exec(top, &block)
-                        # validate optional constraint here
-                    end
-                    top
+                if group
+                    @top.new(group.from_native(fields), *extension)
                 else
                     raise
                 end
@@ -100,14 +89,13 @@ module SlowBlink
             def _model_group(opt, group)
                 this = self
                 Class.new(StaticGroup) do
-                    @implements = group.class
                     @name = group.nameWithID.name
                     @id = group.nameWithID.id
                     @opt = opt
-                    @fields = group.fields.inject([]) do |fields, f|
-                        fields << this._model_field(f)                        
-                    end
-                    
+                    @fields = {}
+                    group.fields.each do |f|
+                        @fields[f.nameWithID.name] = this._model_field(f)
+                    end                    
                 end            
             end
 
@@ -121,7 +109,6 @@ module SlowBlink
             def _model_field(field)
                 this = self
                 Class.new(Field) do
-                    @implements = field.class
                     @opt = field.opt?
                     @name = field.nameWithID.name
                     @id = field.nameWithID.id
@@ -142,8 +129,8 @@ module SlowBlink
                 when SlowBlink::OBJECT
                     groups = @groups
                     permitted = @schema.tagged.keys
-                    klass = Class.new(DynamicGroup) do
-                        @implements = type.class
+                    Class.new(DynamicGroup) do
+                        @top = false
                         @opt = field.opt?                        
                         @groups = groups
                         @permitted = permitted                        
@@ -151,7 +138,7 @@ module SlowBlink
                 when SlowBlink::REF
                     if type.ref.kind_of? Group
                         if type.dynamic?
-                            groups = @groups
+                            groups = @taggedGroups
                             permitted = @schema.tagged.keys
                             @schema.tagged.each do |id, g|
                                 if g.group_kind_of?(type)
@@ -159,7 +146,7 @@ module SlowBlink
                                 end
                             end
                             Class.new(DynamicGroup) do
-                                @implements = type.class
+                                @top = false
                                 @name = name
                                 @opt = field.opt?
                                 @groups = groups
@@ -173,7 +160,6 @@ module SlowBlink
                     end
                 else                        
                     Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
-                        klass = 
                         @opt = field.opt?
                         @name = name
                         @type = type                        

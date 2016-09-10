@@ -24,10 +24,9 @@ This project is currently under development and not very useful.
 gem install slow_blink
 ~~~
 
-
 ## Examples
 
-### Serialise a String
+### Single Group
 
 ~~~ruby
 require 'slow_blink'
@@ -40,12 +39,99 @@ schema = SlowBlink::Schema.new(buffer)
 model = SlowBlink::Message::Model.new(schema)
 
 # create a message instance using the message model
-message = model.group "Hello" do |g|
-    g["greeting"] = "hello"
-end
+message = model.group "Hello", {"greeting" => "hello"}    
 
 # serialise the message instance
 compact_form = message.encode_compact
+
+# deserialise the string
+decoded = model.decode_compact(compact_form)
+
+# read the fields of a message instance
+decoded["greeting"]
+~~~
+
+### Static Subgroup
+
+~~~ruby
+require 'slow_blink'
+include SlowBlink
+
+syntax = <<-eos
+Topgroup/0 ->
+    string greeting,
+    Subgroup sub
+
+Subgroup ->
+    string name,
+    u8 number
+eos
+
+# parse schema and generate model
+model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
+
+# initialise a message instance
+message = model.group "Topgroup",
+    {
+        "greeting" => "hello",
+        "sub" => {
+            "name" => "my name",
+            "number => 42
+        }
+    }
+
+# encode message instance to compact form
+compact_form = message.encode_compact
+
+# decode compact form to a message instance
+decoded = model.decode_compact(compact_form)
+
+# read the fields of a message instance
+decoded["greeting"]
+decoded["sub"]["name"]
+decoded["sub"]["number"]
+~~~
+
+### Dynamic Subgroup
+
+~~~ruby
+require 'slow_blink'
+
+syntax = <<-eos
+Topgroup/0 ->
+    string greeting,
+    Subgroup sub
+
+Subgroup/1 ->
+    string name,
+    u8 number    
+eos
+
+# parse schema and generate model
+model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
+
+# initialise a message instance
+message = model.group "Topgroup",
+    {
+        "greeting" => "hello",
+        "sub" => model.group("Subgroup",
+            {
+                "name" => "my name",
+                "number => 42
+            }
+        )
+    }
+
+# encode message instance to compact form
+compact_form = message.encode_compact
+
+# decode compact form to a message instance
+decoded = model.decode_compact(compact_form)
+
+# read the fields of a message instance
+decoded["greeting"]
+decoded["sub"]["name"]
+decoded["sub"]["number"]
 ~~~
 
 ## Documentation

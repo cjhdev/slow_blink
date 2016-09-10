@@ -19,34 +19,37 @@
 
 module SlowBlink::Message
 
+    # A StaticGroup has zero or more Fields
     class StaticGroup
-        
-        def self.implements
-            @implements
-        end
 
+        # @param [Hash<Field>] group fields
         def self.fields
             @fields
         end
 
+        # @param [true,false] element is referenced by an optional field
         def self.opt?
             @opt
         end
 
+        # @return [Integer,nil] group identifier
         def self.id
             @id
         end
 
+        # @return [String] name of group
         def self.name
             @name
         end
 
+        # @param input [String] Blink compact form
+        # @return [StaticGroup] instance of anonymous subclass of StaticGroup
         def self.from_compact!(input)
             if @opt
                 if input.getPresent!
                     fields = {}
-                    @fields.each do |f|                    
-                        fields[f.name] = f.from_compact!(input)                            
+                    @fields.each do |fn, f|
+                        fields[fn] = f.from_compact!(input)
                     end
                     self.new(fields)
                 else
@@ -54,95 +57,139 @@ module SlowBlink::Message
                 end
             else
                 fields = {}
-                @fields.each do |f|
-                    fields[f.name] = f.from_compact!(input)                        
-                end                
+                @fields.each do |fn, f|
+                    fields[fn] = f.from_compact!(input)
+                end
                 self.new(fields)
             end            
         end
 
-        def []=(name, value)
-            if @value[name]
-                @value[name].set(value)
+        # Create a group from a native structure of native values
+        # @param native [Hash]
+        # @return [StaticGroup]
+        def self.from_native(native)
+            if native
+
+                if native.kind_of? Hash
+                    fields = {}
+                    native.each do |fn, f|
+                        if @fields[fn]
+                            fields[fn] = @fields[fn].from_native(f)
+                        else
+                            raise "unknown field '#{fn}'"
+                        end
+                    end
+                    self.new(fields)                    
+                else
+                    raise "expecting a hash"
+                end
             else
-                raise "field #{name} is not defined in this group"
-            end                    
+                self.new(nil)
+            end
         end
 
+        def each(&block)
+            if @present
+                @value.values.each(&block)
+            end
+        end
+
+        # Call get on field 'name'
+        # @see Field#get
+        # @param name [String] name of field
+        # @return [Object]        
         def [](name)
-            if @value[name]
-                @value[name].get
+            if @present
+                if @value[name]
+                    @value[name].get                
+                else
+                    raise "field #{name} is not defined in this group"
+                end
             else
-                raise "field #{name} is not defined in this group"
+                raise "group is not instanciated"
             end
         end
 
-        def set(value)            
-            if value
-                self.class.fields.each do |f|
-                    @value[f.name].set(value[f.name])
-                    @empty = false
-                end                    
-            elsif self.class.opt?                
-                @empty = true
-            else
-                raise "this group cannot be NULL"
-            end
-        end
-
+        # Get group fields
+        # @return [Hash] name => value for each field
         def get
-            @value
-        end
-
-        def initialize(fields)
-            empty = false
-            @value = self.class.fields.inject({}) do |value, f|                        
-                value[f.name] = f.new(nil)
-            end                            
-            if fields
-                set(fields.to_h)            
+            if @present
+                self
+            else
+                nil
             end
         end
 
+        # Create a Group
+        #
+        # @param fields [Hash] associative array of slow blink objects
+        # @param fields [nil] empty
+        def initialize(fields)
+            @present = false
+            @value = {}
+            if fields
+                if fields.kind_of? Hash
+                    fields.each do |fn, f|
+                        if self.class.fields[fn] and f.is_a? self.class.fields[fn].type
+                            @value[fn] = f
+                            @present = true
+                        else
+                            raise "unexpected object: #{f.inspect}"
+                        end
+                    end
+                else
+                    raise "unexpected input"
+                end
+            end
+            self.class.fields.each do |fn, f|
+                if @value[fn].nil?
+                    @value[fn] = f.new(nil)
+                end
+            end            
+        end
+        
         def fields
             @value
         end
 
         def to_compact(out)
-            if @value
+            if @present                            
                 if self.class.opt?
                     out.putPresent
-                    self.class.fields.each do |f|
-                        @value[f.name].to_compact(out)
+                    @value.each do |fn, fv|
+                        fv.to_compact(out)
                     end
                     out                    
                 else
-                    self.class.fields.each do |f|
-                        @value[f.name].to_compact(out)
+                    @value.each do |fn, fv|
+                        fv.to_compact(out)
                     end
                     out                                        
-                end
+                end                
             else
                 out.putPresent(false)
             end
         end
 
-        def to_h
-            @value
-        end
-
     end
 
+    # A DynamicGroup has a StaticGroup which may be restricted by StaticGroup::id according to DynamicGroup::permitted
     class DynamicGroup
-    
+
+        def self.top?
+            @top
+        end
+
         def self.groups
             @groups
         end
 
+        # @return [Array<Integer>] Array of group IDs that can be encapsulated by this DynamicGroup
         def self.permitted
             @permitted
         end
 
+        # @param [true,false] DynamicGroup is referenced by an optional field
         def self.opt?
             @opt
         end
@@ -154,7 +201,12 @@ module SlowBlink::Message
                 group = @groups[id]
                 if group
                     if @permitted.include? group.id
-                        self.new(group.from_compact!(buf))
+                        group = group.from_compact!(buf)
+                        extensions = []
+                        while buf.size > 0
+                            extensions << self.from_compact!(buf)
+                        end
+                        self.new(group, *extensions)
                     else
                         raise Error.new "W15: Group is known but unexpected"
                     end
@@ -172,11 +224,16 @@ module SlowBlink::Message
             end
         end
 
-        def []=(name, value)
-            if @value
-                @value[name] = value
+        # A DynamicGroup can only be expressed "natively" as a DynamicGroup instance
+        # 
+        # @param native [DynamicGroup]
+        def self.from_native(native)        
+            if native
+                self.new(native.group, *native.extension)
+            elsif @opt
+                self.new(nil)
             else
-                raise "undefined dynamic group"
+                raise "cannot be null"
             end
         end
 
@@ -188,37 +245,55 @@ module SlowBlink::Message
             end
         end
 
-        def set(value)
-            if value
-                if self.class.groups.values.include? value.class
-                    if self.class.permitted.include? value.class.id
-                        @value = value
-                    else
-                        raise "group is not a permitted group"
-                    end
-                else
-                    raise "value is not a group instance"
-                end
-            elsif self.class.opt?
-                @value = nil
-            else
-                raise
-            end        
-        end
-
         def get
             @value
         end
 
-        def initialize(value)
-            if value
-                set(value)
+        def group
+            @value
+        end
+
+        def extension
+            @extension
+        end
+
+        def each(&block)
+            if @value
+                @value.each(&block)                            
+            end
+        end
+
+        def initialize(group, *extension)
+            if group
+                # is group one of the groups we understand?
+                if self.class.groups.values.detect{|g| group.is_a? g} 
+                    # is this group permitted?
+                    if self.class.permitted.include? group.class.id
+                        # do we understand the extensions?
+                        extension.each do |e|
+                            if !self.class.groups.values.detect{|g| group.is_a? g}
+                                raise "extension must be a DynamicGroup subclass instance"
+                            end
+                        end
+                        @value = group
+                        @extension = extension                    
+                    else                        
+                        raise "group valid but not expected"
+                    end
+                else
+                    raise "expecting DynamicGroup subclass instance"
+                end
             else
                 @value = nil
+                @extension = []
             end
         end               
 
-        def to_compact(out="")
+        # Encode {Group} as Blink compact form
+        #
+        # @param out [String] string to append to
+        # @return [String]
+        def to_compact(out)
             if @value
                 group = @value.to_compact("".putU64(@value.class.id))
                 out.putU32(group.size)
@@ -235,11 +310,9 @@ module SlowBlink::Message
         # @return [String]
         #
         def encode_compact
-            to_compact
+            to_compact("")
         end        
 
     end
-
-    
 
 end

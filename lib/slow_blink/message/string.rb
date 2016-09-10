@@ -21,10 +21,12 @@ module SlowBlink::Message
 
     class STRING
 
+        # @return [String] name of field
         def self.name
             @name
         end
 
+        # @param [true,false] element is referenced by an optional field
         def self.opt?
             @opt
         end
@@ -44,6 +46,11 @@ module SlowBlink::Message
             end
         end
 
+        def self.from_native(native)
+            self.new(native)
+        end
+
+        # @param [Integer,nil] optional maximum size of string in bytes
         def self.size
             @type.size
         end
@@ -52,17 +59,17 @@ module SlowBlink::Message
             @value
         end
 
-        def set(value)
+        def initialize(value)
             if value
                 if value.kind_of? String
                     if !self.class.size or value.size <= self.class.size
-                        @value = value
+                        @value = value.to_s
                     else
                         raise Error.new "string cannot be larger than #{self.class.size} bytes"
                     end
                 else
                     raise Error.new "expecting a string type"
-                end
+                end            
             elsif self.class.opt?
                 @value = nil
             else
@@ -70,19 +77,10 @@ module SlowBlink::Message
             end
         end
 
-        def initialize(value)
-            @value = nil
-            if value
-                set(value)
-            end
-        end
-
         def to_compact(out)
             out.putString(@value)
         end
 
-        
-        
     end
 
 end

@@ -25,10 +25,14 @@ module SlowBlink::Message
             self.new(input.getF64!)
         end
 
-        def set(value)
+        def get
+            @value
+        end
+
+        def initialize(value)
             if value
                 if value.kind_of? Numeric
-                    @value = value
+                    @value = value.to_f
                 else
                     raise "expecting float"
                 end
@@ -36,18 +40,6 @@ module SlowBlink::Message
                 @value = nil
             else
                 raise Error.new "value unacceptable"
-            end
-        end
-
-        def get
-            @value
-        end
-
-        def initialize(value)
-            if value
-                set(value)
-            else
-                @value = nil
             end
         end
 

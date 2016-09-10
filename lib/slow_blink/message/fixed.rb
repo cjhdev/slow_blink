@@ -33,11 +33,15 @@ module SlowBlink::Message
             @type.size
         end
 
-        def set(value)
+        def get
+            @value
+        end
+
+        def initialize(value)
             if value
                 if value.kind_of? String
                     if value.size == self.class.size
-                        @value = value
+                        @value = value.to_s
                     else
                         raise Error.new "must be #{@size} bytes"
                     end
@@ -48,18 +52,6 @@ module SlowBlink::Message
                 @value = nil
             else
                 raise Error.new "value unacceptable"
-            end
-        end
-
-        def get
-            @value
-        end
-
-        def initialize(value)
-            if value
-                set(value)
-            else
-                @value = nil
             end
         end
 

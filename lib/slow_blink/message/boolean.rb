@@ -25,7 +25,11 @@ module SlowBlink::Message
             self.new(input.getBool!)
         end
 
-        def set(value)
+        def get
+            @value
+        end
+
+        def initialize(value)
             if value
                 if value.kind_of? TrueClass or value.kind_of? FalseClass
                     @value = value
@@ -36,18 +40,6 @@ module SlowBlink::Message
                 @value = nil
             else
                 raise Error.new "value unacceptable"
-            end
-        end
-
-        def get
-            @value
-        end
-
-        def initialize(value)
-            if value
-                set(value)
-            else
-                @value = nil
             end
         end
 

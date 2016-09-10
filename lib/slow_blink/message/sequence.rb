@@ -34,11 +34,15 @@ module SlowBlink::Message
             end
         end
 
-        # @param v [Array,nil]
-        def set(value)
+        def get
+            @value
+        end
+
+        # @param value [Array]
+        def initialize(value)
             if value
                 if value.kind_of? Array
-                    @value = v
+                    @value = value
                 else
                     raise Error.new "bad type"
                 end
@@ -49,23 +53,10 @@ module SlowBlink::Message
             end
         end
 
-        def get
-            @value
-        end
-
-        # @param value [Array]
-        def initialize(value)
-            if value
-                set(value)
-            else
-                @value = nil
-            end
-        end
-
         def to_compact(out)
             if @value                
-                @value.inject(out.putU32(@value.size)) do |out, v|
-                    out << v.to_compact
+                @value.inject(out.putU32(@value.size)) do |o, v|
+                    o << v.to_compact
                 end
             else
                 out.putU32(nil)

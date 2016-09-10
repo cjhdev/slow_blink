@@ -21,19 +21,32 @@ module SlowBlink::Message
 
     class INTEGER
 
+        # @return [String] name of field
         def self.name
             @name
         end
 
+        # @param [true,false] element is referenced by an optional field
         def self.opt?
             @opt
         end
 
+        # @param value [Integer]
+        # @return [true,false] integer value is within permitted range
         def self.in_range?(value)
             @type.class::RANGE.cover? value
         end
 
-        def set(value)
+        def self.from_native(native)
+            self.new(native)
+        end
+
+        def get
+            @value
+        end
+
+        # @param value [Integer, nil]
+        def initialize(value)
             if value
                 if value.kind_of? Integer
                     if self.class.in_range?(value)
@@ -50,34 +63,18 @@ module SlowBlink::Message
                 raise Error.new "value unacceptable"
             end
         end
-        
-        def get
-            @value
-        end
 
-        # @param value [Integer, nil]
-        def initialize(value)
-            if value
-                set(value)
-            else
-                @value = nil
-            end
-        end
-
-        
     end
 
     class U8 < INTEGER
 
-    
         def self.from_compact!(input)
             self.new(input.getU8!)
         end
 
         def to_compact(out)
             out.putU8(@value)
-        end
-        
+        end        
         
     end
 

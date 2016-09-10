@@ -20,14 +20,14 @@
 require "test/unit"
 require 'slow_blink'
 
-class TestModelStaticGroup < Test::Unit::TestCase
+class TestModelDynamicGroup < Test::Unit::TestCase
 
     include SlowBlink
 
     def setup
 
         rawSchema = <<-eos
-        StaticGroup ->
+        DynamicGroup/0x01 ->
             string one,
             u8 two,
             u8 three
@@ -36,13 +36,13 @@ class TestModelStaticGroup < Test::Unit::TestCase
             string one,
             u8 two,
             u8 three,
-            StaticGroup four            
+            DynamicGroup * four            
         eos
 
         schema = Schema.new(SchemaBuffer.new(rawSchema))
         @model = Message::Model.new(schema)
         
-    end
+    end 
 
     def test_init
 
@@ -50,11 +50,11 @@ class TestModelStaticGroup < Test::Unit::TestCase
             "one" => "hello",
             "two" => 42,
             "three" => 42,
-            "four" => {
+            "four" => @model.group("DynamicGroup", {
                 "one" => "world",
                 "two" => 42,
                 "three" => 42
-            }
+            })
         }
 
         assert_equal("hello", message["one"])
@@ -66,45 +66,4 @@ class TestModelStaticGroup < Test::Unit::TestCase
 
     end
     
-    def test_init_with_extension
-
-        message = @model.group "Test",
-            {                
-                "one" => "hello",
-                "two" => 42,
-                "three" => 42,
-                "four" => {
-                    "one" => "world",
-                    "two" => 42,
-                    "three" => 42
-                }
-            },
-            @model.group("Test",
-                "one" => "hello",
-                "two" => 42,
-                "three" => 42,
-                "four" => {
-                    "one" => "world",
-                    "two" => 42,
-                    "three" => 42
-                }
-            )
-            
-        assert_equal("hello", message["one"])
-        assert_equal(42, message["two"])
-        assert_equal(42, message["three"])
-        assert_equal("world", message["four"]["one"])
-        assert_equal(42, message["four"]["two"])        
-        assert_equal(42, message["four"]["three"])
-
-        assert_equal(1, message.extension.size)
-        assert_equal("hello", message.extension.first["one"])
-        assert_equal(42, message.extension.first["two"])
-        assert_equal(42, message.extension.first["three"])
-        assert_equal("world", message.extension.first["four"]["one"])
-        assert_equal(42, message.extension.first["four"]["two"])        
-        assert_equal(42, message.extension.first["four"]["three"])
-          
-    end
-
 end

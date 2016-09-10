@@ -26,7 +26,11 @@ module SlowBlink::Message
             self.new(input.getI64!)
         end
 
-        def set(value)
+        def get
+            @value
+        end
+
+        def initialize(value)
             if value
                 raise
             elsif self.class.opt?
@@ -36,22 +40,9 @@ module SlowBlink::Message
             end
         end
 
-        def get
-            @value
-        end
-
-        def initialize(value)
-            if value
-                set(value)
-            else
-                @value = nil
-            end
-        end
-
         def to_compact(out)
             out.putI64(@value)
         end
-
     
     end
 
