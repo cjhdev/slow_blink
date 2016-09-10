@@ -67,10 +67,8 @@ Subgroup ->
     u8 number
 eos
 
-# parse schema and generate model
 model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
 
-# initialise a message instance
 message = model.group "Topgroup", {
     "greeting" => "hello",
     "sub" => {
@@ -79,13 +77,10 @@ message = model.group "Topgroup", {
     }
 }
 
-# encode message instance to compact form
 compact_form = message.encode_compact
 
-# decode compact form to a message instance
 decoded = model.decode_compact(compact_form)
 
-# read the fields of a message instance
 decoded["greeting"]
 decoded["sub"]["name"]
 decoded["sub"]["number"]
@@ -95,6 +90,7 @@ decoded["sub"]["number"]
 
 ~~~ruby
 require 'slow_blink'
+include SlowBlink
 
 syntax = <<-eos
 Topgroup/0 ->
@@ -106,10 +102,8 @@ Subgroup/1 ->
     u8 number    
 eos
 
-# parse schema and generate model
 model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
 
-# initialise a message instance
 message = model.group "Topgroup", {
     "greeting" => "hello",
     "sub" => model.group("Subgroup", {
@@ -118,16 +112,57 @@ message = model.group "Topgroup", {
     })
 }
 
-# encode message instance to compact form
 compact_form = message.encode_compact
 
-# decode compact form to a message instance
 decoded = model.decode_compact(compact_form)
 
-# read the fields of a message instance
 decoded["greeting"]
 decoded["sub"]["name"]
 decoded["sub"]["number"]
+~~~
+
+### Message Extensions
+
+~~~ruby
+require 'slow_blink'
+include SlowBlink
+
+syntax = <<-eos
+Mail/7 ->
+    string Subject,
+    string To,
+    string From,
+    string Body
+Trace/8 ->
+    string Hop
+eos
+
+model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
+
+message = model.group("Mail",    
+    {
+        "Subject" => "Hello",
+        "To" => "you",
+        "From" => "me",
+        "Body" => "How are you?"    
+    },
+    model.group("Trace", {
+        "Hop" => "local.eg.org"
+    }),
+    model.group("Trace", {
+        "Hop" => "mail.eg.org"
+    })
+)
+
+compact_form = message.encode_compact
+decoded = model.decode_compact(compact_form)
+
+decoded["Subject"]
+decoded["To"]
+decoded["From"]
+decoded["Body"]
+decoded.extension[0]["Hop"]
+decoded.extension[1]["Hop"]
 ~~~
 
 ## Documentation

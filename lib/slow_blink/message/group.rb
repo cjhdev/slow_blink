@@ -295,8 +295,11 @@ module SlowBlink::Message
         def to_compact(out)
             if @value
                 group = @value.to_compact("".putU64(@value.class.id))
+                @extension.each do |e|
+                    e.to_compact(group)
+                end
                 out.putU32(group.size)
-                out << group                    
+                out << group                          
             else
                 out.putU32(nil)
             end
