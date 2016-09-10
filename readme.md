@@ -76,7 +76,7 @@ message = model.group "Topgroup",
         "greeting" => "hello",
         "sub" => {
             "name" => "my name",
-            "number => 42
+            "number" => 42
         }
     }
 
@@ -117,7 +117,7 @@ message = model.group "Topgroup",
         "sub" => model.group("Subgroup",
             {
                 "name" => "my name",
-                "number => 42
+                "number" => 42
             }
         )
     }
