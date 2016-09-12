@@ -1,20 +1,27 @@
 require 'slow_blink'
+include SlowBlink
 
 # create a schema from Blink syntax
-buffer = SlowBlink::SchemaBuffer.new("Hello/0 -> string greeting")
-schema = SlowBlink::Schema.new(buffer)
+buffer = SchemaBuffer.new("Hello/0 -> string greeting")
+schema = Schema.new(buffer)
 
 # generate a message model from the schema
-model = SlowBlink::Message::Model.new(schema)
+model = Message::Model.new(schema)
 
 # create a message instance using the message model
-message = model.group "Hello", {"greeting" => "hello"}    
+message = model.group("Hello").new("greeting" => "hello")
 
-# serialise the message instance
+# same message but by deferred initialisation
+equivalent_message = model.group("Hello").new
+equivalent_message["greeting"] = "hello"
+
+# convert to compact form...
 compact_form = message.encode_compact
 
 # deserialise the string
 decoded = model.decode_compact(compact_form)
 
 # read the fields of a message instance
-decoded["greeting"]
+puts decoded["greeting"]
+
+

@@ -4,7 +4,6 @@ SlowBlink
 [![Build Status](https://travis-ci.org/cjhdev/slow_blink.svg?branch=master)](https://travis-ci.org/cjhdev/slow_blink)
 [![Gem Version](https://badge.fury.io/rb/slow_blink.svg)](https://badge.fury.io/rb/slow_blink)
 
-
 SlowBlink is a Ruby implementation of the [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
 
 This project is currently under development and not very useful.
@@ -30,25 +29,30 @@ gem install slow_blink
 
 ~~~ruby
 require 'slow_blink'
+include SlowBlink
 
 # create a schema from Blink syntax
-buffer = SlowBlink::SchemaBuffer.new("Hello/0 -> string greeting")
-schema = SlowBlink::Schema.new(buffer)
+buffer = SchemaBuffer.new("Hello/0 -> string greeting")
+schema = Schema.new(buffer)
 
 # generate a message model from the schema
-model = SlowBlink::Message::Model.new(schema)
+model = Message::Model.new(schema)
 
 # create a message instance using the message model
-message = model.group "Hello", {"greeting" => "hello"}    
+message = model.group("Hello").new("greeting" => "hello")
 
-# serialise the message instance
+# same message but by deferred initialisation
+equivalent_message = model.group("Hello").new
+equivalent_message["greeting"] = "hello"
+
+# convert to compact form...
 compact_form = message.encode_compact
 
 # deserialise the string
 decoded = model.decode_compact(compact_form)
 
 # read the fields of a message instance
-decoded["greeting"]
+puts decoded["greeting"]
 ~~~
 
 ### Static Subgroup
@@ -58,32 +62,38 @@ require 'slow_blink'
 include SlowBlink
 
 syntax = <<-eos
-Topgroup/0 ->
-    string greeting,
-    Subgroup sub
-
-Subgroup ->
-    string name,
-    u8 number
+StandardHeader ->
+    u64 SeqNo,
+    millitime SendingTime
+MyMessage/2 ->
+    StandardHeader Header,
+    string Text
 eos
 
 model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
 
-message = model.group "Topgroup", {
-    "greeting" => "hello",
-    "sub" => {
-        "name" => "my name",
-        "number" => 42
-    }
+message = model.group("MyMessage").new(
+    "Header" => {
+        "SeqNo" => 1,
+        "SendingTime" => "2012-10-30 00:00:00 GMT+1"
+    },
+    "Text" => "my name"
+)
+
+# or, by deferred initialisation
+deferred_init = model.group("MyMessage").new
+deferred_init["Header"] = model.group("StandardHeader").new
+deferred_init["Header"]["SeqNo"] = 1
+deferred_init["Header"]["SendingTime"] = "2012-10-30 00:00:00 GMT+1"
+deferred_init["Text"] = "my name"
+
+# or, by mixed deferred initialisation
+mixed_deferred_init = model.group("MyMessage").new
+mixed_deferred_init["Header"] = {
+    "SeqNo" => 1,
+    "SendingTime" => "2012-10-30 00:00:00 GMT+1"
 }
-
-compact_form = message.encode_compact
-
-decoded = model.decode_compact(compact_form)
-
-decoded["greeting"]
-decoded["sub"]["name"]
-decoded["sub"]["number"]
+mixed_deferred_init["Text"] = "my name"
 ~~~
 
 ### Dynamic Subgroup
@@ -139,30 +149,17 @@ eos
 
 model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
 
-message = model.group("Mail",    
-    {
-        "Subject" => "Hello",
-        "To" => "you",
-        "From" => "me",
-        "Body" => "How are you?"    
-    },
-    model.group("Trace", {
-        "Hop" => "local.eg.org"
-    }),
-    model.group("Trace", {
-        "Hop" => "mail.eg.org"
-    })
+# create base message
+message = model.group("Mail").new(        
+    "Subject" => "Hello",
+    "To" => "you",
+    "From" => "me",
+    "Body" => "How are you?"
 )
 
-compact_form = message.encode_compact
-decoded = model.decode_compact(compact_form)
-
-decoded["Subject"]
-decoded["To"]
-decoded["From"]
-decoded["Body"]
-decoded.extension[0]["Hop"]
-decoded.extension[1]["Hop"]
+# append two extensions to "Mail"
+message.extension << model.group("Trace").new("Hop" => "local.eg.org")
+message.extension << model.group("Trace").new("Hop" => "mail.eg.org")
 ~~~
 
 ## Documentation
