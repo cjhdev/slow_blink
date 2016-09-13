@@ -109,7 +109,7 @@ message = model.group("Canvas").new(
         model.group("Rect").new("Area" => 6.0, "Width" => 2, "Height" => 3),
         model.group("Circle").new("Area" => 28.3, "Radius" => 3)
     ]
-)]
+)
 ~~~
 
 ### Message Extensions
