@@ -18,6 +18,6 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 module SlowBlink
-    class Error < Exception
+    class Error < StandardError
     end
 end

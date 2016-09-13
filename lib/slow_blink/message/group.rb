@@ -152,7 +152,7 @@ module SlowBlink::Message
             end
         end
 
-        def to_compact(out)
+        def to_compact(out)            
             group = "".putU64(self.class.id)
             @value.each do |fn, fv|
                 fv.to_compact(group)
@@ -164,7 +164,7 @@ module SlowBlink::Message
                 end
             end
             out.putU32(group.size)
-            out << group        
+            out << group            
         end
 
     end
@@ -219,6 +219,10 @@ module SlowBlink::Message
             @groups
         end
 
+        def self.taggedGroups
+            @taggedGroups
+        end
+
         # @return [Array<Integer>] Array of group IDs that can be encapsulated by this DynamicGroup
         def self.permitted
             @permitted
@@ -228,7 +232,7 @@ module SlowBlink::Message
             buf = input.getBinary!
             if buf.size > 0
                 id = buf.getU64!
-                group = @groups[id]
+                group = @taggedGroups[id]
                 if group
                     if @permitted.include? group.id
                         self.new(group.from_compact!(buf))
@@ -253,7 +257,7 @@ module SlowBlink::Message
 
         def set(value)        
             # is group one of the groups we understand?
-            if self.class.groups.values.detect{|g| value.is_a? g} 
+            if self.class.taggedGroups.values.detect{|g| value.is_a? g} 
                 # is this group permitted?
                 if self.class.permitted.include? value.class.id
                     @value = value

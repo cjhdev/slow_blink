@@ -54,6 +54,8 @@ module SlowBlink
         # @return [Hash<Group>]
         attr_reader :tagged
 
+        attr_reader :groups
+
         # @return [Array<Namespace>]
         attr_reader :ns
 
@@ -117,6 +119,18 @@ module SlowBlink
             @ns.each do |name, ns|
                 if !ns.link(self)
                     error = true
+                end
+            end
+
+            # create list of all groups with qualified names
+            @groups = {}
+            @ns.each do |name, ns|
+                ns.groups.each do |g|
+                    if name
+                        @groups[g.nameWithID.name.prepend "#{name}:"] = g
+                    else
+                        @groups[g.nameWithID.name] = g
+                    end                
                 end
             end
 

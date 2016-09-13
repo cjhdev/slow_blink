@@ -21,7 +21,10 @@ module SlowBlink
 
     module Message
 
-        class Error < Exception
+        class Error < StandardError
+        end
+
+        class DecodeError
         end
 
         class Model
@@ -33,17 +36,20 @@ module SlowBlink
             # @param schema [SlowBlink::Schema]
             def initialize(schema)
                 @schema = schema
-                @taggedGroups = {}                
-                schema.tagged.each do |id, g|
+                @taggedGroups = {}
+                @groups = {}
+                schema.groups.each do |name, g|
                     this = self
-                    @taggedGroups[id] = Class.new(Group) do
-                        @model = this
+                    @groups[name] = Class.new(Group) do
                         @name = g.nameWithID.name
                         @id = g.nameWithID.id
                         @fields = {}
                         g.fields.each do |f|
                             @fields[f.nameWithID.name] = this._model_field(f)
                         end                   
+                    end
+                    if g.nameWithID.id
+                        @taggedGroups[g.nameWithID.id] = @groups[name]
                     end
                 end                          
             end
@@ -63,6 +69,7 @@ module SlowBlink
                     id = buf.getU64!
                     groupClass = @taggedGroups[id]
                     if groupClass
+                        puts groupClass
                         group = groupClass.from_compact!(buf)                        
                     else
                         raise Error.new "W2: Group id #{group.id} is unknown"
@@ -81,8 +88,7 @@ module SlowBlink
             # @return [nil] group not defined
             #
             def group(name)
-                # todo: this should be a hash of all group defs
-                @taggedGroups.values.detect{|g|g.name==name}
+                @groups[name]            
             end
 
             # @api private
@@ -111,7 +117,8 @@ module SlowBlink
                 case type.class
                 when SlowBlink::OBJECT
                     groups = @groups
-                    permitted = @schema.tagged.keys
+                    taggedGroups = @taggedGroups
+                    permitted = @taggedGroups.keys
                     Class.new(DynamicGroup) do
                         @opt = opt
                         @groups = groups
@@ -120,8 +127,9 @@ module SlowBlink
                 when SlowBlink::REF
                     if type.ref.kind_of? SlowBlink::Group
                         if type.dynamic?
-                            groups = @taggedGroups
-                            permitted = @schema.tagged.keys
+                            taggedGroups = @taggedGroups
+                            groups = @groups
+                            permitted = @taggedGroups.keys
                             @schema.tagged.each do |id, g|
                                 if g.group_kind_of?(type)
                                     permitted << id
@@ -129,6 +137,7 @@ module SlowBlink
                             end
                             Class.new(DynamicGroup) do
                                 @opt = opt
+                                @taggedGroups = taggedGroups
                                 @groups = groups
                                 @permitted = permitted
                             end                               
