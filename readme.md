@@ -48,10 +48,10 @@ equivalent_message["greeting"] = "hello"
 # convert to compact form...
 compact_form = message.encode_compact
 
-# deserialise the string
+# convert from compact form...
 decoded = model.decode_compact(compact_form)
 
-# read the fields of a message instance
+# read the field values of a message instance
 puts decoded["greeting"]
 ~~~
 
@@ -79,21 +79,6 @@ message = model.group("MyMessage").new(
     },
     "Text" => "my name"
 )
-
-# or, by deferred initialisation
-deferred_init = model.group("MyMessage").new
-deferred_init["Header"] = model.group("StandardHeader").new
-deferred_init["Header"]["SeqNo"] = 1
-deferred_init["Header"]["SendingTime"] = "2012-10-30 00:00:00 GMT+1"
-deferred_init["Text"] = "my name"
-
-# or, by mixed deferred initialisation
-mixed_deferred_init = model.group("MyMessage").new
-mixed_deferred_init["Header"] = {
-    "SeqNo" => 1,
-    "SendingTime" => "2012-10-30 00:00:00 GMT+1"
-}
-mixed_deferred_init["Text"] = "my name"
 ~~~
 
 ### Dynamic Subgroup
@@ -103,32 +88,28 @@ require 'slow_blink'
 include SlowBlink
 
 syntax = <<-eos
-Topgroup/0 ->
-    string greeting,
-    Subgroup * sub
+Shape ->
+    decimal Area
+    
+Rect/3 : Shape ->
+    u32 Width,
+    u32 Height
 
-Subgroup/1 ->
-    string name,
-    u8 number    
+Circle/4 : Shape ->
+    u32 Radius
+
+Canvas/5 ->
+    Shape * [] Shapes    
 eos
 
 model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
 
-message = model.group "Topgroup", {
-    "greeting" => "hello",
-    "sub" => model.group("Subgroup", {
-        "name" => "my name",
-        "number" => 42
-    })
-}
-
-compact_form = message.encode_compact
-
-decoded = model.decode_compact(compact_form)
-
-decoded["greeting"]
-decoded["sub"]["name"]
-decoded["sub"]["number"]
+message = model.group("Canvas").new(
+    "Shapes" => [
+        model.group("Rect").new("Area" => 6.0, "Width" => 2, "Height" => 3),
+        model.group("Circle").new("Area" => 28.3, "Radius" => 3)
+    ]
+)]
 ~~~
 
 ### Message Extensions
@@ -143,13 +124,13 @@ Mail/7 ->
     string To,
     string From,
     string Body
+    
 Trace/8 ->
     string Hop
 eos
 
 model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
 
-# create base message
 message = model.group("Mail").new(        
     "Subject" => "Hello",
     "To" => "you",
@@ -157,7 +138,7 @@ message = model.group("Mail").new(
     "Body" => "How are you?"
 )
 
-# append two extensions to "Mail"
+# append two extensions to message
 message.extension << model.group("Trace").new("Hop" => "local.eg.org")
 message.extension << model.group("Trace").new("Hop" => "mail.eg.org")
 ~~~
