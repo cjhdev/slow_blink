@@ -43,27 +43,57 @@ module SlowBlink::Message
 
         # @param input [String] Blink compact form
         # @param [Field] instance of anonymous subclass of Field
-        def self.from_compact!(input)
-            @type.from_compact!(input)
-        end
-
-        def self.from_native(native)
-            @type.from_native(native)
+        def self.from_compact!(input)        
+            self.new(@type.from_compact!(input))
         end
 
         def initialize(value)
-            @value = self.class.type.new(value)            
+            @opt = self.class.opt?
+            @type = self.class.type
+            if value.is_a? self.class.type
+                @value = value
+            elsif value
+                @value = self.class.type.new(value)
+            else
+                @value = nil
+            end
+        end
+
+        def set(value)
+            if value
+                if value.is_a? self.class.type
+                    @value = value                    
+                elsif @value                
+                    @value.set(value)
+                else
+                    @value = self.class.type.new(value)                
+                end
+            elsif @opt
+                @value = nil
+            else
+                raise Error.new "field can not be set to null"
+            end            
         end
 
         # @return [Object]
         def get
-            @value.get
+            if @value
+                @value.get
+            else
+                nil
+            end
         end
 
         # @param out [String] output appended to this string
         # @return [String]
         def to_compact(out)
-            @value.to_compact(out)
+            if @value
+                @value.to_compact(out)
+            elsif @opt
+                out.putNull
+            else
+                raise Error.new "field '#{self.name}' must not be null"
+            end
         end
 
     end

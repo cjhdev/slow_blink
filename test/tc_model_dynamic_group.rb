@@ -46,16 +46,16 @@ class TestModelDynamicGroup < Test::Unit::TestCase
 
     def test_init
 
-        message = @model.group "Test", {                
+        message = @model.group("Test").new(
             "one" => "hello",
             "two" => 42,
             "three" => 42,
-            "four" => @model.group("DynamicGroup", {
+            "four" => @model.group("DynamicGroup").new( 
                 "one" => "world",
                 "two" => 42,
                 "three" => 42
-            })
-        }
+            )
+        )
 
         assert_equal("hello", message["one"])
         assert_equal(42, message["two"])

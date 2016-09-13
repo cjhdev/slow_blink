@@ -20,12 +20,21 @@
 module SlowBlink::Message
 
     class FIXED
+
+        def self.opt?
+            @opt
+        end
         
         def self.from_compact!(input)
-            if opt?
-                self.new(input.getFixedOptional!)
+            if @opt
+                value = input.getFixedOptional!
+            else
+                value = input.getFixed!
+            end
+            if value
+                self.new(value)
             else                    
-                self.new(input.getFixed!)
+                value
             end
         end
 
@@ -37,26 +46,25 @@ module SlowBlink::Message
             @value
         end
 
-        def initialize(value)
-            if value
-                if value.kind_of? String
-                    if value.size == self.class.size
-                        @value = value.to_s
-                    else
-                        raise Error.new "must be #{@size} bytes"
-                    end
+        def set(value)
+            if value.kind_of? String
+                if value.size == self.class.size
+                    @value = value.to_s
                 else
-                    raise "expecting string"
+                    raise Error.new "must be #{@size} bytes"
                 end
-            elsif self.class.opt?
-                @value = nil
             else
-                raise Error.new "value unacceptable"
+                raise "expecting string"
             end
         end
 
+        def initialize(value)
+            @opt = self.class.opt?
+            set(value)                
+        end
+
         def to_compact(out)
-            if self.opt?
+            if @opt
                 out.putFixedOptional(@value)
             else
                 out.putFixed(@value)

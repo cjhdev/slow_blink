@@ -46,7 +46,7 @@ class TestModelStaticGroup < Test::Unit::TestCase
 
     def test_init
 
-        message = @model.group "Test", {                
+        message = @model.group("Test").new(
             "one" => "hello",
             "two" => 42,
             "three" => 42,
@@ -55,7 +55,7 @@ class TestModelStaticGroup < Test::Unit::TestCase
                 "two" => 42,
                 "three" => 42
             }
-        }
+        )
 
         assert_equal("hello", message["one"])
         assert_equal(42, message["two"])
@@ -65,30 +65,30 @@ class TestModelStaticGroup < Test::Unit::TestCase
         assert_equal(42, message["four"]["three"])        
 
     end
-    
+
     def test_init_with_extension
 
-        message = @model.group "Test",
-            {                
-                "one" => "hello",
+        message = @model.group("Test").new(
+            "one" => "hello",
+            "two" => 42,
+            "three" => 42,
+            "four" => {
+                "one" => "world",
                 "two" => 42,
-                "three" => 42,
-                "four" => {
-                    "one" => "world",
-                    "two" => 42,
-                    "three" => 42
-                }
-            },
-            @model.group("Test",
-                "one" => "hello",
+                "three" => 42
+            }
+        )
+
+        message.extension << @model.group("Test").new(
+            "one" => "hello",
+            "two" => 42,
+            "three" => 42,
+            "four" => {
+                "one" => "world",
                 "two" => 42,
-                "three" => 42,
-                "four" => {
-                    "one" => "world",
-                    "two" => 42,
-                    "three" => 42
-                }
-            )
+                "three" => 42
+            }
+        )
             
         assert_equal("hello", message["one"])
         assert_equal(42, message["two"])

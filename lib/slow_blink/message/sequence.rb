@@ -30,7 +30,7 @@ module SlowBlink::Message
                 end
                 self.new(value)
             else
-                self.new
+                nil
             end
         end
 
@@ -38,29 +38,24 @@ module SlowBlink::Message
             @value
         end
 
-        # @param value [Array]
-        def initialize(value)
-            if value
-                if value.kind_of? Array
-                    @value = value
-                else
-                    raise Error.new "bad type"
-                end
-            elsif self.class.opt?
-                @value = nil
+        def set(value)
+            if value.kind_of? Array
+                @value = value
             else
-                raise Error.new "value unacceptable"
+                raise Error.new "bad type"
             end
         end
 
+        # @param value [Array<Object>]
+        def initialize(value)
+            set(value)            
+        end
+
         def to_compact(out)
-            if @value                
-                @value.inject(out.putU32(@value.size)) do |o, v|
-                    o << v.to_compact
-                end
-            else
-                out.putU32(nil)
-            end                
+            out.putU32(@value.size)
+            @value.each do |value|
+                value.to_compact(out)
+            end            
         end
 
     end

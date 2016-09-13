@@ -35,15 +35,17 @@ module SlowBlink
                 @schema = schema
                 @taggedGroups = {}                
                 schema.tagged.each do |id, g|
-                    @taggedGroups[id] = _model_group(false, g)                    
-                end                
-                taggedGroups = @taggedGroups
-                @top = Class.new(DynamicGroup) do
-                    @top = true
-                    @opt = false
-                    @groups = taggedGroups
-                    @permitted = taggedGroups.keys                    
-                end                
+                    this = self
+                    @taggedGroups[id] = Class.new(Group) do
+                        @model = this
+                        @name = g.nameWithID.name
+                        @id = g.nameWithID.id
+                        @fields = {}
+                        g.fields.each do |f|
+                            @fields[f.nameWithID.name] = this._model_field(f)
+                        end                   
+                    end
+                end                          
             end
 
             # @api user
@@ -56,49 +58,32 @@ module SlowBlink
             # @return [DynamicGroup] group instance
             #
             def decode_compact(input)
-                @top.from_compact!(input.dup)
+                buf = input.getBinary!
+                if buf.size > 0
+                    id = buf.getU64!
+                    groupClass = @taggedGroups[id]
+                    if groupClass
+                        group = groupClass.from_compact!(buf)                        
+                    else
+                        raise Error.new "W2: Group id #{group.id} is unknown"
+                    end
+                else
+                    raise Error.new "W1: Top level group cannot be null"                    
+                end
             end
 
             # @api user
             #
-            # Create an instance of a (tagged) group subclass
+            # Get a group model
             #
-            # @note return value will be an *anonymous* *subclass* *instance* of {DynamicGroup}
-            #           
-            # @param name [String] name of group
-            # @param fields [Hash] 
-            # @param *extension [Array<DynamicGroup>] optional array of extensions
-            # @return [DynamicGroup] group instance
+            # @param name [String] name of group (may be qualified)
+            # @return [Class] {DynamicGroup} or {Group}
+            # @return [nil] group not defined
             #
-            def group(name, fields, *extension)
-                group = @top.groups.values.detect{|g|g.name == name}
-                if group
-                    @top.new(group.from_native(fields), *extension)
-                else
-                    raise
-                end
+            def group(name)
+                # todo: this should be a hash of all group defs
+                @taggedGroups.values.detect{|g|g.name==name}
             end
-
-            # @api private
-            #
-            # Create a model for a Group
-            #
-            # @param opt [true,false] this group is allowed to be optional
-            # @param group [SlowBlink::Group] group definition
-            # @return [Class] anonymous subclass of {StaticGroup}
-            def _model_group(opt, group)
-                this = self
-                Class.new(StaticGroup) do
-                    @name = group.nameWithID.name
-                    @id = group.nameWithID.id
-                    @opt = opt
-                    @fields = {}
-                    group.fields.each do |f|
-                        @fields[f.nameWithID.name] = this._model_field(f)
-                    end                    
-                end            
-            end
-
 
             # @api private
             #
@@ -130,13 +115,12 @@ module SlowBlink
                     groups = @groups
                     permitted = @schema.tagged.keys
                     Class.new(DynamicGroup) do
-                        @top = false
                         @opt = field.opt?                        
                         @groups = groups
                         @permitted = permitted                        
-                    end                               
+                    end                     
                 when SlowBlink::REF
-                    if type.ref.kind_of? Group
+                    if type.ref.kind_of? SlowBlink::Group
                         if type.dynamic?
                             groups = @taggedGroups
                             permitted = @schema.tagged.keys
@@ -146,17 +130,26 @@ module SlowBlink
                                 end
                             end
                             Class.new(DynamicGroup) do
-                                @top = false
                                 @name = name
                                 @opt = field.opt?
                                 @groups = groups
                                 @permitted = permitted
                             end                               
                         else
-                            _model_group(field.opt?, type.ref)
+                            this = self
+                            Class.new(StaticGroup) do
+                                @name = name
+                                @name = name
+                                @opt = field.opt?
+                                @id = nil
+                                @fields = {}
+                                type.ref.fields.each do |f|
+                                    @fields[f.nameWithID.name] = this._model_field(f)
+                                end                                                            
+                            end                                                   
                         end
                     else
-                        _model_type(opt, type.ref)
+                        _model_type(type.ref)
                     end
                 else                        
                     Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do

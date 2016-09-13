@@ -39,14 +39,13 @@ class TestModelThinkBlink < Test::Unit::TestCase
 
     def test_set
 
-        message = @model.group "OrderExecuted",
-            {
-                "Symbol" => "hey",
-                "OrderId" => 42,
-                "Price" => 42,
-                "Qty" => 42,
-                "MatchId" => 42
-            }
+        message = @model.group("OrderExecuted").new(        
+            "Symbol" => "hey",
+            "OrderId" => 42,
+            "Price" => 42,
+            "Qty" => 42,
+            "MatchId" => 42
+        )
         
         assert_equal("hey", message["Symbol"])
         assert_equal(42, message["OrderId"])
@@ -58,14 +57,13 @@ class TestModelThinkBlink < Test::Unit::TestCase
 
     def test_encode_compact
         
-        message = @model.group "OrderExecuted",
-            {
-                "Symbol" => "hey",
-                "OrderId" => 42,
-                "Price" => 42,
-                "Qty" => 42,
-                "MatchId" => 42
-            }          
+        message = @model.group("OrderExecuted").new(        
+            "Symbol" => "hey",
+            "OrderId" => 42,
+            "Price" => 42,
+            "Qty" => 42,
+            "MatchId" => 42
+        )
 
         output = message.encode_compact
         
@@ -96,5 +94,6 @@ class TestModelThinkBlink < Test::Unit::TestCase
         assert_equal(3, iter.next.get)
         
     end
+
 
 end

@@ -21,47 +21,31 @@ module SlowBlink::Message
 
     class INTEGER
 
-        # @return [String] name of field
-        def self.name
-            @name
-        end
-
-        # @param [true,false] element is referenced by an optional field
-        def self.opt?
-            @opt
-        end
-
         # @param value [Integer]
         # @return [true,false] integer value is within permitted range
         def self.in_range?(value)
             @type.class::RANGE.cover? value
         end
 
-        def self.from_native(native)
-            self.new(native)
-        end
-
         def get
             @value
         end
 
-        # @param value [Integer, nil]
-        def initialize(value)
-            if value
-                if value.kind_of? Integer
-                    if self.class.in_range?(value)
-                        @value = value.to_i
-                    else
-                        raise Error.new "value out of range"
-                    end
+        def set(value)
+            if value.kind_of? Integer
+                if self.class.in_range?(value)
+                    @value = value.to_i
                 else
-                    raise Error.new "value must be an integer"
+                    raise Error.new "value out of range"
                 end
-            elsif self.class.opt?
-                @value = nil
             else
-                raise Error.new "value unacceptable"
-            end
+                raise Error.new "value must be an integer"
+            end            
+        end
+
+        # @param value [Integer, nil]
+        def initialize(value)        
+            set(value)
         end
 
     end
@@ -69,7 +53,12 @@ module SlowBlink::Message
     class U8 < INTEGER
 
         def self.from_compact!(input)
-            self.new(input.getU8!)
+            value = input.getU8!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
 
         def to_compact(out)
@@ -81,7 +70,12 @@ module SlowBlink::Message
     class U16 < INTEGER
 
         def self.from_compact!(input)
-            self.new(input.getU16!)
+            value = input.getU16!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
     
         def to_compact(out)
@@ -93,7 +87,12 @@ module SlowBlink::Message
     class U32 < INTEGER
 
         def self.from_compact!(input)
-            self.new(input.getU32!)
+            value = input.getU32!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
 
         def to_compact(out)
@@ -105,7 +104,12 @@ module SlowBlink::Message
     class U64 < INTEGER
 
         def self.from_compact!(input)
-            self.new(input.getU64!)
+            value = input.getU64!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
     
         def to_compact(out)
@@ -117,7 +121,12 @@ module SlowBlink::Message
     class I8 < INTEGER
 
         def self.from_compact!(input)
-            self.new(input.getI8!)
+            value = input.getI8!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
     
         def to_compact(out)
@@ -129,7 +138,12 @@ module SlowBlink::Message
     class I16 < INTEGER
         
         def self.from_compact!(input)
-            self.new(input.getI16!)
+            value = input.getI16!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
     
         def to_compact(out)
@@ -141,7 +155,12 @@ module SlowBlink::Message
     class I32 < INTEGER
 
         def self.from_compact!(input)
-            self.new(input.getI32!)
+            value = input.getI32!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
     
         def to_compact(out)
@@ -153,7 +172,12 @@ module SlowBlink::Message
     class I64 < INTEGER
 
         def self.from_compact!(input)
-            self.new(input.getI64!)
+            value = input.getI64!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
     
         def to_compact(out)

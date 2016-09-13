@@ -22,25 +22,28 @@ module SlowBlink::Message
     class BOOLEAN
 
         def self.from_compact!(input)
-            self.new(input.getBool!)
+            value = input.getBool!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
 
         def get
             @value
         end
 
-        def initialize(value)
-            if value
-                if value.kind_of? TrueClass or value.kind_of? FalseClass
-                    @value = value
-                else
-                    raise "expecting true/false"
-                end
-            elsif self.class.opt?
-                @value = nil
+        def set(value)
+            if value.kind_of? TrueClass or value.kind_of? FalseClass
+                @value = value
             else
-                raise Error.new "value unacceptable"
+                raise "expecting true/false"
             end
+        end
+
+        def initialize(value)
+            set(value)                
         end
 
         def to_compact(out)

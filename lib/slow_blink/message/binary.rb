@@ -21,11 +21,6 @@ module SlowBlink::Message
 
     class BINARY
 
-        # @param [true,false] element is referenced by an optional field
-        def self.opt?
-            @opt
-        end
-
         def self.from_compact!(input)
             value = input.getBinary!
             if value
@@ -34,11 +29,9 @@ module SlowBlink::Message
                 else
                     raise Error.new "W8: Binary value exceeds maximum size"
                 end
-            elsif @opt
-                self.new(nil)
             else
-                raise Error.new "W5: Value cannot be null"
-            end
+                value
+            end               
         end
 
         # @param [Integer,nil] optional maximum size of string in bytes
@@ -50,22 +43,20 @@ module SlowBlink::Message
             @value
         end
 
-        def initialize(value)
-            if value
-                if value.kind_of? String
-                    if !self.class.size or value.size <= self.class.size
-                        @value = value.to_s
-                    else
-                        raise Error.new "string cannot be larger than #{self.class.size} bytes"
-                    end
+        def set(value)
+            if value.kind_of? String
+                if !self.class.size or value.size <= self.class.size
+                    @value = value.to_s
                 else
-                    raise Error.new "expecting a string type"
+                    raise Error.new "string cannot be larger than #{self.class.size} bytes"
                 end
-            elsif self.class.opt?
-                @value = nil
             else
-                raise Error.new "string cannot be null"
-            end        
+                raise Error.new "expecting a string type"
+            end
+        end
+
+        def initialize(value)
+            set(value)                
         end
 
         def to_compact(out)

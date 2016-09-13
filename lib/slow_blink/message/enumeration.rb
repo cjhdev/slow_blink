@@ -21,30 +21,38 @@ module SlowBlink::Message
 
     class ENUMERATION
 
+        def self.symbols
+            @symbols
+        end
+
         def self.from_compact!(input)
-            self.new(input.getU32!)
+            value = input.getU32!
+            if value
+                self.new(value)
+            else
+                value
+            end            
         end
 
         def get
             @value
         end
 
-        def initialize(value)
-            if value
-                if self.symbols[value]
-                    @value = self.class.symbols[value]
-                else
-                    raise Error.new "symbol '#{value}' not defined in enumeration"
-                end                    
-            elsif self.class.opt?
-                @value = nil
+        def set(value)
+            if @symbols[value]
+                @value = @symbols[value]
             else
-                raise Error.new "field may not be null"
-            end
+                raise Error.new "symbol '#{value}' not defined in enumeration"
+            end                    
+        end        
+
+        def initialize(value)
+            @symbols = self.class.symbols
+            set(value)
         end
         
         def to_compact(out)
-            out.putU32(@value ? self.class.symbols[@value] : nil)
+            out.putU32(@value ? @symbols[@value] : nil)
         end
     
     end

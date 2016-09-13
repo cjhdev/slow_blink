@@ -5,7 +5,6 @@ syntax = <<-eos
 Topgroup/0 ->
     string greeting,
     Subgroup * sub
-
 Subgroup/1 ->
     string name,
     u8 number    

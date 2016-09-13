@@ -22,25 +22,28 @@ module SlowBlink::Message
     class FLOATING_POINT
 
         def self.from_compact!(input)
-            self.new(input.getF64!)
+            value = input.getF64!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
 
         def get
             @value
         end
 
-        def initialize(value)
-            if value
-                if value.kind_of? Numeric
-                    @value = value.to_f
-                else
-                    raise "expecting float"
-                end
-            elsif self.class.opt?
-                @value = nil
+        def set(value)
+            if value.kind_of? Numeric
+                @value = value.to_f
             else
-                raise Error.new "value unacceptable"
+                raise "expecting float"
             end
+        end
+
+        def initialize(value)
+            set(value)
         end
 
         def to_compact(out)

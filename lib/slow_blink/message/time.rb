@@ -17,37 +17,52 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-module SlowBlink::Message
+require 'time'
 
+module SlowBlink::Message
 
     class MILLI_TIME
 
         def self.from_compact!(input)
-            self.new(input.getI64!)
+            value = input.getI64!
+            if value
+                self.new(value)
+            else
+                value
+            end
         end
 
         def get
             @value
         end
 
-        def initialize(value)
-            if value
-                raise
-            elsif self.class.opt?
-                @value = nil
+        def set(value)            
+            if value.kind_of? Time or value.kind_of? DateTime or value.kind_of? Date
+                @value = time.to_datetime
+            elsif value.kind_of? String
+                @value = DateTime.parse(value)
+            elsif value.kind_of? Integer
+                @value = DateTime.new(value)
             else
-                raise 
-            end
+                raise Error.new "unexpected type"
+            end                        
+        end
+
+        def initialize(value)
+            set(value)            
         end
 
         def to_compact(out)
-            out.putI64(@value)
+            out.putI64(@value.strftime('%Q'))            
         end
     
     end
 
     class NANO_TIME < MILLI_TIME
         
+        def to_compact(out)
+            out.putI64(@value.strftime('%N'))
+        end
         
     end
 
