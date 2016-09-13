@@ -97,7 +97,7 @@ module SlowBlink
                     @opt = field.opt?
                     @name = field.nameWithID.name
                     @id = field.nameWithID.id
-                    @type = this._model_type(field)
+                    @type = this._model_type(field.type, field.opt?)
                 end                
             end
 
@@ -105,17 +105,15 @@ module SlowBlink
             #
             # Create a model for a type
             #
-            # @param field [SlowBlink::Field] field definition (containing type)
-            # @return [Class] anonymous subclass
-            def _model_type(field)
-                type = field.type
-                name = field.nameWithID.name    
+            
+            def _model_type(type, opt)
+                this = self
                 case type.class
                 when SlowBlink::OBJECT
                     groups = @groups
                     permitted = @schema.tagged.keys
                     Class.new(DynamicGroup) do
-                        @opt = field.opt?                        
+                        @opt = opt
                         @groups = groups
                         @permitted = permitted                        
                     end                     
@@ -130,18 +128,15 @@ module SlowBlink
                                 end
                             end
                             Class.new(DynamicGroup) do
-                                @name = name
-                                @opt = field.opt?
+                                @opt = opt
                                 @groups = groups
                                 @permitted = permitted
                             end                               
                         else
-                            this = self
                             Class.new(StaticGroup) do
-                                @name = name
-                                @name = name
-                                @opt = field.opt?
+                                @name = type.ref.nameWithID.name
                                 @id = nil
+                                @opt = opt
                                 @fields = {}
                                 type.ref.fields.each do |f|
                                     @fields[f.nameWithID.name] = this._model_field(f)
@@ -151,11 +146,14 @@ module SlowBlink
                     else
                         _model_type(type.ref)
                     end
-                else                        
+                when SlowBlink::SEQUENCE
+                    Class.new(SEQUENCE) do
+                        @type = this._model_type(type.type, false)
+                    end                    
+                else
                     Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
-                        @opt = field.opt?
-                        @name = name
-                        @type = type                        
+                        @opt = opt
+                        @type = type                                        
                     end                    
                 end
             end
@@ -178,5 +176,5 @@ require "slow_blink/message/sequence"
 require "slow_blink/message/group"
 require "slow_blink/message/time"
 require "slow_blink/message/time_of_day"
-require "slow_blink/message/date"
+require "slow_blink/message/decimal"
 

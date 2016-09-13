@@ -20,6 +20,10 @@
 module SlowBlink::Message
 
     class SEQUENCE
+
+        def self.type
+            @type
+        end
             
         def self.from_compact!(input)
             value = []
@@ -39,21 +43,29 @@ module SlowBlink::Message
         end
 
         def set(value)
+            @value = []
             if value.kind_of? Array
-                @value = value
+                value.each do |v|
+                    if v.kind_of? self.class.type
+                        @value << v
+                    else
+                        @value << self.class.type.new(v)
+                    end
+                end
             else
-                raise Error.new "bad type"
+                raise Error.new "expecting an array"
             end
         end
 
         # @param value [Array<Object>]
         def initialize(value)
+            @value = []            
             set(value)            
         end
 
         def to_compact(out)
             out.putU32(@value.size)
-            @value.each do |value|
+            @value.each do |value|                                
                 value.to_compact(out)
             end            
         end

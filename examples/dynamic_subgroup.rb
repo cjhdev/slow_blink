@@ -2,33 +2,29 @@ require 'slow_blink'
 include SlowBlink
 
 syntax = <<-eos
-Topgroup/0 ->
-    string greeting,
-    Subgroup * sub
-Subgroup/1 ->
-    string name,
-    u8 number    
+Shape ->
+    decimal Area
+
+Rect/3 : Shape ->
+    u32 Width,
+    u32 Height
+
+Circle/4 : Shape ->
+    u32 Radius
+
+Canvas/5 ->
+    Shape * [] Shapes    
 eos
 
-# parse schema and generate model
 model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
 
-# initialise a message instance
-message = model.group "Topgroup", {
-    "greeting" => "hello",
-    "sub" => model.group("Subgroup", {
-        "name" => "my name",
-        "number" => 42
-    })
-}
+message = model.group("Canvas").new(
+    "Shapes" => [
+        model.group("Rect").new("Area" => 6.0, "Width" => 2, "Height" => 3),
+        model.group("Circle").new("Area" => 28.3, "Radius" => 3)
+    ]
+)
+ 
 
-# encode message instance to compact form
-compact_form = message.encode_compact
 
-# decode compact form to a message instance
-decoded = model.decode_compact(compact_form)
 
-# read the fields of a message instance
-decoded["greeting"]
-decoded["sub"]["name"]
-decoded["sub"]["number"]

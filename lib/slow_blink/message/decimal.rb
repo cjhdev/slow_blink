@@ -17,9 +17,43 @@
 # IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+require 'bigdecimal'
+
 module SlowBlink::Message
 
     class DECIMAL
+
+        def self.from_compact!(input)
+            e = input.getI8!
+            if e
+                m = input.getI64!
+                if m
+                    self.new("#{m}E#{e}")
+                else
+                    raise "a null mantissa is not defined"
+                end
+            else
+                nil
+            end                
+        end
+
+        def initialize(value)
+            set(value)
+        end
+
+        def get
+            @value
+        end
+
+        def set(value)
+            @value = BigDecimal.new(value.to_s)            
+        end
+
+        def to_compact(out)
+            out.putI8(@value.exponent)
+            out.putI64(0)
+        end
+    
     end
 
 end
