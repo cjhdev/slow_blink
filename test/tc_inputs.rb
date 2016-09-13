@@ -25,8 +25,8 @@ testClass = Class.new(Test::Unit::TestCase) do
             # run and intercept stderr output
             err = capture_stderr do
 
-                SlowBlink::Schema.new(SlowBlink::SchemaBuffer.new(inputs[__method__][:buffer], filename: inputs[__method__][:fileName]))
-            
+                schema = SlowBlink::Schema.new(SlowBlink::SchemaBuffer.new(inputs[__method__][:buffer], filename: inputs[__method__][:fileName]))
+
             end
 
             # there should have been no messages to stderr

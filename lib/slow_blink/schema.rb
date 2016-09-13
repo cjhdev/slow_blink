@@ -47,15 +47,13 @@ module SlowBlink
             end
         end
 
-        # Tagged groups are able to be serialised as dynamic groups
+        # @api user
         #
-        # - These groups are of interest to message code generators
-        #
-        # @return [Hash<Group>]
-        attr_reader :tagged
-
+        # @return [Hash<Group>] groups indexed by qualified name
         attr_reader :groups
 
+        attr_reader :tagged
+        
         # @return [Array<Namespace>]
         attr_reader :ns
 
