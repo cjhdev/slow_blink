@@ -39,26 +39,33 @@ module SlowBlink::Message
         # @param input [String] Blink compact form
         # @return [StaticGroup] instance of anonymous subclass of StaticGroup
         def self.from_compact!(input)            
+
             fields = {}
+            extensions = []
+            
             @fields.each do |fn, fd|
                 fields[fn] = fd.from_compact!(input)
             end
-=begin            
+
             if input.size > 0
-                expected = buf.getU32!
+                expected = input.getU32!
                 while extensions.size != expected do
-                    extensions << self.from_compact!(buf)
+                    extensions << self.from_compact!(input)                    
                 end
             end
+            
             if input.size != 0
                 raise Error.new "extra bytes at end of group after extensions"
             end
-=end            
-            self.new(fields)   
-        end
 
-        def each(&block)
-            @value.values.each(&block)            
+            group = self.new(fields)
+
+            extensions.each do |e|
+                group.extension << group
+            end
+
+            group
+               
         end
 
         def []=(name, value)
@@ -194,7 +201,7 @@ module SlowBlink::Message
         end
 
         def to_compact(out)
-            if @opt
+            if self.class.opt?
                 out.putPresent
             end
             @value.each do |fn, fv|

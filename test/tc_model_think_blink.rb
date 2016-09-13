@@ -84,14 +84,6 @@ class TestModelThinkBlink < Test::Unit::TestCase
         assert_equal(1, message["Price"])
         assert_equal(2, message["Qty"])
         assert_equal(3, message["MatchId"])
-
-        iter = message.each
-
-        assert_equal("hello", iter.next.get)
-        assert_equal(0, iter.next.get)
-        assert_equal(1, iter.next.get)
-        assert_equal(2, iter.next.get)
-        assert_equal(3, iter.next.get)
         
     end
 
