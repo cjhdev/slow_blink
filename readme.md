@@ -25,15 +25,32 @@ gem install slow_blink
 
 ## Examples
 
+### Create a Schema From Schema Definitions
+
+~~~ruby
+require 'slow_blink'
+include SlowBlink
+
+# read schema definition from file
+schema = Schema.read("your_schema.blink")
+
+# read several schema definitions from file and combine them in that order
+schema = Schema.read("common_schema.blink", "specialised_schema.blink")
+
+# read schema definition from memory with optional 'filename' equivalent string
+schema = Schema.new(SchemaBuffer.new("Hello/0 -> string greeting", "buffer"))
+
+# read several schema definitions from memory and combine them in that order
+schema = Schema.new(SchemaBuffer.new("Hello -> string greeting"), SchemaBuffer.new("Hello <- 0"))
+~~~
+
 ### Single Group
 
 ~~~ruby
 require 'slow_blink'
 include SlowBlink
 
-# create a schema from Blink syntax
-buffer = SchemaBuffer.new("Hello/0 -> string greeting")
-schema = Schema.new(buffer)
+schema = Schema.new(SchemaBuffer.new("Hello/0 -> string greeting"))
 
 # generate a message model from the schema
 model = Message::Model.new(schema)
