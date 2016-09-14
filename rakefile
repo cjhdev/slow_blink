@@ -36,5 +36,11 @@ task :benchmark do
     system "ruby -Ilib -- bench/think_blink_example.rb"
 end
 
+task :run_examples do
+    Dir.glob("examples/**/*.rb").each do |f|
+        system "ruby -Ilib -- #{f}"
+    end
+end
+
 task :default => :test
 
