@@ -41,7 +41,6 @@ puts ""
 puts "    " + compact_form.bytes.map{ |c| sprintf("\\x%02X",c) }.join + "  (#{compact_form.size} bytes)"
 puts ""
 puts "benchmark:"
-puts ""
 
 Benchmark.benchmark(CAPTION, 50) do |x|
     st = x.report("#{CYCLES} x Schema::new") { CYCLES.times { Schema.new(buffer) } }
