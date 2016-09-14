@@ -21,7 +21,7 @@ module SlowBlink::Message
 
     class TIME_OF_DAY_MILLI
 
-        def self.from_compact!(input)
+        def self.from_compact!(input, stack)
             value = input.getU32!
             if value
                 self.new(value)
@@ -66,7 +66,7 @@ module SlowBlink::Message
 
     class TIME_OF_DAY_NANO
                     
-        def self.from_compact!(input)
+        def self.from_compact!(input, stack)
             value = input.getU64!
             if value
                 self.new(value)

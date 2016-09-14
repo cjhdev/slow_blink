@@ -37,20 +37,27 @@ module SlowBlink::Message
         end
 
         # @param input [String] Blink compact form
+        # @param stack [Array] 
         # @return [StaticGroup] instance of anonymous subclass of StaticGroup
-        def self.from_compact!(input)            
+        def self.from_compact!(input, stack)            
 
             fields = {}
             extensions = []
+
+            if stack.size < @maxRecursion
+                stack << self
+            else
+                raise Error.new "stack limit"
+            end
             
             @fields.each do |fn, fd|
-                fields[fn] = fd.from_compact!(input)
+                fields[fn] = fd.from_compact!(input, stack)
             end
 
-            if input.size > 0
-                expected = input.getU32!
+            if input.size > 0                
+                expected = input.getU32!                
                 while extensions.size != expected do
-                    extensions << self.from_compact!(input)                    
+                    extensions << @extensionObject.from_compact!(input, stack)                    
                 end
             end
             
@@ -63,6 +70,8 @@ module SlowBlink::Message
             extensions.each do |e|
                 group.extension << group
             end
+
+            stack.pop
 
             group
                
@@ -179,7 +188,14 @@ module SlowBlink::Message
     
         # @param input [String] Blink compact form
         # @return [StaticGroup] instance of anonymous subclass of {StaticGroup}
-        def self.from_compact!(input)
+        def self.from_compact!(input, stack)
+
+            if stack.size < @maxRecursion
+                stack << self
+            else
+                raise Error.new "stack limit"
+            end
+        
             if @opt
                 present = input.getPresent
             else
@@ -188,12 +204,16 @@ module SlowBlink::Message
             if present
                 fields = {}
                 @fields.each do |fn, fd|
-                    fields[fn] = fd.from_compact!(input)
+                    fields[fn] = fd.from_compact!(input, stack)
                 end
-                self.new(fields)            
+                result = self.new(fields)            
             else
                 nil
-            end        
+            end
+
+            stack.pop
+            result
+            
         end
 
         def extension
@@ -228,14 +248,21 @@ module SlowBlink::Message
             @permitted
         end
         
-        def self.from_compact!(input)
+        def self.from_compact!(input, stack)
+
+            if stack.size < @maxRecursion
+                stack << self
+            else
+                raise Error.new "stack limit"
+            end
+        
             buf = input.getBinary!
             if buf.size > 0
                 id = buf.getU64!
                 group = @taggedGroups[id]
                 if group
                     if @permitted.include? group.id
-                        self.new(group.from_compact!(buf))
+                        result = self.new(group.from_compact!(buf, stack))
                     else
                         raise Error.new "W15: Group is known but unexpected"
                     end
@@ -245,6 +272,10 @@ module SlowBlink::Message
             else
                 raise Error.new "W5: Value cannot be null"                
             end
+
+            stack.pop
+            result
+
         end
 
         def name

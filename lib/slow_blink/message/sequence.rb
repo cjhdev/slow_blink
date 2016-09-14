@@ -25,17 +25,27 @@ module SlowBlink::Message
             @type
         end
             
-        def self.from_compact!(input)
+        def self.from_compact!(input, stack)
+
+            if stack.size < @maxRecursion
+                stack << self
+            else
+                raise Error.new "stack limit"
+            end
+        
             value = []
             size = input.getU32!
             if size
                 while out.size < size do
-                    value << @type.from_compact!(input)
+                    value << @type.from_compact!(input, stack)
                 end
                 self.new(value)
             else
                 nil
             end
+
+            stack.pop
+            
         end
 
         def get

@@ -97,8 +97,10 @@ void Init_ext_compact_encoder(void)
 {
     VALUE cSlowBlink;
 
+    rb_require("slow_blink/message/model.rb");
+
     cSlowBlink = rb_define_module("SlowBlink");
-    cError = rb_const_get(cSlowBlink, rb_intern("Error"));
+    cError = rb_const_get(rb_define_module_under(cSlowBlink, "Message"), rb_intern("Error"));
     
     rb_define_method(rb_cString, "putNull", putNull, 0);
     rb_define_method(rb_cString, "putPresent", putPresent, 0);

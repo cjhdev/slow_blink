@@ -43,8 +43,8 @@ module SlowBlink::Message
 
         # @param input [String] Blink compact form
         # @param [Field] instance of anonymous subclass of Field
-        def self.from_compact!(input)        
-            self.new(@type.from_compact!(input))
+        def self.from_compact!(input, stack)        
+            self.new(@type.from_compact!(input, stack))
         end
 
         def initialize(value)

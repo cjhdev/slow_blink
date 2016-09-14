@@ -21,16 +21,15 @@ model = Message::Model.new(Schema.new(SchemaBuffer.new(rawSchema)))
 
 CYCLES = 1000000
 
-output = model.group("OrderExecuted").from_native(
+output = model.group("OrderExecuted").new(
     "Symbol" => "SPY",
     "OrderId" => 4467995,
     "Price" => 13548,
     "Qty" => 100,
     "MatchId" => 6911
-).extend(
+)
 
 input = "\x0E\x4C\x03\x53\x50\x59\xC3\x1B\x2D\x44\xAC\xD3\x64\xBF\x6B"
-
 
 Benchmark.bm do |x|
     x.report("encode_compact") { CYCLES.times { output.encode_compact } }

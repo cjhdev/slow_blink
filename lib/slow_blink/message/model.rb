@@ -28,19 +28,47 @@ module SlowBlink
         end
 
         class Model
+    
+            DEFAULT_MAX_RECURSION = 100
+
+            attr_reader :maxRecursion
 
             # @api user
             #
             # Create a Model from a {Schema}
             #
             # @param schema [SlowBlink::Schema]
-            def initialize(schema)
+            # @param opts [Hash]
+            #
+            # @option opts [Symbol] :maxRecursion
+            #
+            def initialize(schema, **opts)
+
                 @schema = schema
                 @taggedGroups = {}
                 @groups = {}
+                @maxRecursion = opts[:maxRecursion]||DEFAULT_MAX_RECURSION
+                maxRecursion = @maxRecursion
+
+                # define the extension object
+                groups = @groups
+                taggedGroups = @taggedGroups
+                permitted = schema.tagged.keys
+                @extensionObject = Class.new(DynamicGroup) do
+                    @maxRecursion = maxRecursion
+                    @extensionObject = self
+                    @opt = false
+                    @groups = groups
+                    @taggedGroups = taggedGroups
+                    @permitted = permitted                        
+                end
+                extensionObject = @extensionObject
+                
                 schema.groups.each do |name, g|
                     this = self
                     @groups[name] = Class.new(Group) do
+                        @extensionObject = extensionObject
+                        @maxRecursion = maxRecursion
                         @name = g.nameWithID.name
                         @id = g.nameWithID.id
                         @fields = {}
@@ -51,31 +79,41 @@ module SlowBlink
                     if g.nameWithID.id
                         @taggedGroups[g.nameWithID.id] = @groups[name]
                     end
-                end                          
+                end
+
+
             end
 
             # @api user
             #
             # Initialise a message model instance with a compact form string
             #
-            # @note return value will be an *anonymous* *subclass* *instance* of {DynamicGroup}
+            # @note return value will be an *anonymous* *subclass* *instance* of {Group}
             #
             # @param [String] Blink Protocol compact form
-            # @return [DynamicGroup] group instance
+            # @return [Group] group instance
             #
             def decode_compact(input)
+                stack = []
+                inputSize = input.size
                 buf = input.getBinary!
                 if buf.size > 0
                     id = buf.getU64!
                     groupClass = @taggedGroups[id]
-                    if groupClass
-                        puts groupClass
-                        group = groupClass.from_compact!(buf)                        
-                    else
-                        raise Error.new "W2: Group id #{group.id} is unknown"
+                    begin
+                        if groupClass                        
+                            group = groupClass.from_compact!(buf, stack)                        
+                        else
+                            raise Error.new "W2: Group id #{group.id} is unknown"
+                        end
+                    rescue Error => ex
+                        puts ex
+                        puts "encountered at offset #{inputSize - input.size}"
+                        puts stack.last.name
+                        raise
                     end
                 else
-                    raise Error.new "W1: Top level group cannot be null"                    
+                    raise Error.new "W1: Top level group cannot be null "                    
                 end
             end
 
@@ -111,17 +149,25 @@ module SlowBlink
             #
             # Create a model for a type
             #
-            
+            # @param type [SlowBlink::Type] type definition
+            # @param opt  [true,false] parent definition may allow this type to be optional
+            #
+            #            
             def _model_type(type, opt)
                 this = self
+                extensionObject = @extensionObject
+                maxRecursion = @maxRecursion
                 case type.class
                 when SlowBlink::OBJECT
                     groups = @groups
                     taggedGroups = @taggedGroups
                     permitted = @taggedGroups.keys
                     Class.new(DynamicGroup) do
+                        @extensionObject = extensionObject
+                        @maxRecursion = maxRecursion
                         @opt = opt
                         @groups = groups
+                        @taggedGroups = taggedGroups
                         @permitted = permitted                        
                     end                     
                 when SlowBlink::REF
@@ -136,6 +182,8 @@ module SlowBlink
                                 end
                             end
                             Class.new(DynamicGroup) do
+                                @extensionObject = extensionObject
+                                @maxRecursion = maxRecursion
                                 @opt = opt
                                 @taggedGroups = taggedGroups
                                 @groups = groups
@@ -143,6 +191,8 @@ module SlowBlink
                             end                               
                         else
                             Class.new(StaticGroup) do
+                                @extensionObject = extensionObject
+                                @maxRecursion = maxRecursion
                                 @name = type.ref.nameWithID.name
                                 @id = nil
                                 @opt = opt
@@ -157,6 +207,7 @@ module SlowBlink
                     end
                 when SlowBlink::SEQUENCE
                     Class.new(SEQUENCE) do
+                        @maxRecursion = maxRecursion
                         @type = this._model_type(type.type, false)
                     end                    
                 else
@@ -185,5 +236,6 @@ require "slow_blink/message/sequence"
 require "slow_blink/message/group"
 require "slow_blink/message/time"
 require "slow_blink/message/time_of_day"
+require "slow_blink/message/date"
 require "slow_blink/message/decimal"
 

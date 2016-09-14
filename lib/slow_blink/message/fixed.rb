@@ -25,7 +25,7 @@ module SlowBlink::Message
             @opt
         end
         
-        def self.from_compact!(input)
+        def self.from_compact!(input, stack)
             if @opt
                 value = input.getFixedOptional!
             else

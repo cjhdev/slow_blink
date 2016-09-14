@@ -25,7 +25,7 @@ module SlowBlink::Message
             @symbols
         end
 
-        def self.from_compact!(input)
+        def self.from_compact!(input, stack)
             value = input.getU32!
             if value
                 self.new(value)
