@@ -16,29 +16,28 @@ Rake::ExtensionTask.new  do |ext|
     ext.lib_dir = "lib/slow_blink"
 end
 
-desc "parser tests"
+desc "run contents of test folder"
 Rake::TestTask.new do |t|
     t.name = :test
     t.libs << "lib"
     t.test_files = FileList["test/**/tc_*.rb"]    
 end
 
-desc "run flex-bison"
+desc "run flex-bison to build new parser source"
 task :flexbison do    
     system "flex --outfile=#{DIR_SRC}/lexer.c --header-file=#{DIR_SRC}/lexer.h #{DIR_ETC}/parser.l"
     system "bison -d #{DIR_ETC}/parser.y --output=#{DIR_SRC}/parser.c --report=all --report-file=#{DIR_SRC}/report.txt"    
 end
 
-task :local => [:flexbison, :compile, :test] do    
-end
-
+desc "run the think_blink benchmark"
 task :benchmark do
-    system "ruby -Ilib -- bench/think_blink_example.rb"
+    system "ruby -Ilib -- bench/tutorial_example.rb"
 end
 
+desc "run code in examples folder"
 task :run_examples do
     Dir.glob("examples/**/*.rb").each do |f|
-        system "ruby -Ilib -- #{f}"
+        system "ruby -Ilib -Cexamples -- #{f.sub("examples/", "")}"
     end
 end
 

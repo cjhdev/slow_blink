@@ -4,18 +4,16 @@ SlowBlink
 [![Build Status](https://travis-ci.org/cjhdev/slow_blink.svg?branch=master)](https://travis-ci.org/cjhdev/slow_blink)
 [![Gem Version](https://badge.fury.io/rb/slow_blink.svg)](https://badge.fury.io/rb/slow_blink)
 
-SlowBlink is a Ruby implementation of the [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
+SlowBlink is a Ruby implementation of [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
 
-This project is currently under development and not very useful.
-
+SlowBlink was written to evaluate Blink Protocol. It needs more testing, use at your own peril.
 
 ## Highlights
 
-- Integrated Blink Protocol schema parser built on GLR Flex/Bison
-- VLC encode/decode functions implemented as native extensions
-- Message models generated dynamically from Blink schema (no compilation step necessary)
-- A complete message serialisation solution dependent only on MRI
-
+- Integrated Blink Protocol schema parser (GLR Flex/Bison)
+- Dynamic message model generator
+- Low level encode/decode functions implemented as native extensions
+- Implements Blink Specification beta4-2013-06-14
 
 ## Installation
 
@@ -25,7 +23,7 @@ gem install slow_blink
 
 ## Examples
 
-### Create a Schema From Schema Definitions
+### Create a Schema From Schema Definition(s)
 
 ~~~ruby
 require 'slow_blink'
@@ -165,6 +163,68 @@ message.extension << model.group("Trace").new("Hop" => "mail.eg.org")
 - SlowBlink interface documentation can be viewed [online](http://www.rubydoc.info/gems/slow_blink "slow_blink")
 - Blink Specification is maintained [here](http://www.blinkprotocol.org/ "Blink Protocol")
 - The version of Blink Specification implemented by SlowBlink is included in this repository under `specification/blink`
+
+## Typical Performance
+
+Run `rake benchmark`:
+
+~~~
+schema with data:
+
+    InsertOrder/1 ->
+        string Symbol,  # set to "IBM"
+        string OrderId, # set to "ABC123"
+        u32 Price,      # set to 125
+        u32 Quantity    # set to 1000
+
+compact form:
+
+    \x0F\x01\x03\x49\x42\x4D\x06\x41\x42\x43\x31\x32\x33\x7D\xA8\x0F  (16 bytes)
+
+benchmark:
+
+                                                         user     system      total        real
+10000 x Schema::new                                  0.370000   0.050000   0.420000 (  0.416566)
+10000 x Message::Model::new                          0.350000   0.000000   0.350000 (  0.351028)
+10000 x Message::Model#group::new#encode_compact     0.130000   0.000000   0.130000 (  0.132689)
+10000 x Message::Model#decode_compact                0.140000   0.000000   0.140000 (  0.136855)
+
+parse                 24005 schema/s
+generate              28487 model/s
+initialise and encode 75364 message/s    (1205824 Bytes/s)
+decode                73069 message/s    (1169104 Bytes/s)
+
+running ruby 2.2.1p85 (2015-02-26 revision 49769) [x86_64-linux]
+on Intel(R) Core(TM) i7-4500U CPU @ 1.80GHz
+cjh@xps ~/project/dev/dev0048 $ rake benchmark
+schema with data:
+
+    InsertOrder/1 ->
+        string Symbol,  # set to "IBM"
+        string OrderId, # set to "ABC123"
+        u32 Price,      # set to 125
+        u32 Quantity    # set to 1000
+
+compact form:
+
+    \x0F\x01\x03\x49\x42\x4D\x06\x41\x42\x43\x31\x32\x33\x7D\xA8\x0F  (16 bytes)
+
+benchmark:
+
+                                                         user     system      total        real
+100000 x Schema::new                                 3.730000   0.550000   4.280000 (  4.283120)
+100000 x Message::Model::new                         3.820000   0.000000   3.820000 (  3.823880)
+100000 x Message::Model#group::new#encode_compact    1.310000   0.000000   1.310000 (  1.307128)
+100000 x Message::Model#decode_compact               1.380000   0.000000   1.380000 (  1.376434)
+
+parse                 23347 schema/s
+generate              26151 model/s
+initialise and encode 76503 message/s    (1224048 Bytes/s)
+decode                72651 message/s    (1162416 Bytes/s)
+
+running ruby 2.2.1p85 (2015-02-26 revision 49769) [x86_64-linux]
+on Intel(R) Core(TM) i7-4500U CPU @ 1.80GHz
+~~~
     
 ## License
 
