@@ -12,8 +12,8 @@ end
 
 Rake::ExtensionTask.new  do |ext|
     ext.name = "ext_compact_encoder"
-    ext.ext_dir = "ext/slow_blink/ext_compact_encoder"
-    ext.lib_dir = "lib/slow_blink"
+    ext.ext_dir = "ext/slow_blink/message/ext_compact_encoder"
+    ext.lib_dir = "lib/slow_blink/message"
 end
 
 desc "run contents of test folder"

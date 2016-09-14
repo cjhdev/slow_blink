@@ -21,6 +21,30 @@ module SlowBlink::Message
 
     class DATE
 
+        def self.from_compact!(input, stack)
+            value = input.getI32!
+            if value
+                self.new(value)
+            else
+                value
+            end
+        end
+
+        def get
+            @value
+        end
+
+        def set(value)
+            raise Error.new "type not supported"
+        end
+
+        def initialize(value)
+            set(value)            
+        end
+
+        def to_compact(out)
+            out.putI32(@value.strftime('%Q'))            
+        end
         
     end
 
