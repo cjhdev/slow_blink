@@ -19,9 +19,11 @@
 
 module SlowBlink::Message
 
+    # @api user
     # A Group may form a complete message or be nested as a {DynamicGroup}
     class Group
 
+        # @private
         # @return [Hash<Field>] group fields
         def self.fields
             @fields
@@ -39,6 +41,7 @@ module SlowBlink::Message
             @name
         end
 
+        # @private
         # @param input [String] Blink compact form
         # @param stack [Array] used to measure depth of recursion 
         # @return [Group, nil]
@@ -120,11 +123,7 @@ module SlowBlink::Message
             self
         end
 
-        # Get the value hash directly
-        # @return [Hash{String => Field}]
-        def fields
-            @value
-        end
+        
 
         # Set the contents of this group
         #
@@ -181,6 +180,7 @@ module SlowBlink::Message
             end
         end
 
+        # @private
         def to_compact(out)            
             group = "".putU64(self.class.id)
             @value.each do |fn, fv|
@@ -200,18 +200,30 @@ module SlowBlink::Message
             out << group            
         end
 
+        protected
+
+            # Get the value hash directly
+            # @return [Hash{String => Field}]
+            def fields
+                @value
+            end
+
     end
 
+    # @api user
     # A StaticGroup is a kind of {Group} that can only exist as the contents of a {Field}
     class StaticGroup < Group
 
+        # @private
+        #
         # @note optionality affects how instances of this type are encoded
         #
         # @return [true,false] is optional
         def self.opt?
             @opt
         end
-    
+
+        # @private
         # @param input [String] Blink compact form
         # @param stack [Array] used to measure depth of recursion 
         # @return [Group, nil]
@@ -250,6 +262,7 @@ module SlowBlink::Message
             raise NoMethodError.new "static groups cannot have extensions"
         end
         
+        # @private
         def to_compact(out)
             if self.class.opt?
                 out.putPresent

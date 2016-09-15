@@ -23,6 +23,8 @@ module SlowBlink
 
         include Annotatable
 
+        attr_reader :symbols
+
         def self.===(other)
             self == other                
         end
@@ -31,7 +33,7 @@ module SlowBlink
         def initialize(syms)
             @annotes = {}
             @rawSyms = syms
-            @syms = {}
+            @symbols = {}
             @schema = nil       
         end
 
@@ -46,16 +48,16 @@ module SlowBlink
         def link(schema, ns, stack=[])
             if @schema.nil?
                 value = 0
-                @syms = {}
+                @symbols = {}
                 @schema = schema
                 @rawSyms.each do |s|
-                    if @syms[s.name]
-                        Log.error "#{s.location}: error: symbols within an enumeration must have unique names ('#{s.name}' first appears at #{@syms[s.name].location})"
+                    if @symbols[s.name]
+                        Log.error "#{s.location}: error: symbols within an enumeration must have unique names ('#{s.name}' first appears at #{@symbols[s.name].location})"
                         @schema = nil
                     else
                         if s.val
-                            if @syms.values.include? s.val
-                                Log.error "#{s.location}: error: values of symbols must be distinct ('#{s.val}' first appears at #{@syms[s.val].location})"
+                            if @symbols.values.include? s.val
+                                Log.error "#{s.location}: error: values of symbols must be distinct ('#{s.val}' first appears at #{@symbols[s.val].location})"
                                 @schema = nil
                             else
                                 value = s.val + 1
@@ -64,7 +66,7 @@ module SlowBlink
                             s.val = value                            
                             value += 1
                         end
-                        @syms[s.name] = s
+                        @symbols[s.name] = s
                     end
                 end                
             end
@@ -76,9 +78,9 @@ module SlowBlink
         # @return [nil]
         def symbol(nameOrVal)
             if nameOrVal.kind_of? String
-                @syms[nameOrVal]
+                @symbols[nameOrVal]
             else
-                @syms.values.detect{|s|s.val == nameOrVal.to_i}
+                @symbols.values.detect{|s|s.val == nameOrVal.to_i}
             end
         end
 

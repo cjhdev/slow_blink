@@ -19,12 +19,15 @@
 
 module SlowBlink
 
+    # @api user
     # This module is concerned with generating models from Schema that are optimised for encoding/decoding and enforcing constraints
     module Message
 
         class Error < StandardError
         end
 
+        # @api user
+        #
         # Use Model to create message models from a {Schema}
         #
         # Typical use cases are as follows:
@@ -223,14 +226,22 @@ module SlowBlink
                                 end                                                   
                             end
                         else
-                            _model_type(type.ref)
+                            _model_type(type.ref, false)
                         end
                     when SlowBlink::SEQUENCE
                         t = _model_type(type.type, false)
                         Class.new(SEQUENCE) do
                             @maxRecursion = maxRecursion
                             @type = t
-                        end                    
+                        end
+                    when SlowBlink::ENUMERATION
+                        symbols = {}
+                        type.symbols.each do |n,s|
+                            symbols[n] = s.val
+                        end
+                        Class.new(ENUMERATION) do
+                            @symbols = symbols
+                        end                        
                     else
                         Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
                             @opt = opt
