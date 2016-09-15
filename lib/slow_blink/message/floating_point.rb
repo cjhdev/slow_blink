@@ -30,18 +30,22 @@ module SlowBlink::Message
             end
         end
 
+        # @return [Numeric]
         def get
             @value
         end
 
+        # @param value [Numeric]
+        # @raise [TypeError]
         def set(value)
             if value.kind_of? Numeric
                 @value = value.to_f
             else
-                raise "expecting float"
+                raise TypeError.new "expecting an instance of Numeric"
             end
         end
 
+        # @note calls {#set}(value)
         def initialize(value)
             set(value)
         end

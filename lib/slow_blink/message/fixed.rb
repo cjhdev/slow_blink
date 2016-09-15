@@ -21,6 +21,9 @@ module SlowBlink::Message
 
     class FIXED
 
+        # @note optionality affects how instances of this type are encoded
+        #
+        # @param [true,false] is optional
         def self.opt?
             @opt
         end
@@ -38,26 +41,32 @@ module SlowBlink::Message
             end
         end
 
+        # @return [Integer,nil] size of fixed type in bytes
         def self.size
             @type.size
         end
 
+        # @return [String]
         def get
             @value
         end
 
+        # Set a fixed size type
+        # @param value [String]
+        # @param
         def set(value)
             if value.kind_of? String
                 if value.size == self.class.size
                     @value = value.to_s
                 else
-                    raise Error.new "must be #{@size} bytes"
+                    raise RangeError.new "String instance must have size of #{@size} bytes"
                 end
             else
-                raise "expecting string"
+                raise TypeError.new "expecting a String instance"
             end
         end
 
+        # @note calls {#set}(value)
         def initialize(value)
             @opt = self.class.opt?
             set(value)                

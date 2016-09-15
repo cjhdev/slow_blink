@@ -34,27 +34,33 @@ module SlowBlink::Message
             end               
         end
 
-        # @param [Integer,nil] optional maximum size of string in bytes
+        # @return [Integer,nil] maximum size of string in bytes
         def self.size
             @type.size
         end
 
+        # @return [String]
         def get
             @value
         end
 
+        # Set a string value
+        # @param value [String]
+        # @raise [TypeError]
+        # @raise [RangeError] value is larger than {::size}
         def set(value)
-            if value.kind_of? String
+            if value.kind_of? String 
                 if !self.class.size or value.size <= self.class.size
                     @value = value.to_s
                 else
-                    raise Error.new "string cannot be larger than #{self.class.size} bytes"
+                    raise RangeError.new "String instance cannot be larger than #{self.class.size} bytes"
                 end
             else
-                raise Error.new "expecting a string type"
+                raise TypeError.new "expecting a String instance"
             end            
         end
 
+        # @note calls {#set}(value)
         def initialize(value)
             set(value)
         end

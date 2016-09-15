@@ -21,6 +21,7 @@ module SlowBlink::Message
 
     class SEQUENCE
 
+        # @return the type that repeats in this SEQUENCE
         def self.type
             @type
         end
@@ -48,10 +49,17 @@ module SlowBlink::Message
             
         end
 
+        # @return [Array]
         def get
             @value
         end
 
+        # Set value of a SEQUENCE
+        #
+        # @param value [Array]
+        # @raise [TypeError]
+        # @raise [RangeError]
+        #
         def set(value)
             @value = []
             if value.kind_of? Array
@@ -63,13 +71,12 @@ module SlowBlink::Message
                     end
                 end
             else
-                raise Error.new "expecting an array"
+                raise TypeError.new "expecting an array"
             end
         end
 
-        # @param value [Array<Object>]
-        def initialize(value)
-            @value = []            
+        # @note calls {#set}(value)
+        def initialize(value)       
             set(value)            
         end
 

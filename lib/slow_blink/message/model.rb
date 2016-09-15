@@ -19,19 +19,16 @@
 
 module SlowBlink
 
+    # This module is concerned with generating models from Schema that are optimised for encoding/decoding and enforcing constraints
     module Message
 
         class Error < StandardError
         end
 
-        class DecodeError
-        end
-
         class Model
-    
-            DEFAULT_MAX_RECURSION = 100
 
-            attr_reader :maxRecursion
+            # the maximum level of nesting in messages able to be decoded by models
+            DEFAULT_MAX_RECURSION = 100
 
             # @api user
             #

@@ -21,6 +21,7 @@ module SlowBlink::Message
 
     class ENUMERATION
 
+        # @return [Hash] symbol/value table
         def self.symbols
             @symbols
         end
@@ -38,14 +39,18 @@ module SlowBlink::Message
             @value
         end
 
+        # Set a symbol
+        # @param value [String] symbol in enumeration
+        # @raise [RangeError] value is not valid symbol
         def set(value)
             if @symbols[value]
                 @value = @symbols[value]
             else
-                raise Error.new "symbol '#{value}' not defined in enumeration"
+                raise RangeError.new "symbol '#{value}' not defined in enumeration"
             end                    
         end        
 
+        # @note calls {#set}(value)
         def initialize(value)
             @symbols = self.class.symbols
             set(value)

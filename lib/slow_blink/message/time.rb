@@ -32,10 +32,20 @@ module SlowBlink::Message
             end
         end
 
+        # @return [DateTime]
         def get
             @value
         end
 
+        # @overload set(value)
+        #   Set a millisecond time value
+        #   @param value [Time,DateTime,Date]
+        # @overload set(value)
+        #   @param value [String] time in ISO 8601
+        # @overload set(value)
+        #   @param value [String] time in milliseconds since UNIX epoch
+        # @raise [TypeError]
+        # @raise [ArgumentError]
         def set(value)            
             if value.kind_of? Time or value.kind_of? DateTime or value.kind_of? Date
                 @value = time.to_datetime
@@ -44,10 +54,11 @@ module SlowBlink::Message
             elsif value.kind_of? Integer
                 @value = DateTime.new(value)
             else
-                raise Error.new "unexpected type"
+                raise TypeError
             end                        
         end
 
+        # @note calls {#set}(value)
         def initialize(value)
             set(value)            
         end
@@ -62,6 +73,27 @@ module SlowBlink::Message
         
         def to_compact(out)
             out.putI64(@value.strftime('%N'))
+        end
+
+        # @overload set(value)
+        #   Set a nanosecond resolution time value
+        #   @param value [Time,DateTime,Date]
+        # @overload set(value)
+        #   @param value [String] time in ISO 8601
+        # @overload set(value)
+        #   @param value [Integer] time in nanoseconds since UNIX epoch
+        # @raise [TypeError]
+        # @raise [ArgumentError]
+        def set(value)            
+            if value.kind_of? Time or value.kind_of? DateTime or value.kind_of? Date
+                @value = time.to_datetime
+            elsif value.kind_of? String
+                @value = DateTime.parse(value)
+            elsif value.kind_of? Integer
+                @value = DateTime.new(value)
+            else
+                raise TypeError
+            end                        
         end
         
     end

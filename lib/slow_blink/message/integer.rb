@@ -27,23 +27,28 @@ module SlowBlink::Message
             @type.class::RANGE.cover? value
         end
 
+        # @return [Integer]
         def get
             @value
         end
-
+        
+        # Set an Integer value
+        # @param value [Integer]
+        # @raise [RangeError] value is outside of range according to {::in_range?}
+        # @raise [TypeError]
         def set(value)
             if value.kind_of? Integer
                 if self.class.in_range?(value)
                     @value = value.to_i
                 else
-                    raise Error.new "value out of range"
+                    raise RangeError.new
                 end
             else
-                raise Error.new "value must be an integer"
+                raise TypeError.new "value must be an integer"
             end            
         end
 
-        # @param value [Integer, nil]
+        # @note calls {#set}(value)
         def initialize(value)        
             set(value)
         end

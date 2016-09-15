@@ -30,18 +30,23 @@ module SlowBlink::Message
             end
         end
 
+        # @return [TrueClass,FalseClass]
         def get
             @value
         end
 
+        # Set a boolean value
+        # @param value [TrueClass,FalseClass]
+        # @raise [TypeError] value must be literally TrueClass or FalseClass
         def set(value)
             if value.kind_of? TrueClass or value.kind_of? FalseClass
                 @value = value
             else
-                raise "expecting true/false"
+                raise TypeError.new "expecting true/false"
             end
         end
 
+        # @note calls {#set}(value)
         def initialize(value)
             set(value)                
         end

@@ -19,6 +19,7 @@
 
 module SlowBlink::Message
 
+    # A Group may form a complete message or be nested as a {DynamicGroup}
     class Group
 
         # @param [Hash<Field>] group fields
@@ -37,8 +38,9 @@ module SlowBlink::Message
         end
 
         # @param input [String] Blink compact form
-        # @param stack [Array] 
-        # @return [StaticGroup] instance of anonymous subclass of StaticGroup
+        # @param stack [Array] used to measure depth of recursion 
+        # @return [Group, nil]
+        # @raise [Error] recursion depth limit
         def self.from_compact!(input, stack)            
 
             fields = {}
@@ -77,42 +79,59 @@ module SlowBlink::Message
                
         end
 
+        # @param [Array] group extension objects
+        attr_reader :extension
+
+        # set a field value
+        #
+        # @param name [String] name of field
+        # @param value [Object]
+        # @raise [IndexError, TypeError]
         def []=(name, value)
             if @value[name]
                 @value[name].set(value)
+                self
             else
-                raise "field #{name} is not defined in this group"            
+                raise IndexError.new "field #{name} is not defined in this group"            
             end
         end
 
-        def name
-            self.class.name
-        end
-
-        def id
-            self.class.id
-        end
-
-        # Call get on field 'name'
-        # @see Field#get
+        # Get a field value
+        #
         # @param name [String] name of field
-        # @return [Object]        
+        # @return [Object]
+        # @raise [IndexError, TypeError]
         def [](name)            
             if @value[name]
                 @value[name].get                
             else
-                raise "field #{name} is not defined in this group"
+                raise IndexError.new "field #{name} is not defined in this group"
             end            
         end
 
+        # Get this group
+        # @param [Group] self
         def get
             self
         end
 
+        # Get the value hash directly
+        # @return [Hash]
         def fields
             @value
         end
 
+        # Set the contents of this group
+        #
+        # This method accepts one of two options:
+        #
+        # First option is a Hash of fields. Values may be literals to be set to fields objects,
+        # or instances of the field objects to completely replace existing field objects
+        #
+        # Second option is a {Group} where #{Group#fields} will be used in the same manner as the first option.
+        #
+        # @param value [Hash, Group] fields to set
+        # @raise [IndexError, TypeError]
         def set(value)
             if value.kind_of? Hash
                 value.each do |fn, fv|
@@ -125,21 +144,17 @@ module SlowBlink::Message
                             @value[fn].set(fv)
                         end
                     else
-                        raise Error.new "field '#{fn}' is unknown"
+                        raise IndexError.new "field '#{fn}' is unknown"
                     end
                 end
             # replace @value with value from another instance of self.class
             elsif value.is_a? self.class
                 @value = value.fields.to_h
             else
-                raise Error.new "expecting a Hash or a StaticGroup instance"
+                raise TypeError.new "expecting a Hash or a StaticGroup instance"
             end
         end
 
-        def extension
-            @extension
-        end
-        
         # Create a Group
         #
         # @param fields [Hash] associative array of slow blink objects or native values
@@ -157,7 +172,7 @@ module SlowBlink::Message
             if self.class.id
                 to_compact("")            
             else
-                raise "cannot encode a group without an ID"
+                raise Error.new "cannot encode a group without an ID"
             end
         end
 
@@ -169,7 +184,11 @@ module SlowBlink::Message
             if @extension.size > 0
                 group.putU32(@extension.size)
                 @extension.each do |e|
-                    e.to_compact(group)
+                    #if e.is_a? @extensionObject
+                        e.to_compact(group)
+                    #else
+                     #   raise Error.new "cannot convert unknown extension object to compact form"
+                    #end
                 end
             end
             out.putU32(group.size)
@@ -178,16 +197,20 @@ module SlowBlink::Message
 
     end
 
-    # static subgroup
+    # A StaticGroup is a kind of #{Group} that can only exist as the contents of a #{Field}
     class StaticGroup < Group
 
-        # @param [true,false] element is referenced by an optional field
+        # @note optionality affects how instances of this type are encoded
+        #
+        # @param [true,false] is optional
         def self.opt?
             @opt
         end
     
         # @param input [String] Blink compact form
-        # @return [StaticGroup] instance of anonymous subclass of {StaticGroup}
+        # @param stack [Array] used to measure depth of recursion 
+        # @return [Group, nil]
+        # @raise [Error] recursion depth limit
         def self.from_compact!(input, stack)
 
             if stack.size < @maxRecursion
@@ -216,10 +239,11 @@ module SlowBlink::Message
             
         end
 
+        # @raise [NoMethodError]
         def extension
-            raise "static groups cannot have extensions"
+            raise NoMethodError.new "static groups cannot have extensions"
         end
-
+        
         def to_compact(out)
             if self.class.opt?
                 out.putPresent
@@ -232,13 +256,15 @@ module SlowBlink::Message
 
     end
 
-    # A DynamicGroup subgroup has a Group which may be restricted by Group::id according to DynamicGroup::permitted
+    # A DynamicGroup has a {Group} which has a {Group::id} that appears in {DynamicGroup::permitted}
     class DynamicGroup
 
+        # @return [Hash] Hash of all groups referenced by name
         def self.groups
             @groups
         end
 
+        # @return [Hash] Hash of all tagged groups referenced by ID
         def self.taggedGroups
             @taggedGroups
         end
@@ -247,7 +273,11 @@ module SlowBlink::Message
         def self.permitted
             @permitted
         end
-        
+
+        # @param input [String] Blink compact form
+        # @param stack [Array] used to measure depth of recursion 
+        # @return [Group, nil]
+        # @raise [Error] recursion depth limit
         def self.from_compact!(input, stack)
 
             if stack.size < @maxRecursion
@@ -278,14 +308,6 @@ module SlowBlink::Message
 
         end
 
-        def name
-            @value.name
-        end
-
-        def id
-            @value.id
-        end
-
         def set(value)        
             # is group one of the groups we understand?
             if self.class.taggedGroups.values.detect{|g| value.is_a? g} 
@@ -303,14 +325,18 @@ module SlowBlink::Message
             end
         end
 
+        # @return [Group] contained group
         def get
             @value.get
         end
 
+        # Calls {Group#extension}
+        # @return [Array]
         def extension
             @value.extension
         end
 
+        # @param value [Group, Hash]
         def initialize(value)
             set(value)        
         end

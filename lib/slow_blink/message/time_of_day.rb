@@ -35,12 +35,12 @@ module SlowBlink::Message
                 if value < 86400000
                     @value = value                            
                 else
-                    raise Error.new "input out of range"
+                    raise RangeError
                 end
             elsif value.kind_of? Time
                 @value = value.to_i
             else
-                raise "what is this?"                        
+                raise TypeError
             end                     
         end
 
@@ -48,6 +48,7 @@ module SlowBlink::Message
             @value
         end
 
+        # @note calls {#set}(value)
         def initialize(value)
             @opt = self.class.opt?
             if value
@@ -80,19 +81,20 @@ module SlowBlink::Message
                 if value < 86400000000000
                     @value = value                            
                 else
-                    raise Error.new "input out of range"
+                    raise RangeError
                 end
             elsif value.kind_of? Time
                 @value = value.to_i
             else
-                raise "what is this?"                        
+                raise TypeError                        
             end                     
         end
 
         def get
             @value
         end
-    
+
+        # @note calls {#set}(value)
         def initialize(value)
             set(value)            
         end
