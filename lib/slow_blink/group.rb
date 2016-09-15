@@ -85,7 +85,7 @@ module SlowBlink
                                         return schema
                                     end
                                 rescue StopIteration
-                                    raise Error.new "#{self.location}: error: invalid cycle detected"
+                                    raise ParseError.new "#{self.location}: error: invalid cycle detected"
                                 end
                             end
                         end

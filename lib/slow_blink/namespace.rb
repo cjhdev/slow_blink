@@ -83,7 +83,7 @@ module SlowBlink
             end
 
             if error
-                raise
+                raise ParseError
             end
             
         end
@@ -96,7 +96,7 @@ module SlowBlink
             namespace.definitions.each do |d|
                 if @definitions[d.nameWithID.name]
                     Log.error "#{d.location}: error: definitions must have unique names ('#{d.nameWithID.name}' first appears at #{definitions[d.nameWithID.name].location})"
-                    raise
+                    raise ParseError
                 else
                     @definitions[d.nameWithID.name] = d
                     if d.is_a? Group

@@ -21,6 +21,6 @@
 
 
 module SlowBlink
-    class Error < StandardError
+    class ParseError < StandardError
     end
 end

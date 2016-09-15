@@ -88,7 +88,7 @@ module SlowBlink
                         end                    
                     end                
                 else
-                    raise "unknown component reference #{@componentReference.class}".freeze
+                    raise ParseError.new "unknown component reference #{@componentReference.class}".freeze
                 end                    
             end
             @schema                

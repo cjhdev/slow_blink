@@ -44,7 +44,7 @@ module SlowBlink
                 end
                 self.new(*input)
             else
-                raise "at least one file required"                
+                raise ArgumentError.new "at least one file required"                
             end
         end
 
@@ -72,7 +72,7 @@ module SlowBlink
                     namespace << Namespace.parse(b.buffer, filename: b.filename)                    
                 end
             else
-                raise "at least one buffer required"
+                raise ArgumentError.new "at least one buffer required"
             end
 
             @ns = {}
@@ -86,7 +86,7 @@ module SlowBlink
                     begin
                         @ns[ns.name].merge!(ns)
                     rescue
-                        raise
+                        raise ParseError
                     end
                 else
                     @ns[ns.name] = ns
@@ -134,7 +134,7 @@ module SlowBlink
             end
 
             if error
-                raise
+                raise ParseError
             end
             
         end
@@ -156,11 +156,11 @@ module SlowBlink
 
 end
 
+require 'slow_blink/parse_error'
 require 'slow_blink/log'
 require 'slow_blink/schema_buffer'
 require 'slow_blink/annotatable'
 require 'slow_blink/namespace'
-require 'slow_blink/error'
 require 'slow_blink/version'
 require 'slow_blink/annotation'
 require 'slow_blink/incremental_annotation'
