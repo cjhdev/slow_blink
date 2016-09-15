@@ -27,7 +27,7 @@ module SlowBlink::Message
         end
 
         def self.from_compact!(input, stack)
-            value = input.getU32!
+            value = input.getI32!
             if value
                 self.new(value)
             else
@@ -58,7 +58,7 @@ module SlowBlink::Message
         end
         
         def to_compact(out)
-            out.putU32(@symbols[@value])
+            out.putI32(@symbols[@value])
         end
     
     end

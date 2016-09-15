@@ -236,9 +236,10 @@ module SlowBlink
                         end
                     when SlowBlink::ENUMERATION
                         symbols = {}
-                        type.symbols.each do |n,s|
-                            symbols[n] = s.val
+                        type.symbols.each do |n,v|
+                            symbols[n] = v.val
                         end
+                        puts symbols.inspect
                         Class.new(ENUMERATION) do
                             @symbols = symbols
                         end                        

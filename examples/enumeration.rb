@@ -10,7 +10,7 @@ ExplicitSize = Small/38 | Medium/40 | Large/42
 
 Colour = Red/0xff0000 | Green/0x00ff00 | Blue/0x0000ff
 
-Message ->
+Message/0 ->
     Singleton One,
     Size Two,
     ExplicitSize Three,
@@ -25,3 +25,7 @@ message = model.group("Message").new(
     "Three" => "Medium",
     "Four" => "Blue"
 )
+
+puts message.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join
+
+

@@ -24,6 +24,8 @@ message = model.group("Canvas").new(
         model.group("Circle").new("Area" => 28.3, "Radius" => 3)
     ]
 )
+
+puts message.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join
  
 
 

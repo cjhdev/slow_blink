@@ -20,4 +20,4 @@ message = model.group("MyMessage").new(
     "Text" => "my name"
 )
 
-
+puts message.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join

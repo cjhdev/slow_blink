@@ -18,6 +18,8 @@ equivalent_message["greeting"] = "hello"
 # convert to compact form...
 compact_form = message.encode_compact
 
+puts message.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join
+
 # deserialise the string
 decoded = model.decode_compact(compact_form)
 

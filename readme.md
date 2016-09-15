@@ -6,12 +6,13 @@ SlowBlink
 
 SlowBlink is a Ruby implementation of [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
 
-SlowBlink was written to evaluate Blink Protocol. It needs more testing, use at your own peril.
+SlowBlink was written to evaluate Blink Protocol. It is not suitable for production at this time.
 
 ## Highlights
 
 - Integrated Blink Protocol schema parser (GLR Flex/Bison)
 - Dynamic message model generator
+    - Does not generate constants or symbols
 - Low level encode/decode functions implemented as native extensions
 - Implements Blink Specification beta4-2013-06-14
 
@@ -32,13 +33,13 @@ include SlowBlink
 # read schema definition from file
 schema = Schema.read("your_schema.blink")
 
-# read several schema definitions from file and combine them in that order
+# read several schema definitions from file and combine them in order read
 schema = Schema.read("common_schema.blink", "specialised_schema.blink")
 
 # read schema definition from memory with optional 'filename' equivalent string
 schema = Schema.new(SchemaBuffer.new("Hello/0 -> string greeting", "buffer.blink"))
 
-# read several schema definitions from memory and combine them in that order
+# read several schema definitions from memory and combine them in order read
 schema = Schema.new(SchemaBuffer.new("Hello -> string greeting"), SchemaBuffer.new("Hello <- 0"))
 ~~~
 
@@ -60,7 +61,7 @@ message = model.group("Hello").new("greeting" => "hello")
 equivalent_message = model.group("Hello").new
 equivalent_message["greeting"] = "hello"
 
-# convert to compact form...
+# "\x07\x00\x05\x68\x65\x6C\x6C\x6F"
 compact_form = message.encode_compact
 
 # convert from compact form...
@@ -156,6 +157,10 @@ message = model.group("Mail").new(
 # append two extensions to message
 message.extension << model.group("Trace").new("Hop" => "local.eg.org")
 message.extension << model.group("Trace").new("Hop" => "mail.eg.org")
+
+# "\x39\x07\x05\x48\x65\x6C\x6C\x6F\x03\x79\x6F\x75\x02\x6D\x65\x0C\x48\x6F\x77\x20\x61\x72\x65\x20\x79\x6F\x75\x3F\x02\x0E\x08\x0C\x6C\x6F\x63\x61\x6C\x2E\x65\x67\x2E\x6F\x72\x67\x0D\x08\x0B\x6D\x61\x69\x6C\x2E\x65\x67\x2E\x6F\x72\x67"
+message.encode_compact
+
 ~~~
 
 ### Enumeration
@@ -173,7 +178,7 @@ ExplicitSize = Small/38 | Medium/40 | Large/42
 
 Colour = Red/0xff0000 | Green/0x00ff00 | Blue/0x0000ff
 
-Message ->
+Message/0 ->
     Singleton One,
     Size Two,
     ExplicitSize Three,
@@ -188,6 +193,10 @@ message = model.group("Message").new(
     "Three" => "Medium",
     "Four" => "Blue"
 )
+
+# "\x06\x00\x00\x00\x28\xBF\x03"
+message.encode_compact
+
 ~~~
 
 ## Documentation

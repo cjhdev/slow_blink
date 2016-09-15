@@ -25,3 +25,4 @@ message = model.group("Mail").new(
 message.extension << model.group("Trace").new("Hop" => "local.eg.org")
 message.extension << model.group("Trace").new("Hop" => "mail.eg.org")
 
+puts message.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join

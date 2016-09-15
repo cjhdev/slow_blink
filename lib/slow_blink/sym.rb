@@ -44,6 +44,7 @@ module SlowBlink
             @val = val
             @annotes = {}
             @location = location
+            @implicit = (val ? false : true)
         end
 
         # @api private
