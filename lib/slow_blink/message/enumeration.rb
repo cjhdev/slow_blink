@@ -21,7 +21,7 @@ module SlowBlink::Message
 
     class ENUMERATION
 
-        # @return [Hash] symbol/value table
+        # @return [Hash] symbol => value table
         def self.symbols
             @symbols
         end
@@ -35,6 +35,7 @@ module SlowBlink::Message
             end            
         end
 
+        # @return [String]
         def get
             @value
         end
@@ -44,7 +45,7 @@ module SlowBlink::Message
         # @raise [RangeError] value is not valid symbol
         def set(value)
             if @symbols[value]
-                @value = @symbols[value]
+                @value = value.to_s
             else
                 raise RangeError.new "symbol '#{value}' not defined in enumeration"
             end                    
@@ -57,7 +58,7 @@ module SlowBlink::Message
         end
         
         def to_compact(out)
-            out.putU32(@value ? @symbols[@value] : nil)
+            out.putU32(@symbols[@value])
         end
     
     end

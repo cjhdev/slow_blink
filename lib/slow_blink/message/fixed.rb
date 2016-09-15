@@ -23,7 +23,7 @@ module SlowBlink::Message
 
         # @note optionality affects how instances of this type are encoded
         #
-        # @param [true,false] is optional
+        # @return [true,false] is optional
         def self.opt?
             @opt
         end
@@ -53,7 +53,8 @@ module SlowBlink::Message
 
         # Set a fixed size type
         # @param value [String]
-        # @param
+        # @raise [RangeError]
+        # @raise [TypeError]
         def set(value)
             if value.kind_of? String
                 if value.size == self.class.size

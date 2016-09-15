@@ -42,11 +42,13 @@ module SlowBlink::Message
         end
 
         # @param input [String] Blink compact form
-        # @param [Field] instance of anonymous subclass of Field
+        # @param stack [Array]
+        # @return [Field] instance of anonymous subclass of Field
         def self.from_compact!(input, stack)        
             self.new(@type.from_compact!(input, stack))
         end
 
+        # @note calls {#set}(value)
         def initialize(value)
             @opt = self.class.opt?
             @type = self.class.type
@@ -59,6 +61,7 @@ module SlowBlink::Message
             end
         end
 
+        
         def set(value)
             if value
                 if value.is_a? self.class.type
@@ -71,11 +74,11 @@ module SlowBlink::Message
             elsif @opt
                 @value = nil
             else
-                raise Error.new "field can not be set to null"
+                raise TypeError.new "field can not be set to null"
             end            
         end
 
-        # @return [Object]
+        # @return field value or nil
         def get
             if @value
                 @value.get

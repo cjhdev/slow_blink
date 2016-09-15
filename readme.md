@@ -181,9 +181,9 @@ compact form:
 
 benchmark:
                                                          user     system      total        real
-100000 x Schema::new                                 3.630000   0.550000   4.180000 (  4.176857)
-100000 x Message::Model::new                         3.870000   0.000000   3.870000 (  3.873298)
-100000 x Message::Model#group::new#encode_compact    1.300000   0.000000   1.300000 (  1.295605)
+100000 x Schema.new                                  3.630000   0.550000   4.180000 (  4.176857)
+100000 x Message::Model.new                          3.870000   0.000000   3.870000 (  3.873298)
+100000 x Message::Model#group.new#encode_compact     1.300000   0.000000   1.300000 (  1.295605)
 100000 x Message::Model#decode_compact               1.360000   0.000000   1.360000 (  1.362102)
 
 parse                 23941 schema/s

@@ -43,9 +43,9 @@ puts ""
 puts "benchmark:"
 
 Benchmark.benchmark(CAPTION, 50) do |x|
-    st = x.report("#{CYCLES} x Schema::new") { CYCLES.times { Schema.new(buffer) } }
-    mt = x.report("#{CYCLES} x Message::Model::new") { CYCLES.times { Message::Model.new(schema) } }
-    iet = x.report("#{CYCLES} x Message::Model#group::new#encode_compact") { CYCLES.times { model.group("InsertOrder").new("Symbol" => "IBM", "OrderId" => "ABC123", "Price" => 125, "Quantity" => 1000).encode_compact } }
+    st = x.report("#{CYCLES} x Schema.new") { CYCLES.times { Schema.new(buffer) } }
+    mt = x.report("#{CYCLES} x Message::Model.new") { CYCLES.times { Message::Model.new(schema) } }
+    iet = x.report("#{CYCLES} x Message::Model#group.new#encode_compact") { CYCLES.times { model.group("InsertOrder").new("Symbol" => "IBM", "OrderId" => "ABC123", "Price" => 125, "Quantity" => 1000).encode_compact } }
     dt = x.report("#{CYCLES} x Message::Model#decode_compact") { CYCLES.times { model.decode_compact(compact_form.dup) } }
     puts ""
     puts "parse                 #{(CYCLES/st.to_a.last.to_f).to_i} schema/s"

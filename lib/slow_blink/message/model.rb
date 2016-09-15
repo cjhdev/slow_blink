@@ -87,7 +87,7 @@ module SlowBlink
             #
             # @note return value will be an *anonymous* *subclass* *instance* of {Group}
             #
-            # @param [String] Blink Protocol compact form
+            # @param input [String] Blink Protocol compact form
             # @return [Group] group instance
             #
             def decode_compact(input)

@@ -34,7 +34,7 @@ module SlowBlink::Message
             end               
         end
 
-        # @param [Integer,nil] maximum size of string in bytes
+        # @return [Integer,nil] maximum size of string in bytes
         def self.size
             @type.size
         end

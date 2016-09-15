@@ -22,7 +22,7 @@ module SlowBlink::Message
     # A Group may form a complete message or be nested as a {DynamicGroup}
     class Group
 
-        # @param [Hash<Field>] group fields
+        # @return [Hash<Field>] group fields
         def self.fields
             @fields
         end
@@ -79,7 +79,7 @@ module SlowBlink::Message
                
         end
 
-        # @param [Array] group extension objects
+        # @return [Array<Group>] group extension objects
         attr_reader :extension
 
         # set a field value
@@ -110,7 +110,7 @@ module SlowBlink::Message
         end
 
         # Get this group
-        # @param [Group] self
+        # @return [Group] self
         def get
             self
         end
@@ -197,12 +197,12 @@ module SlowBlink::Message
 
     end
 
-    # A StaticGroup is a kind of #{Group} that can only exist as the contents of a #{Field}
+    # A StaticGroup is a kind of {Group} that can only exist as the contents of a {Field}
     class StaticGroup < Group
 
         # @note optionality affects how instances of this type are encoded
         #
-        # @param [true,false] is optional
+        # @return [true,false] is optional
         def self.opt?
             @opt
         end
@@ -216,7 +216,7 @@ module SlowBlink::Message
             if stack.size < @maxRecursion
                 stack << self
             else
-                raise Error.new "stack limit"
+                raise Error.new "stack limit"   
             end
         
             if @opt
@@ -239,6 +239,7 @@ module SlowBlink::Message
             
         end
 
+        # @note {StaticGroup} cannot have extensions therefore this method will raise a NoMethodError
         # @raise [NoMethodError]
         def extension
             raise NoMethodError.new "static groups cannot have extensions"
@@ -256,7 +257,7 @@ module SlowBlink::Message
 
     end
 
-    # A DynamicGroup has a {Group} which has a {Group::id} that appears in {DynamicGroup::permitted}
+    # A DynamicGroup has a {Group} which has a {Group.id} that appears in {DynamicGroup.permitted} list
     class DynamicGroup
 
         # @return [Hash] Hash of all groups referenced by name
