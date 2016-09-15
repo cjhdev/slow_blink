@@ -25,6 +25,29 @@ module SlowBlink
         class Error < StandardError
         end
 
+        # Use Model to create message models from a {Schema}
+        #
+        # Typical use cases are as follows:
+        #
+        # # Precondition
+        #
+        # Examples below will use the following {Schema} instance
+        #
+        #       raw =  <<-eos
+        #       Thing
+        #       AnotherThing ->
+        #        string Greeting
+        #
+        #       schema <- @test="test"
+        #   eos
+        #
+        #
+        # # Create a Message Model
+        #
+        #     model = Model.new(schema)
+        # 
+        # # 
+        #
         class Model
 
             # the maximum level of nesting in messages able to be decoded by models
@@ -32,12 +55,12 @@ module SlowBlink
 
             # @api user
             #
-            # Create a Model from a {Schema}
+            # Generate a Model from a {Schema}
             #
             # @param schema [SlowBlink::Schema]
-            # @param opts [Hash]
+            # @param opts [Hash] options
             #
-            # @option opts [Symbol] :maxRecursion
+            # @option opts [Integer] :maxRecursion
             #
             def initialize(schema, **opts)
 
@@ -62,16 +85,16 @@ module SlowBlink
                 extensionObject = @extensionObject
                 
                 schema.groups.each do |name, g|
-                    this = self
+                    fields = {}
+                    g.fields.each do |f|
+                        fields[f.nameWithID.name] = _model_field(f)
+                    end                    
                     @groups[name] = Class.new(Group) do
                         @extensionObject = extensionObject
                         @maxRecursion = maxRecursion
                         @name = g.nameWithID.name
                         @id = g.nameWithID.id
-                        @fields = {}
-                        g.fields.each do |f|
-                            @fields[f.nameWithID.name] = this._model_field(f)
-                        end                   
+                        @fields = fields                    
                     end
                     if g.nameWithID.id
                         @taggedGroups[g.nameWithID.id] = @groups[name]
@@ -83,12 +106,10 @@ module SlowBlink
 
             # @api user
             #
-            # Initialise a message model instance with a compact form string
-            #
-            # @note return value will be an *anonymous* *subclass* *instance* of {Group}
+            # Initialise a {Group} from a compact form string
             #
             # @param input [String] Blink Protocol compact form
-            # @return [Group] group instance
+            # @return [Group] anonymous subclass instance of Group
             #
             def decode_compact(input)
                 stack = []
@@ -116,104 +137,107 @@ module SlowBlink
 
             # @api user
             #
-            # Get a group model
+            # Get a {Group} by name
             #
             # @param name [String] name of group (may be qualified)
-            # @return [Class] {DynamicGroup} or {Group}
-            # @return [nil] group not defined
-            #
+            # @return [Group] anonymous subclass of Group
+            # @raise [RangeError]
             def group(name)
-                @groups[name]            
-            end
-
-            # @api private
-            #
-            # Create a model for a Field
-            #
-            # @param field [SlowBlink::Field] field definition
-            # @return [Class] anonymous subclass of {Field}
-            def _model_field(field)
-                this = self
-                Class.new(Field) do
-                    @opt = field.opt?
-                    @name = field.nameWithID.name
-                    @id = field.nameWithID.id
-                    @type = this._model_type(field.type, field.opt?)
+                group = @groups[name]
+                if group
+                    group
+                else
+                    raise RangeError.new "group '#{name}' is unknown"
                 end                
             end
 
-            # @api private
-            #
-            # Create a model for a type
-            #
-            # @param type [SlowBlink::Type] type definition
-            # @param opt  [true,false] parent definition may allow this type to be optional
-            #
-            #            
-            def _model_type(type, opt)
-                this = self
-                extensionObject = @extensionObject
-                maxRecursion = @maxRecursion
-                case type.class
-                when SlowBlink::OBJECT
-                    groups = @groups
-                    taggedGroups = @taggedGroups
-                    permitted = @taggedGroups.keys
-                    Class.new(DynamicGroup) do
-                        @extensionObject = extensionObject
-                        @maxRecursion = maxRecursion
-                        @opt = opt
-                        @groups = groups
-                        @taggedGroups = taggedGroups
-                        @permitted = permitted                        
-                    end                     
-                when SlowBlink::REF
-                    if type.ref.kind_of? SlowBlink::Group
-                        if type.dynamic?
-                            taggedGroups = @taggedGroups
-                            groups = @groups
-                            permitted = @taggedGroups.keys
-                            @schema.tagged.each do |id, g|
-                                if g.group_kind_of?(type)
-                                    permitted << id
-                                end
-                            end
-                            Class.new(DynamicGroup) do
-                                @extensionObject = extensionObject
-                                @maxRecursion = maxRecursion
-                                @opt = opt
-                                @taggedGroups = taggedGroups
-                                @groups = groups
-                                @permitted = permitted
-                            end                               
-                        else
-                            Class.new(StaticGroup) do
-                                @extensionObject = extensionObject
-                                @maxRecursion = maxRecursion
-                                @name = type.ref.nameWithID.name
-                                @id = nil
-                                @opt = opt
-                                @fields = {}
-                                type.ref.fields.each do |f|
-                                    @fields[f.nameWithID.name] = this._model_field(f)
-                                end                                                            
-                            end                                                   
-                        end
-                    else
-                        _model_type(type.ref)
-                    end
-                when SlowBlink::SEQUENCE
-                    Class.new(SEQUENCE) do
-                        @maxRecursion = maxRecursion
-                        @type = this._model_type(type.type, false)
-                    end                    
-                else
-                    Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
-                        @opt = opt
-                        @type = type                                        
-                    end                    
+            private
+
+                # Create a model for a Field
+                #
+                # @param field [SlowBlink::Field] field definition
+                # @return [Class] anonymous subclass of {Field}
+                def _model_field(field)
+                    type = _model_type(field.type, field.opt?)
+                    Class.new(Field) do
+                        @opt = field.opt?
+                        @name = field.nameWithID.name
+                        @id = field.nameWithID.id
+                        @type = type
+                    end                
                 end
-            end
+
+                # Create a model for a type
+                #
+                # @param type [SlowBlink::Type] type definition
+                # @param opt  [true,false] parent definition may allow this type to be optional
+                #
+                #            
+                def _model_type(type, opt)
+                    extensionObject = @extensionObject
+                    maxRecursion = @maxRecursion
+                    case type.class
+                    when SlowBlink::OBJECT
+                        groups = @groups
+                        taggedGroups = @taggedGroups
+                        permitted = @taggedGroups.keys
+                        Class.new(DynamicGroup) do
+                            @extensionObject = extensionObject
+                            @maxRecursion = maxRecursion
+                            @opt = opt
+                            @groups = groups
+                            @taggedGroups = taggedGroups
+                            @permitted = permitted                        
+                        end                     
+                    when SlowBlink::REF
+                        if type.ref.kind_of? SlowBlink::Group
+                            if type.dynamic?
+                                taggedGroups = @taggedGroups
+                                groups = @groups
+                                permitted = @taggedGroups.keys
+                                @schema.tagged.each do |id, g|
+                                    if g.group_kind_of?(type)
+                                        permitted << id
+                                    end
+                                end
+                                Class.new(DynamicGroup) do
+                                    @extensionObject = extensionObject
+                                    @maxRecursion = maxRecursion
+                                    @opt = opt
+                                    @taggedGroups = taggedGroups
+                                    @groups = groups
+                                    @permitted = permitted
+                                end                               
+                            else
+                                fields = {}
+                                type.ref.fields.each do |f|
+                                    fields[f.nameWithID.name] = _model_field(f)
+                                end                                                            
+                                Class.new(StaticGroup) do
+                                    @extensionObject = extensionObject
+                                    @maxRecursion = maxRecursion
+                                    @name = type.ref.nameWithID.name
+                                    @id = nil
+                                    @opt = opt
+                                    @fields = fields                                
+                                end                                                   
+                            end
+                        else
+                            _model_type(type.ref)
+                        end
+                    when SlowBlink::SEQUENCE
+                        t = _model_type(type.type, false)
+                        Class.new(SEQUENCE) do
+                            @maxRecursion = maxRecursion
+                            @type = t
+                        end                    
+                    else
+                        Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
+                            @opt = opt
+                            @type = type                                        
+                        end                    
+                    end
+                end
 
         end
 

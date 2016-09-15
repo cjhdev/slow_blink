@@ -1,3 +1,4 @@
+--markup markdown
 --no-private
 --title "SlowBlink: Blink Protocol for Ruby"
 lib/slow_blink/schema.rb

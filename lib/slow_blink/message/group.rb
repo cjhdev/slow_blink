@@ -27,11 +27,13 @@ module SlowBlink::Message
             @fields
         end
 
+        # @api user
         # @return [Integer,nil] group identifier
         def self.id
             @id
         end
 
+        # @api user
         # @return [String] name of group
         def self.name
             @name
@@ -79,10 +81,12 @@ module SlowBlink::Message
                
         end
 
-        # @return [Array<Group>] group extension objects
+        # @api user
+        # @return [Array<Group>] extension objects
         attr_reader :extension
 
-        # set a field value
+        # @api user
+        # Finds Field by name and calls {Field#set}(value) 
         #
         # @param name [String] name of field
         # @param value [Object]
@@ -90,13 +94,14 @@ module SlowBlink::Message
         def []=(name, value)
             if @value[name]
                 @value[name].set(value)
-                self
             else
                 raise IndexError.new "field #{name} is not defined in this group"            
             end
+            self
         end
 
-        # Get a field value
+        # @api user
+        # Finds Field by name and calls {Field#get}
         #
         # @param name [String] name of field
         # @return [Object]
@@ -110,27 +115,24 @@ module SlowBlink::Message
         end
 
         # Get this group
-        # @return [Group] self
+        # @return [self]
         def get
             self
         end
 
         # Get the value hash directly
-        # @return [Hash]
+        # @return [Hash{String => Field}]
         def fields
             @value
         end
 
         # Set the contents of this group
         #
-        # This method accepts one of two options:
-        #
-        # First option is a Hash of fields. Values may be literals to be set to fields objects,
-        # or instances of the field objects to completely replace existing field objects
-        #
-        # Second option is a {Group} where #{Group#fields} will be used in the same manner as the first option.
-        #
-        # @param value [Hash, Group] fields to set
+        # @overload set(value)
+        #   @param value [Hash{String=>Field,Numeric,String,Time,nil}] Hash of {Field} objects or literal values
+        # @overload set(value)
+        #   @param value [Group] a Hash of {Field} objects will be extracted from a Group object by calling {Group#fields}
+        # @return [self]
         # @raise [IndexError, TypeError]
         def set(value)
             if value.kind_of? Hash
@@ -153,11 +155,14 @@ module SlowBlink::Message
             else
                 raise TypeError.new "expecting a Hash or a StaticGroup instance"
             end
+            self
         end
 
+        # @api user
         # Create a Group
         #
-        # @param fields [Hash] associative array of slow blink objects or native values
+        # @note calls {#set}(fields)
+        # @param fields [Hash]
         def initialize(fields={})
             @extension = []            
             @fields = self.class.fields
