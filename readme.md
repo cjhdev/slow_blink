@@ -14,7 +14,7 @@ SlowBlink was written to evaluate Blink Protocol. It is not suitable for product
 - Dynamic message model generator
     - Does not generate constants or symbols
 - Low level encode/decode functions implemented as native extensions
-- Implements Blink Specification beta4-2013-06-14
+- Implements Blink Specification [beta4-2013-06-14](specification/blink/BlinkSpec-beta4.pdf "Blink Specification").
 
 ## Installation
 
