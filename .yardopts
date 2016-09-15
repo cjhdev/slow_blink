@@ -1,6 +1,9 @@
 --markup markdown
+--tag license:"License"
+--hide-tag license
 --no-private
 --title "SlowBlink: Blink Protocol for Ruby"
 lib/slow_blink/schema.rb
+lib/slow_blink/message/model.rb
 lib/**/*.rb -
 readme.md

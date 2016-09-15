@@ -1,25 +1,27 @@
-# Copyright (c) 2016 Cameron Harper
+# @license
+#   
+#   Copyright (c) 2016 Cameron Harper
+#     
+#   Permission is hereby granted, free of charge, to any person obtaining a copy of
+#   this software and associated documentation files (the "Software"), to deal in
+#   the Software without restriction, including without limitation the rights to
+#   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+#   the Software, and to permit persons to whom the Software is furnished to do so,
+#   subject to the following conditions:
+#   
+#   The above copyright notice and this permission notice shall be included in all
+#   copies or substantial portions of the Software.
 # 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of
-# this software and associated documentation files (the "Software"), to deal in
-# the Software without restriction, including without limitation the rights to
-# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is furnished to do so,
-# subject to the following conditions:
-#  
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+#   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+#   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+#   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+#   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 module SlowBlink::Message
 
-    # @api user
+    # @abstract
+    #
     # A Group may form a complete message or be nested as a {DynamicGroup}
     class Group
 
@@ -123,8 +125,6 @@ module SlowBlink::Message
             self
         end
 
-        
-
         # Set the contents of this group
         #
         # @overload set(value)
@@ -171,7 +171,8 @@ module SlowBlink::Message
             end            
             set(fields)        
         end
-        
+
+        # @return [String] Blink Protocol compact form
         def encode_compact
             if self.class.id
                 to_compact("")            
@@ -210,7 +211,8 @@ module SlowBlink::Message
 
     end
 
-    # @api user
+    # @abstract
+    #
     # A StaticGroup is a kind of {Group} that can only exist as the contents of a {Field}
     class StaticGroup < Group
 
@@ -256,10 +258,10 @@ module SlowBlink::Message
             
         end
 
-        # @note {StaticGroup} cannot have extensions therefore this method will raise a NoMethodError
+        # @note StaticGroup does not have extensions
         # @raise [NoMethodError]
         def extension
-            raise NoMethodError.new "static groups cannot have extensions"
+            raise NoMethodError.new "StaticGroup does not implement #{__method__}"
         end
         
         # @private
@@ -273,8 +275,16 @@ module SlowBlink::Message
             out            
         end
 
+        # @note StaticGroup cannot be encoded as a top level message
+        # @raise [NoMethodError]
+        def encode_compact
+            raise NoMethodError.new "StaticGroup does not inmplement #{__method__}"
+        end
+
     end
 
+    # @abstract
+    #
     # A DynamicGroup has a {Group} which has a {Group.id} that appears in {DynamicGroup.permitted} list
     class DynamicGroup
 
@@ -293,6 +303,7 @@ module SlowBlink::Message
             @permitted
         end
 
+        # @private
         # @param input [String] Blink compact form
         # @param stack [Array] used to measure depth of recursion 
         # @return [Group, nil]
@@ -355,11 +366,12 @@ module SlowBlink::Message
             @value.extension
         end
 
-        # @param value [Group, Hash]
+        # @note calls {#set}(value)
         def initialize(value)
             set(value)        
         end
 
+        # @private
         def to_compact(out)
             @value.to_compact(out)                                    
         end

@@ -1,56 +1,32 @@
-# Copyright (c) 2016 Cameron Harper
+# @license
+#   
+#   Copyright (c) 2016 Cameron Harper
+#    
+#   Permission is hereby granted, free of charge, to any person obtaining a copy of
+#   this software and associated documentation files (the "Software"), to deal in
+#   the Software without restriction, including without limitation the rights to
+#   use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+#   the Software, and to permit persons to whom the Software is furnished to do so,
+#   subject to the following conditions:
+#   
+#   The above copyright notice and this permission notice shall be included in all
+#   copies or substantial portions of the Software.
 # 
-# Permission is hereby granted, free of charge, to any person obtaining a copy of
-# this software and associated documentation files (the "Software"), to deal in
-# the Software without restriction, including without limitation the rights to
-# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-# the Software, and to permit persons to whom the Software is furnished to do so,
-# subject to the following conditions:
-#  
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-
+#   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+#   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+#   FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+#   COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+#   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+#   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 module SlowBlink
 
-    # @api user
     # This module is concerned with generating models from Schema that are optimised for encoding/decoding and enforcing constraints
     module Message
 
         class Error < StandardError
         end
 
-        # @api user
-        #
         # Use Model to create message models from a {Schema}
-        #
-        # Typical use cases are as follows:
-        #
-        # # Precondition
-        #
-        # Examples below will use the following {Schema} instance
-        #
-        #       raw =  <<-eos
-        #       Thing
-        #       AnotherThing ->
-        #        string Greeting
-        #
-        #       schema <- @test="test"
-        #   eos
-        #
-        #
-        # # Create a Message Model
-        #
-        #     model = Model.new(schema)
-        # 
-        # # 
-        #
         class Model
 
             # the maximum level of nesting in messages able to be decoded by models
@@ -110,11 +86,9 @@ module SlowBlink
             # @api user
             #
             # Initialise a {Group} from a compact form string
-            #
             # @param input [String] Blink Protocol compact form
             # @return [Group] anonymous subclass instance of Group
-            #
-            def decode_compact(input)
+                def decode_compact(input)
                 stack = []
                 inputSize = input.size
                 buf = input.getBinary!
@@ -174,8 +148,6 @@ module SlowBlink
                 #
                 # @param type [SlowBlink::Type] type definition
                 # @param opt  [true,false] parent definition may allow this type to be optional
-                #
-                #            
                 def _model_type(type, opt)
                     extensionObject = @extensionObject
                     maxRecursion = @maxRecursion
@@ -239,7 +211,6 @@ module SlowBlink
                         type.symbols.each do |n,v|
                             symbols[n] = v.val
                         end
-                        puts symbols.inspect
                         Class.new(ENUMERATION) do
                             @symbols = symbols
                         end                        
