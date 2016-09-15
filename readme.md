@@ -95,6 +95,10 @@ message = model.group("MyMessage").new(
     },
     "Text" => "my name"
 )
+
+# "\x0F\x02\x01\xC5\x80\xC5\xC0\xAE\x3A\x07\x6D\x79\x20\x6E\x61\x6D\x65"
+message.encode_compact
+
 ~~~
 
 ### Dynamic Subgroup
