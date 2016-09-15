@@ -31,7 +31,7 @@ module SlowBlink::Message
                 if !@type.size or value.size <= @type.size
                     self.new(value)
                 else
-                    raise Error.new "W7: String value exceeds maximum size"
+                    raise WeakError7.new "W7: String value exceeds maximum size"
                 end
             else
                 value

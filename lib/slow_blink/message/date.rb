@@ -39,7 +39,7 @@ module SlowBlink::Message
         end
 
         def set(value)
-            raise Error.new "type not supported"
+            raise TypeError.new "type not supported"
         end
 
         def initialize(value)

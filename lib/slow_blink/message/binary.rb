@@ -31,7 +31,7 @@ module SlowBlink::Message
                 if !@size or value.size <= @size
                     self.new(value)
                 else
-                    raise Error.new "W8: Binary value exceeds maximum size"
+                    raise WeakError8.new "W8: Binary value exceeds maximum size"
                 end
             else
                 value

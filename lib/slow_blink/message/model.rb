@@ -24,7 +24,62 @@ module SlowBlink
     # This module is concerned with generating models from Schema that are optimised for encoding/decoding and enforcing constraints
     module Message
 
-        class Error < StandardError
+        # Trying to encode a group which has one or more uninitialised non-optional fields
+        class IncompleteGroup < EncodingError
+        end
+
+        # Trying to encode a group which does not have an ID
+        class UntaggedGroup < EncodingError
+        end
+
+        # Trying decode a message that has more than {Model#maxRecursion} levels of nesting
+        class RecursionLimit < EncodingError
+        end
+
+        # extra bytes exist after sequence of extension groups but before end of container group
+        class ExtensionPadding < EncodingError
+        end
+
+        # Blink Specification: strong (encoding) errors are caused by constraints that *must* be checked
+        class StrongError < EncodingError
+        end
+
+        # Blink Specification: weak (encoding) errors are caused by constraints that *may* be checked
+        class WeakError < EncodingError
+        end
+
+        class StrongError1 < StrongError
+        end
+        
+        class WeakError1 < WeakError
+        end
+        class WeakError2 < WeakError            
+        end
+        class WeakError3 < WeakError
+        end
+        class WeakError4 < WeakError
+        end
+        class WeakError5 < WeakError
+        end
+        class WeakError6 < WeakError
+        end
+        class WeakError7 < WeakError
+        end
+        class WeakError8 < WeakError
+        end
+        class WeakError9 < WeakError
+        end
+        class WeakError10 < WeakError
+        end
+        class WeakError11 < WeakError
+        end
+        class WeakError12 < WeakError
+        end
+        class WeakError13 < WeakError
+        end
+        class WeakError14 < WeakError
+        end
+        class WeakError15 < WeakError
         end
 
         # Use Model to create message models from a {Schema}
@@ -32,6 +87,9 @@ module SlowBlink
 
             # the maximum level of nesting in messages able to be decoded by models
             DEFAULT_MAX_RECURSION = 100
+
+            # @return [Integer]
+            attr_reader :maxRecursion
 
             # @api user
             #
@@ -89,7 +147,10 @@ module SlowBlink
             # Initialise a {Group} from a compact form string
             # @param input [String] Blink Protocol compact form
             # @return [Group] anonymous subclass instance of Group
-                def decode_compact(input)
+            # @raise [WeakError,StrongError]
+            # @raise [RecursionLimit]
+            # @raise []
+            def decode_compact(input)
                 stack = []
                 inputSize = input.size
                 buf = input.getBinary!
@@ -100,7 +161,7 @@ module SlowBlink
                         if groupClass                        
                             group = groupClass.from_compact!(buf, stack)                        
                         else
-                            raise Error.new "W2: Group id #{group.id} is unknown"
+                            raise WeakError2.new "W2: Group id #{group.id} is unknown"
                         end
                     rescue Error => ex
                         puts ex
@@ -109,7 +170,7 @@ module SlowBlink
                         raise
                     end
                 else
-                    raise Error.new "W1: Top level group cannot be null "                    
+                    raise WeakError1.new "W1: Top level group cannot be null"
                 end
             end
 
@@ -119,7 +180,7 @@ module SlowBlink
             #
             # @param name [String] name of group (may be qualified)
             # @return [Group] anonymous subclass of Group
-            # @raise [RangeError]
+            # @raise [RangeError] unknown group
             def group(name)
                 group = @groups[name]
                 if group

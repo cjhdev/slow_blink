@@ -35,7 +35,7 @@ module SlowBlink::Message
             if stack.size < @maxRecursion
                 stack << self
             else
-                raise Error.new "stack limit"
+                raise RecursionLimit
             end
         
             value = []

@@ -57,7 +57,7 @@ module SlowBlink::Message
             if stack.size < @maxRecursion
                 stack << self
             else
-                raise Error.new "stack limit"
+                raise RecursionLimit
             end
             
             @fields.each do |fn, fd|
@@ -65,14 +65,18 @@ module SlowBlink::Message
             end
 
             if input.size > 0                
-                expected = input.getU32!                
-                while extensions.size != expected do
-                    extensions << @extensionObject.from_compact!(input, stack)                    
+                expected = input.getU32!
+                if expected       
+                    while extensions.size != expected do
+                        extensions << @extensionObject.from_compact!(input, stack)                    
+                    end
+                else
+                    raise ExtensionPadding
                 end
             end
             
             if input.size != 0
-                raise Error.new "extra bytes at end of group after extensions"
+                raise ExtensionPadding
             end
 
             group = self.new(fields)
@@ -178,7 +182,7 @@ module SlowBlink::Message
             if self.class.id
                 to_compact("")            
             else
-                raise Error.new "cannot encode a group without an ID"
+                raise UntaggedGroup.new "cannot encode a group without an ID"
             end
         end
 
@@ -194,7 +198,7 @@ module SlowBlink::Message
                     #if e.is_a? @extensionObject
                         e.to_compact(group)
                     #else
-                     #   raise Error.new "cannot convert unknown extension object to compact form"
+                     #   raise EncodingError.new "cannot convert unknown extension object to compact form"
                     #end
                 end
             end
@@ -236,7 +240,7 @@ module SlowBlink::Message
             if stack.size < @maxRecursion
                 stack << self
             else
-                raise Error.new "stack limit"   
+                raise RecursionLimit
             end
         
             if @opt
@@ -314,7 +318,7 @@ module SlowBlink::Message
             if stack.size < @maxRecursion
                 stack << self
             else
-                raise Error.new "stack limit"
+                raise RecursionLimit
             end
         
             buf = input.getBinary!
@@ -325,13 +329,13 @@ module SlowBlink::Message
                     if @permitted.include? group.id
                         result = self.new(group.from_compact!(buf, stack))
                     else
-                        raise Error.new "W15: Group is known but unexpected"
+                        raise WeakError15.new "W15: Group is known but unexpected"
                     end
                 else
-                    raise Error.new "W2: Group id #{group.id} is unknown"
+                    raise WeakError2.new "W2: Group id #{group.id} is unknown"
                 end
             else
-                raise Error.new "W5: Value cannot be null"                
+                raise WeakError5.new "W5: Value cannot be null"                
             end
 
             stack.pop
@@ -346,7 +350,7 @@ module SlowBlink::Message
                 if self.class.permitted.include? value.class.id
                     @value = value
                 else                        
-                    raise "group valid but not expected"
+                    raise TypeError.new "group is known but compatible with schema"
                 end
             # native values
             elsif value.kind_of? Hash

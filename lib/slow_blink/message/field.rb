@@ -100,7 +100,7 @@ module SlowBlink::Message
             elsif @opt
                 out.putNull
             else
-                raise Error.new "field '#{self.name}' must not be null"
+                raise IncompleteGroup.new "field '#{self.name}' must not be null"
             end
         end
 

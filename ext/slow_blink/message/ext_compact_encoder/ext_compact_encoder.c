@@ -89,18 +89,31 @@ static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned);
 
 /* static variables ***************************************************/
 
-static VALUE cError;
+static VALUE cStrongError1;
+
+static VALUE cWeakError3;
+static VALUE cWeakError4;
+static VALUE cWeakError9;
+static VALUE cWeakError11;
+
+
 
 /* functions **********************************************************/
 
 void Init_ext_compact_encoder(void)
 {
     VALUE cSlowBlink;
-
-    rb_require("slow_blink/message/model.rb");
+    VALUE cMessage;
 
     cSlowBlink = rb_define_module("SlowBlink");
-    cError = rb_const_get(rb_define_module_under(cSlowBlink, "Message"), rb_intern("Error"));
+    cMessage = rb_const_get(cSlowBlink, rb_intern("Message"));
+
+    cStrongError1 = rb_const_get(cMessage, rb_intern("StrongError1"));
+
+    cWeakError3 = rb_const_get(cMessage, rb_intern("WeakError3"));
+    cWeakError4 = rb_const_get(cMessage, rb_intern("WeakError4"));
+    cWeakError9 = rb_const_get(cMessage, rb_intern("WeakError9"));
+    cWeakError11 = rb_const_get(cMessage, rb_intern("WeakError11"));
     
     rb_define_method(rb_cString, "putNull", putNull, 0);
     rb_define_method(rb_cString, "putPresent", putPresent, 0);
@@ -298,7 +311,7 @@ static VALUE putInt(VALUE self, VALUE val, int64_t min, int64_t max, bool isSign
 
             if((value < min) || (value > max)){
 
-                rb_raise(cError, "Input exceeds allowable range of type");
+                rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
             }
 
             retval = rb_str_buf_cat(self, (const char *)out, BLINK_putVLC((uint64_t)value, true, out, sizeof(out)));
@@ -309,7 +322,7 @@ static VALUE putInt(VALUE self, VALUE val, int64_t min, int64_t max, bool isSign
 
             if(value > (uint64_t)max){
 
-                rb_raise(cError, "Input exceeds allowable range of type");
+                rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
             }
 
             retval = rb_str_buf_cat(self, (const char *)out, BLINK_putVLC(value, false, out, sizeof(out)));
@@ -378,7 +391,7 @@ static VALUE getF64(VALUE self)
     }
     else{
 
-        rb_raise(cError, "S1: Group encoding ends prematurely");
+        rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
     }
 
     return retval;
@@ -411,7 +424,7 @@ static VALUE getBool(VALUE self)
     }
     else{
 
-        rb_raise(cError, "W11: Decoded value is not 0x00 or 0x01");
+        rb_raise(cWeakError11, "W11: Decoded value is not 0x00 or 0x01");
     }
 
     return retval;
@@ -425,7 +438,7 @@ static VALUE getBinary(VALUE self)
     if(size != Qnil){
 
         if(NUM2UINT(size) > RSTRING_LEN(self)){
-            rb_raise(cError, "S1: Group encoding ends prematurely");
+            rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
         }
 
         retval = rb_str_substr(self, 0, NUM2UINT(size));
@@ -453,7 +466,7 @@ static VALUE getFixed(VALUE self, VALUE size)
 
     if(NUM2UINT(size) > RSTRING_LEN(self)){
 
-        rb_raise(cError, "S1: Group encoding ends prematurely");
+        rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
     }
 
     retval = rb_str_substr(self, 0, NUM2UINT(size));
@@ -485,19 +498,19 @@ static VALUE getFixedOptional(VALUE self, VALUE size)
 
             if(RSTRING_LEN(retval) != NUM2UINT(size)){
 
-                rb_raise(cError, "S1: Group encoding ends prematurely");
+                rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
             }
 
             rb_str_drop_bytes(self, NUM2UINT(size));
         }
         else{
 
-            rb_raise(cError, "W9: Presence flag is not 0xC0 or 0x01");
+            rb_raise(cWeakError9, "W9: Presence flag is not 0xC0 or 0x01");
         }   
     }
     else{
 
-        rb_raise(cError, "S1: Group encoding ends prematurely");
+        rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
     }
 
     return retval;
@@ -522,12 +535,12 @@ static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned)
 
                 if(((int64_t)out < min) || ((int64_t)out > max)){
 
-                    rb_raise(cError, "W3: Decoded value overflows range");            
+                    rb_raise(cWeakError3, "W3: Decoded value overflows range");            
                 }
 
                 if(BLINK_getSizeSigned((int64_t)out) != ret){
 
-                    rb_raise(cError, "W4: VLC entity contains more bytes than needed to express full width of type");
+                    rb_raise(cWeakError4, "W4: VLC entity contains more bytes than needed to express full width of type");
                 }
 
                 retval = LL2NUM((int64_t)out);
@@ -536,12 +549,12 @@ static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned)
                 
                 if(out > (uint64_t)max){
 
-                    rb_raise(cError, "W3: Decoded value overflows range");            
+                    rb_raise(cWeakError3, "W3: Decoded value overflows range");            
                 }
 
                 if(BLINK_getSizeUnsigned(out) != ret){
 
-                    rb_raise(cError, "W4: VLC entity contains more bytes than needed to express full width of type");
+                    rb_raise(cWeakError4, "W4: VLC entity contains more bytes than needed to express full width of type");
                 }
 
                 retval = ULL2NUM(out);
@@ -550,7 +563,7 @@ static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned)
     }
     else{
 
-        rb_raise(cError, "S1: Group encoding ends prematurely");
+        rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
     }
 
     return retval;
