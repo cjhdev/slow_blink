@@ -23,3 +23,7 @@ message = model.group("MyMessage").new(
 puts message.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join
 
 rx = model.decode_compact(message.encode_compact)
+
+puts rx["Header"]["SeqNo"]
+puts rx["Header"]["SendingTime"]
+puts rx["Text"]

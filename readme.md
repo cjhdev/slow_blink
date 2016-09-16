@@ -6,21 +6,34 @@ SlowBlink
 
 SlowBlink is a Ruby implementation of [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
 
-SlowBlink was written to evaluate Blink Protocol. It is not suitable for production at this time.
+SlowBlink was written to evaluate Blink Protocol.
 
 ## Highlights
 
-- Integrated Blink Protocol schema parser (GLR Flex/Bison)
+- Implements Blink Specification [beta4-2013-06-14](specification/blink/BlinkSpec-beta4.pdf "Blink Specification").
+- Integrated Blink Protocol schema parser
 - Dynamic message model generator
     - Does not generate constants or symbols
-- Low level encode/decode functions implemented as native extensions
-- Implements Blink Specification [beta4-2013-06-14](specification/blink/BlinkSpec-beta4.pdf "Blink Specification").
+    - Applies schema constraints to Ruby types
+- Support for compact mode serialisation
+
+## Todo
+
+This list is not exhaustive:
+
+- More tests
+- Support SlowBlink::Message::DATE
+- Improve interface for SlowBlink::Message::SEQUENCE
+- More debug features (error messages involving anonymous classes are confusing)
+- Incremental annotation is parsed but not applied
 
 ## Installation
 
 ~~~
 gem install slow_blink
 ~~~
+
+Requires Ruby 2.0 and up.
 
 ## Examples
 
@@ -57,10 +70,6 @@ model = Message::Model.new(schema)
 # create a message instance using the message model
 message = model.group("Hello").new("greeting" => "hello")
 
-# same message but by deferred initialisation
-equivalent_message = model.group("Hello").new
-equivalent_message["greeting"] = "hello"
-
 # "\x07\x00\x05\x68\x65\x6C\x6C\x6F"
 compact_form = message.encode_compact
 
@@ -96,8 +105,14 @@ message = model.group("MyMessage").new(
     "Text" => "my name"
 )
 
-# "\x0F\x02\x01\xC5\x80\xC5\xC0\xAE\x3A\x07\x6D\x79\x20\x6E\x61\x6D\x65"
+# "\x10\x02\x01\xC6\x80\xC5\xC0\xAE\x3A\x01\x07\x6D\x79\x20\x6E\x61\x6D\x65"
 message.encode_compact
+
+decoded = model.decode_compact(compact_form)
+
+puts decoded["Header"]["SeqNo"]
+puts decoded["Header"]["SendingTime"]
+puts decoded["Text"]
 
 ~~~
 
