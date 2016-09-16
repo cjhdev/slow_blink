@@ -32,9 +32,9 @@ module SlowBlink::Message
             if e
                 m = input.getI64!
                 if m
-                    self.new("#{m}E#{e}")
+                    self.new("#{m}E#{e}")                    
                 else
-                    raise "a null mantissa is not defined"
+                    raise NullMantissa
                 end
             else
                 nil
@@ -60,8 +60,15 @@ module SlowBlink::Message
 
         # @private
         def to_compact(out)
-            out.putI8(@value.exponent)
-            out.putI64(0)
+
+            split = @value.split
+
+            exponent = - split[1].size + split[3]
+            mantissa = split[0]*split[1].to_i
+
+            out.putI8(exponent)
+            out.putI64(mantissa)
+
         end
     
     end

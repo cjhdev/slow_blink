@@ -40,6 +40,10 @@ module SlowBlink
         class ExtensionPadding < EncodingError
         end
 
+        # exponent is not null but mantissa is
+        class NullMantissa < EncodingError
+        end
+
         # Blink Specification: strong (encoding) errors are caused by constraints that *must* be checked
         class StrongError < EncodingError
         end
@@ -156,19 +160,12 @@ module SlowBlink
                 buf = input.getBinary!
                 if buf.size > 0
                     id = buf.getU64!
-                    groupClass = @taggedGroups[id]
-                    begin
-                        if groupClass                        
-                            group = groupClass.from_compact!(buf, stack)                        
-                        else
-                            raise WeakError2.new "W2: Group id #{group.id} is unknown"
-                        end
-                    rescue Error => ex
-                        puts ex
-                        puts "encountered at offset #{inputSize - input.size}"
-                        puts stack.last.name
-                        raise
-                    end
+                    groupClass = @taggedGroups[id]                    
+                    if groupClass                        
+                        group = groupClass.from_compact!(buf, stack)                        
+                    else
+                        raise WeakError2.new "W2: Group id #{group.id} is unknown"
+                    end                    
                 else
                     raise WeakError1.new "W1: Top level group cannot be null"
                 end

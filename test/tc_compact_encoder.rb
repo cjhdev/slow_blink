@@ -49,6 +49,18 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal("\x40", output)
     end
 
+    def test_putU16_16383
+        input = 16383
+        output = "".putU16(input)
+        assert_equal("\xBf\xff", output)
+    end
+
+    def test_putI16_16383
+        input = 16383
+        output = "".putI16(input)
+        assert_equal("\xC2\xff\x3f", output)
+    end
+
     # Blink Specification 3.1
     def test_putI8_64signed
         input = 64
