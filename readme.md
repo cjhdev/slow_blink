@@ -130,6 +130,9 @@ message = model.group("Canvas").new(
         model.group("Circle").new("Area" => 28.3, "Radius" => 3)
     ]
 )
+
+# "\x0E\x05\x02\x05\x03\x00\x06\x02\x03\x05\x04\x7F\x9B\x04\x03"
+message.encode_compact
 ~~~
 
 ### Message Extensions
