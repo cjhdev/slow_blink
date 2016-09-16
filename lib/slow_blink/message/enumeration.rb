@@ -33,7 +33,12 @@ module SlowBlink::Message
         def self.from_compact!(input, stack)
             value = input.getI32!
             if value
-                self.new(value)
+                symbol = @symbols.key(value)
+                if symbol
+                    self.new(symbol)
+                else
+                    raise WeakError10.new "W10: value '#{value}' does not correspond to any symbol in enumeration"
+                end
             else
                 value
             end            

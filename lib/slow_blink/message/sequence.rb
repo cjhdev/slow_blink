@@ -41,21 +41,23 @@ module SlowBlink::Message
             value = []
             size = input.getU32!
             if size
-                while out.size < size do
+                while value.size < size do
                     value << @type.from_compact!(input, stack)
                 end
-                self.new(value)
+                result = self.new(value)
             else
-                nil
+                result = nil
             end
 
             stack.pop
-            
+
+            result
+                
         end
 
         # @return [Array]
         def get
-            @value
+            @value.map{|v|v.get}
         end
 
         # Set value of a SEQUENCE
