@@ -118,19 +118,19 @@ uint8_t BLINK_getSizeSigned(int64_t value)
         else if(value <= 0x7fffL){
             retval = 3U;
         }
-        else if(value < 0x7fffffffL){
+        else if(value <= 0x7fffffL){
             retval = 4U;
         }
-        else if(value < 0x7fffffffffL){
+        else if(value <= 0x7fffffffL){
             retval = 5U;
         }
-        else if(value < 0x7fffffffffffL){
+        else if(value <= 0x7fffffffffL){
             retval = 6U;
         }
-        else if(value < 0x7fffffffffffffL){
+        else if(value <= 0x7fffffffffffL){
             retval = 7U;
         }
-        else if(value < 0x7fffffffffffffffL){
+        else if(value <= 0x7fffffffffffffL){
             retval = 8U;
         }
         else{

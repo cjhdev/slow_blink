@@ -19,7 +19,7 @@ class TestCompactEncoder < Test::Unit::TestCase
 
     def test_putU8_tooBig
         input = 0x100
-        assert_raise do
+        assert_raise RangeError do
             "".putU8(input)
         end
     end
@@ -241,7 +241,7 @@ class TestCompactEncoder < Test::Unit::TestCase
 
     def test_getBool_other
         input = "\x02"
-        assert_raise do
+        assert_raise Message::WeakError11 do
             input.getBool!
         end
         assert_equal(0, input.size)
@@ -263,7 +263,7 @@ class TestCompactEncoder < Test::Unit::TestCase
 
     def test_getString_eof
         input = "\x01"
-        assert_raise do
+        assert_raise Message::StrongError1 do
             input.getString!
         end
     end
@@ -284,7 +284,7 @@ class TestCompactEncoder < Test::Unit::TestCase
 
     def test_getBinary_eof
         input = "\x01"
-        assert_raise do
+        assert_raise Message::StrongError1 do
             input.getBinary!
         end
     end
@@ -298,7 +298,7 @@ class TestCompactEncoder < Test::Unit::TestCase
 
     def test_getFixed_eof
         input = ""
-        assert_raise do
+        assert_raise Message::StrongError1 do
             input.getFixed!(1)
         end
     end
@@ -319,16 +319,57 @@ class TestCompactEncoder < Test::Unit::TestCase
 
     def test_getFixedOptional_eof
         input = "\x01"
-        assert_raise do
+        assert_raise Message::StrongError1 do
             input.getFixedOptional!(1)
         end
     end
 
-    def test_getU32_13548
-        input = "\x01"
-        assert_raise do
-            input.getFixedOptional!(1)
-        end
+    def test_getI64_max
+        input = "\xC8\xff\xff\xff\xff\xff\xff\xff\x7f"
+        expected = 9223372036854775807
+        assert_equal(expected, input.getI64!)
+    end
+
+    def test_putI64_max
+        expected = "\xC8\xff\xff\xff\xff\xff\xff\xff\x7f"
+        input = 9223372036854775807
+        assert_equal(expected, "".putI64(input))
+    end
+
+    def test_getI64_min
+        input = "\xC8\x00\x00\x00\x00\x00\x00\x00\x80"
+        expected = -9223372036854775808
+        assert_equal(expected, input.getI64!)
+    end
+
+    def test_putI64_min
+        expected = "\xC8\x00\x00\x00\x00\x00\x00\x00\x80"
+        input = -9223372036854775808
+        assert_equal(expected, "".putI64(input))
+    end
+
+    def test_getI32_max
+        input = "\xC4\xff\xff\xff\x7f"
+        expected = 2147483647
+        assert_equal(expected, input.getI32!)
+    end
+
+    def test_getI32_min
+        input = "\xC4\x00\x00\x00\x80"
+        expected = -2147483648
+        assert_equal(expected, input.getI32!)
+    end
+
+    def test_getI16_max
+        input = "\xC2\xff\x7f"
+        expected = 32767
+        assert_equal(expected, input.getI32!)
+    end
+
+    def test_getI16_min
+        input = "\xC2\x00\x80"
+        expected = -32768
+        assert_equal(expected, input.getI32!)
     end
     
 end

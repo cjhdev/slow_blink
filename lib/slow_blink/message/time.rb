@@ -55,7 +55,7 @@ module SlowBlink::Message
             elsif value.kind_of? String
                 @value = DateTime.parse(value)
             elsif value.kind_of? Integer
-                @value = DateTime.new(value)
+                @value = DateTime.strptime(value.to_s, '%Q')
             else
                 raise TypeError
             end                        
@@ -76,11 +76,6 @@ module SlowBlink::Message
     # @abstract
     class NANO_TIME < MILLI_TIME
 
-        # @private
-        def to_compact(out)
-            out.putI64(@value.strftime('%N').to_i)
-        end
-
         # @overload set(value)
         #   Set a nanosecond resolution time value
         #   @param value [Time,DateTime,Date]
@@ -96,10 +91,15 @@ module SlowBlink::Message
             elsif value.kind_of? String
                 @value = DateTime.parse(value)
             elsif value.kind_of? Integer
-                @value = DateTime.new(value)
+                @value = DateTime.strptime(value.to_s, '%N')
             else
                 raise TypeError
             end                        
+        end
+
+        # @private
+        def to_compact(out)
+            out.putI64(@value.strftime('%N').to_i)
         end
         
     end
