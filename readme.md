@@ -14,7 +14,6 @@ SlowBlink was written to evaluate Blink Protocol.
 - Integrated Blink Protocol schema parser
 - Dynamic message model generator
     - Does not generate constants or symbols
-    - Applies schema constraints to Ruby types
 - Support for compact mode serialisation
 
 ## Todo
@@ -22,8 +21,8 @@ SlowBlink was written to evaluate Blink Protocol.
 This list is not exhaustive:
 
 - More tests
-- Support SlowBlink::Message::DATE
-- Improve interface for SlowBlink::Message::SEQUENCE
+- Support `SlowBlink::Message::DATE`
+- Improve `SlowBlink::Message::SEQUENCE` interface
 - More debug features (error messages involving anonymous classes are confusing)
 - Incremental annotation is parsed but not applied
 
