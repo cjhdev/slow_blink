@@ -3,6 +3,8 @@ notifications:
 language: Ruby
 rvm:
   - 2.0
+  - 2.1
+  - 2.2
 script:
     - rake compile
     - rake
