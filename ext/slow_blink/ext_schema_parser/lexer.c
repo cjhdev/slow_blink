@@ -1372,7 +1372,7 @@ YY_RULE_SETUP
 case 51:
 YY_RULE_SETUP
 #line 111 "etc/slow_blink/ext_schema_parser/parser.l"
-{ *yylval = rb_str_new(yytext, yyleng); return TOK_ESCAPED_NC_NAME; }
+{ *yylval = rb_str_new(&yytext[1], yyleng-1); return TOK_ESCAPED_NC_NAME; }
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */

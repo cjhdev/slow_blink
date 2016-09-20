@@ -91,4 +91,21 @@ class TestField < Test::Unit::TestCase
         Schema.new(SchemaBuffer.new(input))
     end
 
+    def test_field_escaped_name
+        input =  "test -> u8 \\u8"
+        
+        schema = Schema.new(SchemaBuffer.new(input))
+
+        assert_equal("u8", schema.groups["test"].field("u8").nameWithID.name)
+    end
+
+    def test_field_unescaped_keyword
+        input =  "test -> u8 u8"
+
+        assert_raise do
+            schema = Schema.new(SchemaBuffer.new(input))
+        end
+
+    end
+
 end
