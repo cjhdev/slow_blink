@@ -1,12 +1,8 @@
 #line 2 "ext/slow_blink/ext_schema_parser/lexer.c"
-#line 36 "etc/slow_blink/ext_schema_parser/parser.l"
 
     #include "common.h"
 
-
-
-
-#line 10 "ext/slow_blink/ext_schema_parser/lexer.c"
+#line 6 "ext/slow_blink/ext_schema_parser/lexer.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -22,8 +18,8 @@
 
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
-#define YY_FLEX_MINOR_VERSION 5
-#define YY_FLEX_SUBMINOR_VERSION 35
+#define YY_FLEX_MINOR_VERSION 6
+#define YY_FLEX_SUBMINOR_VERSION 0
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
 #endif
@@ -227,6 +223,11 @@ typedef void* yyscan_t;
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #endif
 
+#ifndef YY_TYPEDEF_YY_SIZE_T
+#define YY_TYPEDEF_YY_SIZE_T
+typedef size_t yy_size_t;
+#endif
+
 /* %if-not-reentrant */
 /* %endif */
 
@@ -240,6 +241,7 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 #define EOB_ACT_LAST_MATCH 2
 
     #define YY_LESS_LINENO(n)
+    #define YY_LINENO_REWIND_TO(ptr)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -256,11 +258,6 @@ typedef struct yy_buffer_state *YY_BUFFER_STATE;
 	while ( 0 )
 
 #define unput(c) yyunput( c, yyg->yytext_ptr , yyscanner )
-
-#ifndef YY_TYPEDEF_YY_SIZE_T
-#define YY_TYPEDEF_YY_SIZE_T
-typedef size_t yy_size_t;
-#endif
 
 #ifndef YY_STRUCT_YY_BUFFER_STATE
 #define YY_STRUCT_YY_BUFFER_STATE
@@ -381,7 +378,7 @@ static void yy_init_buffer (YY_BUFFER_STATE b,FILE *file ,yyscan_t yyscanner );
 
 YY_BUFFER_STATE yy_scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
 YY_BUFFER_STATE yy_scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
-YY_BUFFER_STATE yy_scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_bytes (yyconst char *bytes,yy_size_t len ,yyscan_t yyscanner );
 
 /* %endif */
 
@@ -416,7 +413,7 @@ void yyfree (void * ,yyscan_t yyscanner );
 /* %% [1.0] yytext/yyin/yyout/yy_state_type/yylineno etc. def's & init go here */
 /* Begin user sect3 */
 
-#define yywrap(n) 1
+#define yywrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define FLEX_DEBUG
@@ -427,11 +424,16 @@ typedef int yy_state_type;
 
 #define yytext_ptr yytext_r
 
+/* %% [1.5] DFA */
+
 /* %if-c-only Standard (non-C++) definition */
 
 static yy_state_type yy_get_previous_state (yyscan_t yyscanner );
 static yy_state_type yy_try_NUL_trans (yy_state_type current_state  ,yyscan_t yyscanner);
 static int yy_get_next_buffer (yyscan_t yyscanner );
+#if defined(__GNUC__) && __GNUC__ >= 3
+__attribute__((__noreturn__))
+#endif
 static void yy_fatal_error (yyconst char msg[] ,yyscan_t yyscanner );
 
 /* %endif */
@@ -479,7 +481,7 @@ static yyconst flex_int16_t yy_accept[156] =
        50,   50,   33,   32,    0
     } ;
 
-static yyconst flex_int32_t yy_ec[256] =
+static yyconst YY_CHAR yy_ec[256] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
         1,    1,    3,    1,    1,    1,    1,    1,    1,    1,
@@ -511,7 +513,7 @@ static yyconst flex_int32_t yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst flex_int32_t yy_meta[59] =
+static yyconst YY_CHAR yy_meta[59] =
     {   0,
         1,    2,    2,    3,    1,    4,    1,    1,    1,    1,
         1,    1,    1,    5,    5,    5,    5,    5,    5,    5,
@@ -521,7 +523,7 @@ static yyconst flex_int32_t yy_meta[59] =
         8,    8,    8,    8,    8,    9,    8,    1
     } ;
 
-static yyconst flex_int16_t yy_base[168] =
+static yyconst flex_uint16_t yy_base[168] =
     {   0,
         0,    0,  366,  365,  362,  361,  366,  371,  371,    0,
       371,  371,  371,  371,  371,   44,  371,  371,  309,   56,
@@ -565,7 +567,7 @@ static yyconst flex_int16_t yy_def[168] =
       155,  155,  155,  155,  155,  155,  155
     } ;
 
-static yyconst flex_int16_t yy_nxt[430] =
+static yyconst flex_uint16_t yy_nxt[430] =
     {   0,
         8,    8,    8,    9,   10,   11,   12,   13,   14,   15,
        16,   17,   18,   19,   20,   20,   20,   20,   20,   20,
@@ -669,12 +671,12 @@ static yyconst flex_int16_t yy_chk[430] =
 
 static yyconst flex_int16_t yy_rule_linenum[53] =
     {   0,
-       54,   56,   57,   58,   60,   61,   62,   64,   65,   66,
-       67,   68,   69,   70,   71,   72,   73,   74,   75,   76,
-       78,   79,   80,   81,   82,   83,   84,   85,   86,   87,
-       88,   89,   90,   91,   92,   93,   94,   95,   96,   97,
-       98,   99,  100,  102,  103,  105,  106,  107,  109,  110,
-      111,  113
+       55,   57,   58,   59,   61,   62,   63,   65,   66,   67,
+       68,   69,   70,   71,   72,   73,   74,   75,   76,   77,
+       79,   80,   81,   82,   83,   84,   85,   86,   87,   88,
+       89,   90,   91,   92,   93,   94,   95,   96,   97,   98,
+       99,  100,  101,  103,  104,  106,  107,  108,  110,  111,
+      112,  114
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -696,6 +698,7 @@ static yyconst flex_int16_t yy_rule_linenum[53] =
 
 #include <float.h>
 #include <ruby.h>
+#include <inttypes.h>
 #include "parser.h"
 
 /* static prototypes **************************************************/
@@ -721,7 +724,7 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 #define YY_NO_INPUT 1
 
 
-#line 725 "ext/slow_blink/ext_schema_parser/lexer.c"
+#line 728 "ext/slow_blink/ext_schema_parser/lexer.c"
 
 #define INITIAL 0
 #define LITERAL_C 1
@@ -760,7 +763,7 @@ struct yyguts_t
     YY_BUFFER_STATE * yy_buffer_stack; /**< Stack as an array. */
     char yy_hold_char;
     int yy_n_chars;
-    int yyleng_r;
+    yy_size_t yyleng_r;
     char *yy_c_buf_p;
     int yy_init;
     int yy_start;
@@ -821,19 +824,23 @@ void yyset_extra (YY_EXTRA_TYPE user_defined ,yyscan_t yyscanner );
 
 FILE *yyget_in (yyscan_t yyscanner );
 
-void yyset_in  (FILE * in_str ,yyscan_t yyscanner );
+void yyset_in  (FILE * _in_str ,yyscan_t yyscanner );
 
 FILE *yyget_out (yyscan_t yyscanner );
 
-void yyset_out  (FILE * out_str ,yyscan_t yyscanner );
+void yyset_out  (FILE * _out_str ,yyscan_t yyscanner );
 
-int yyget_leng (yyscan_t yyscanner );
+yy_size_t yyget_leng (yyscan_t yyscanner );
 
 char *yyget_text (yyscan_t yyscanner );
 
 int yyget_lineno (yyscan_t yyscanner );
 
-void yyset_lineno (int line_number ,yyscan_t yyscanner );
+void yyset_lineno (int _line_number ,yyscan_t yyscanner );
+
+int yyget_column  (yyscan_t yyscanner );
+
+void yyset_column (int _column_no ,yyscan_t yyscanner );
 
 /* %if-bison-bridge */
 
@@ -861,6 +868,9 @@ extern int yywrap (yyscan_t yyscanner );
 
 /* %not-for-header */
 
+#ifndef YY_NO_UNPUT
+    
+#endif
 /* %ok-for-header */
 
 /* %endif */
@@ -1013,7 +1023,7 @@ extern int yylex \
 
 /* Code executed at the end of each rule. */
 #ifndef YY_BREAK
-#define YY_BREAK break;
+#define YY_BREAK /*LINTED*/break;
 #endif
 
 /* %% [6.0] YY_RULE_SETUP definition goes here */
@@ -1026,16 +1036,10 @@ extern int yylex \
  */
 YY_DECL
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp, *yy_bp;
-	register int yy_act;
+	yy_state_type yy_current_state;
+	char *yy_cp, *yy_bp;
+	int yy_act;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-
-/* %% [7.0] user's declarations go here */
-#line 52 "etc/slow_blink/ext_schema_parser/parser.l"
-
-
-#line 1039 "ext/slow_blink/ext_schema_parser/lexer.c"
 
     yylval = yylval_param;
 
@@ -1075,7 +1079,14 @@ YY_DECL
 		yy_load_buffer_state(yyscanner );
 		}
 
-	while ( 1 )		/* loops until end-of-file is reached */
+	{
+/* %% [7.0] user's declarations go here */
+#line 53 "etc/slow_blink/ext_schema_parser/parser.l"
+
+
+#line 1088 "ext/slow_blink/ext_schema_parser/lexer.c"
+
+	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
 /* %% [8.0] yymore()-related code goes here */
 		yy_cp = yyg->yy_c_buf_p;
@@ -1093,7 +1104,7 @@ YY_DECL
 yy_match:
 		do
 			{
-			register YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)];
+			YY_CHAR yy_c = yy_ec[YY_SC_TO_UI(*yy_cp)] ;
 			if ( yy_accept[yy_current_state] )
 				{
 				yyg->yy_last_accepting_state = yy_current_state;
@@ -1155,237 +1166,237 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 54 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 55 "etc/slow_blink/ext_schema_parser/parser.l"
 { /* skip comments */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 56 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 57 "etc/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(LITERAL_C); }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 57 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 58 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 58 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 59 "etc/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 60 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 61 "etc/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(LITERAL_A); }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 61 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 62 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 62 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 63 "etc/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 8:
-#line 65 "etc/slow_blink/ext_schema_parser/parser.l"
-case 9:
 #line 66 "etc/slow_blink/ext_schema_parser/parser.l"
-case 10:
+case 9:
 #line 67 "etc/slow_blink/ext_schema_parser/parser.l"
-case 11:
+case 10:
 #line 68 "etc/slow_blink/ext_schema_parser/parser.l"
-case 12:
+case 11:
 #line 69 "etc/slow_blink/ext_schema_parser/parser.l"
-case 13:
+case 12:
 #line 70 "etc/slow_blink/ext_schema_parser/parser.l"
-case 14:
+case 13:
 #line 71 "etc/slow_blink/ext_schema_parser/parser.l"
-case 15:
+case 14:
 #line 72 "etc/slow_blink/ext_schema_parser/parser.l"
-case 16:
+case 15:
 #line 73 "etc/slow_blink/ext_schema_parser/parser.l"
-case 17:
+case 16:
 #line 74 "etc/slow_blink/ext_schema_parser/parser.l"
-case 18:
+case 17:
 #line 75 "etc/slow_blink/ext_schema_parser/parser.l"
-case 19:
+case 18:
 #line 76 "etc/slow_blink/ext_schema_parser/parser.l"
+case 19:
+#line 77 "etc/slow_blink/ext_schema_parser/parser.l"
 case 20:
 YY_RULE_SETUP
-#line 76 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 77 "etc/slow_blink/ext_schema_parser/parser.l"
 { return *yytext; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 78 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 79 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I8; }  
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 79 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 80 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I16; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 80 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 81 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I32; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 81 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 82 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I64; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 82 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 83 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U8; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 83 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 84 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U16; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 84 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 85 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U32; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 85 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 86 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U64; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 86 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 87 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_F64; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 87 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 88 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_DECIMAL; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 88 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 89 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_DATE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 89 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 90 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TIME_OF_DAY_MILLI; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 90 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 91 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TIME_OF_DAY_NANO; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 91 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 92 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_NANO_TIME; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 92 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 93 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_MILLI_TIME; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 93 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 94 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_BOOLEAN; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 94 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 95 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_STRING; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 95 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 96 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_OBJECT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 96 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 97 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_NAMESPACE; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 97 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 98 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TYPE; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 98 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 99 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_SCHEMA; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 99 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 100 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_FIXED; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 100 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 101 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_BINARY; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 102 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 103 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_RIGHT_ARROW; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 103 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 104 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_LEFT_ARROW; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 105 "etc/slow_blink/ext_schema_parser/parser.l"
-{ unsigned int tmp = 0; sscanf(yytext, "%x", &tmp); *yylval = UINT2NUM(tmp); return TOK_HEX; }
+#line 106 "etc/slow_blink/ext_schema_parser/parser.l"
+{ uint64_t tmp = 0; sscanf(yytext, "%" SCNx64, &tmp); *yylval = ULONG2NUM(tmp); return TOK_HEX; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 106 "etc/slow_blink/ext_schema_parser/parser.l"
-{ unsigned int tmp = 0; sscanf(yytext, "%u", &tmp); *yylval = UINT2NUM(tmp); return TOK_UINT; }
+#line 107 "etc/slow_blink/ext_schema_parser/parser.l"
+{ uint64_t tmp = 0; sscanf(yytext, "%" SCNu64, &tmp); *yylval = ULONG2NUM(tmp); return TOK_UINT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 107 "etc/slow_blink/ext_schema_parser/parser.l"
-{ int tmp = 0; sscanf(yytext, "%i", &tmp); *yylval = INT2NUM(tmp); return TOK_INT; }
+#line 108 "etc/slow_blink/ext_schema_parser/parser.l"
+{ int64_t tmp = 0; sscanf(yytext, "%" SCNi64, &tmp); *yylval = LONG2NUM(tmp); return TOK_INT; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 109 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 110 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_C_NAME; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 110 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 111 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 111 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 112 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(&yytext[1], yyleng-1); return TOK_ESCAPED_NC_NAME; }
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-#line 113 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 114 "etc/slow_blink/ext_schema_parser/parser.l"
 {}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 115 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 116 "etc/slow_blink/ext_schema_parser/parser.l"
 ECHO;
 	YY_BREAK
-#line 1389 "ext/slow_blink/ext_schema_parser/lexer.c"
+#line 1400 "ext/slow_blink/ext_schema_parser/lexer.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(LITERAL_C):
 case YY_STATE_EOF(LITERAL_A):
@@ -1412,7 +1423,11 @@ case YY_STATE_EOF(LITERAL_A):
 			 * back-up) that will match for the new input source.
 			 */
 			yyg->yy_n_chars = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+/* %if-c-only */
 			YY_CURRENT_BUFFER_LVALUE->yy_input_file = yyin;
+/* %endif */
+/* %if-c++-only */
+/* %endif */
 			YY_CURRENT_BUFFER_LVALUE->yy_buffer_status = YY_BUFFER_NORMAL;
 			}
 
@@ -1519,6 +1534,7 @@ case YY_STATE_EOF(LITERAL_A):
 			"fatal flex scanner internal error--no action found" );
 	} /* end of action switch */
 		} /* end of scanning one token */
+	} /* end of user's declarations */
 } /* end of yylex */
 /* %ok-for-header */
 
@@ -1543,9 +1559,9 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 /* %endif */
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
-	register char *source = yyg->yytext_ptr;
-	register int number_to_move, i;
+	char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+	char *source = yyg->yytext_ptr;
+	yy_size_t number_to_move, i;
 	int ret_val;
 
 	if ( yyg->yy_c_buf_p > &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[yyg->yy_n_chars + 1] )
@@ -1574,7 +1590,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	/* Try to read more data. */
 
 	/* First move last chars to start of buffer. */
-	number_to_move = (int) (yyg->yy_c_buf_p - yyg->yytext_ptr) - 1;
+	number_to_move = (yy_size_t) (yyg->yy_c_buf_p - yyg->yytext_ptr) - 1;
 
 	for ( i = 0; i < number_to_move; ++i )
 		*(dest++) = *(source++);
@@ -1587,21 +1603,21 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 	else
 		{
-			int num_to_read =
+			yy_size_t num_to_read =
 			YY_CURRENT_BUFFER_LVALUE->yy_buf_size - number_to_move - 1;
 
 		while ( num_to_read <= 0 )
 			{ /* Not enough room in the buffer - grow it. */
 
 			/* just a shorter name for the current buffer */
-			YY_BUFFER_STATE b = YY_CURRENT_BUFFER;
+			YY_BUFFER_STATE b = YY_CURRENT_BUFFER_LVALUE;
 
 			int yy_c_buf_p_offset =
 				(int) (yyg->yy_c_buf_p - b->yy_ch_buf);
 
 			if ( b->yy_is_our_buffer )
 				{
-				int new_size = b->yy_buf_size * 2;
+				yy_size_t new_size = b->yy_buf_size * 2;
 
 				if ( new_size <= 0 )
 					b->yy_buf_size += b->yy_buf_size / 8;
@@ -1632,7 +1648,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 		/* Read in more data. */
 		YY_INPUT( (&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move]),
-			yyg->yy_n_chars, (size_t) num_to_read );
+			yyg->yy_n_chars, num_to_read );
 
 		YY_CURRENT_BUFFER_LVALUE->yy_n_chars = yyg->yy_n_chars;
 		}
@@ -1656,9 +1672,9 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	else
 		ret_val = EOB_ACT_CONTINUE_SCAN;
 
-	if ((yy_size_t) (yyg->yy_n_chars + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
+	if ((int) (yyg->yy_n_chars + number_to_move) > YY_CURRENT_BUFFER_LVALUE->yy_buf_size) {
 		/* Extend the array by 50%, plus the number we really need. */
-		yy_size_t new_size = yyg->yy_n_chars + number_to_move + (yyg->yy_n_chars >> 1);
+		int new_size = yyg->yy_n_chars + number_to_move + (yyg->yy_n_chars >> 1);
 		YY_CURRENT_BUFFER_LVALUE->yy_ch_buf = (char *) yyrealloc((void *) YY_CURRENT_BUFFER_LVALUE->yy_ch_buf,new_size ,yyscanner );
 		if ( ! YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
 			YY_FATAL_ERROR( "out of dynamic memory in yy_get_next_buffer()" );
@@ -1683,8 +1699,8 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 /* %if-c++-only */
 /* %endif */
 {
-	register yy_state_type yy_current_state;
-	register char *yy_cp;
+	yy_state_type yy_current_state;
+	char *yy_cp;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
 /* %% [15.0] code to get the start state into yy_current_state goes here */
@@ -1693,7 +1709,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	for ( yy_cp = yyg->yytext_ptr + YY_MORE_ADJ; yy_cp < yyg->yy_c_buf_p; ++yy_cp )
 		{
 /* %% [16.0] code to find the next state goes here */
-		register YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
+		YY_CHAR yy_c = (*yy_cp ? yy_ec[YY_SC_TO_UI(*yy_cp)] : 1);
 		if ( yy_accept[yy_current_state] )
 			{
 			yyg->yy_last_accepting_state = yy_current_state;
@@ -1722,12 +1738,12 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 /* %if-c++-only */
 /* %endif */
 {
-	register int yy_is_jam;
+	int yy_is_jam;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner; /* This var may be unused depending upon options. */
 /* %% [17.0] code to find the next state, and perhaps do backing up, goes here */
-	register char *yy_cp = yyg->yy_c_buf_p;
+	char *yy_cp = yyg->yy_c_buf_p;
 
-	register YY_CHAR yy_c = 1;
+	YY_CHAR yy_c = 1;
 	if ( yy_accept[yy_current_state] )
 		{
 		yyg->yy_last_accepting_state = yy_current_state;
@@ -1742,12 +1758,15 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 	yy_is_jam = (yy_current_state == 155);
 
+	(void)yyg;
 	return yy_is_jam ? 0 : yy_current_state;
 }
 
+#ifndef YY_NO_UNPUT
 /* %if-c-only */
 
 /* %endif */
+#endif
 
 /* %if-c-only */
 #ifndef YY_NO_INPUT
@@ -1778,7 +1797,7 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 		else
 			{ /* need more input */
-			int offset = yyg->yy_c_buf_p - yyg->yytext_ptr;
+			yy_size_t offset = yyg->yy_c_buf_p - yyg->yytext_ptr;
 			++yyg->yy_c_buf_p;
 
 			switch ( yy_get_next_buffer( yyscanner ) )
@@ -1855,6 +1874,9 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	yy_load_buffer_state(yyscanner );
 }
 
+/* %if-c++-only */
+/* %endif */
+
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
  * @param yyscanner The scanner object.
@@ -1904,7 +1926,11 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 	yyg->yy_n_chars = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
 	yyg->yytext_ptr = yyg->yy_c_buf_p = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
+/* %if-c-only */
 	yyin = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
+/* %endif */
+/* %if-c++-only */
+/* %endif */
 	yyg->yy_hold_char = *yyg->yy_c_buf_p;
 }
 
@@ -1926,7 +1952,7 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 	if ( ! b )
 		YY_FATAL_ERROR( "out of dynamic memory in yy_create_buffer()" );
 
-	b->yy_buf_size = size;
+	b->yy_buf_size = (yy_size_t)size;
 
 	/* yy_ch_buf has to be 2 characters longer than the size given because
 	 * we need to put in 2 end-of-buffer characters.
@@ -1941,6 +1967,9 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 
 	return b;
 }
+
+/* %if-c++-only */
+/* %endif */
 
 /** Destroy the buffer.
  * @param b a buffer created with yy_create_buffer()
@@ -1966,17 +1995,6 @@ static void yy_load_buffer_state  (yyscan_t yyscanner)
 	yyfree((void *) b ,yyscanner );
 }
 
-/* %if-c-only */
-
-#ifndef __cplusplus
-extern int isatty (int );
-#endif /* __cplusplus */
-    
-/* %endif */
-
-/* %if-c++-only */
-/* %endif */
-
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a yyrestart() or at EOF.
@@ -1993,7 +2011,11 @@ extern int isatty (int );
 
 	yy_flush_buffer(b ,yyscanner);
 
+/* %if-c-only */
 	b->yy_input_file = file;
+/* %endif */
+/* %if-c++-only */
+/* %endif */
 	b->yy_fill_buffer = 1;
 
     /* If b is the current buffer, then yy_init_buffer was _probably_
@@ -2123,7 +2145,7 @@ static void yyensure_buffer_stack (yyscan_t yyscanner)
 /* %if-c++-only */
 /* %endif */
 {
-	int num_to_alloc;
+	yy_size_t num_to_alloc;
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
 	if (!yyg->yy_buffer_stack) {
@@ -2132,7 +2154,7 @@ static void yyensure_buffer_stack (yyscan_t yyscanner)
 		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
 		 * immediate realloc on the next call.
          */
-		num_to_alloc = 1;
+		num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
 		yyg->yy_buffer_stack = (struct yy_buffer_state**)yyalloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								, yyscanner);
@@ -2149,7 +2171,7 @@ static void yyensure_buffer_stack (yyscan_t yyscanner)
 	if (yyg->yy_buffer_stack_top >= (yyg->yy_buffer_stack_max) - 1){
 
 		/* Increase the buffer to prepare for a possible push. */
-		int grow_size = 8 /* arbitrary grow size */;
+		yy_size_t grow_size = 8 /* arbitrary grow size */;
 
 		num_to_alloc = yyg->yy_buffer_stack_max + grow_size;
 		yyg->yy_buffer_stack = (struct yy_buffer_state**)yyrealloc
@@ -2227,12 +2249,12 @@ YY_BUFFER_STATE yy_scan_string (yyconst char * yystr , yyscan_t yyscanner)
  * @param yyscanner The scanner object.
  * @return the newly allocated buffer state object.
  */
-YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yyscan_t yyscanner)
+YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, yy_size_t  _yybytes_len , yyscan_t yyscanner)
 {
 	YY_BUFFER_STATE b;
 	char *buf;
 	yy_size_t n;
-	int i;
+	yy_size_t i;
     
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
@@ -2265,7 +2287,9 @@ YY_BUFFER_STATE yy_scan_bytes  (yyconst char * yybytes, int  _yybytes_len , yysc
 /* %if-c-only */
 static void yy_fatal_error (yyconst char* msg , yyscan_t yyscanner)
 {
-    	(void) fprintf( stderr, "%s\n", msg );
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
+	(void) fprintf( stderr, "%s\n", msg );
 	exit( YY_EXIT_FAILURE );
 }
 /* %endif */
@@ -2352,7 +2376,7 @@ FILE *yyget_out  (yyscan_t yyscanner)
 /** Get the length of the current token.
  * @param yyscanner The scanner object.
  */
-int yyget_leng  (yyscan_t yyscanner)
+yy_size_t yyget_leng  (yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
     return yyleng;
@@ -2383,51 +2407,51 @@ void yyset_extra (YY_EXTRA_TYPE  user_defined , yyscan_t yyscanner)
 /* %endif */
 
 /** Set the current line number.
- * @param line_number
+ * @param _line_number line number
  * @param yyscanner The scanner object.
  */
-void yyset_lineno (int  line_number , yyscan_t yyscanner)
+void yyset_lineno (int  _line_number , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
         /* lineno is only valid if an input buffer exists. */
         if (! YY_CURRENT_BUFFER )
-           yy_fatal_error( "yyset_lineno called with no buffer" , yyscanner); 
+           YY_FATAL_ERROR( "yyset_lineno called with no buffer" );
     
-    yylineno = line_number;
+    yylineno = _line_number;
 }
 
 /** Set the current column.
- * @param line_number
+ * @param _column_no column number
  * @param yyscanner The scanner object.
  */
-void yyset_column (int  column_no , yyscan_t yyscanner)
+void yyset_column (int  _column_no , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
         /* column is only valid if an input buffer exists. */
         if (! YY_CURRENT_BUFFER )
-           yy_fatal_error( "yyset_column called with no buffer" , yyscanner); 
+           YY_FATAL_ERROR( "yyset_column called with no buffer" );
     
-    yycolumn = column_no;
+    yycolumn = _column_no;
 }
 
 /** Set the input stream. This does not discard the current
  * input buffer.
- * @param in_str A readable stream.
+ * @param _in_str A readable stream.
  * @param yyscanner The scanner object.
  * @see yy_switch_to_buffer
  */
-void yyset_in (FILE *  in_str , yyscan_t yyscanner)
+void yyset_in (FILE *  _in_str , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    yyin = in_str ;
+    yyin = _in_str ;
 }
 
-void yyset_out (FILE *  out_str , yyscan_t yyscanner)
+void yyset_out (FILE *  _out_str , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    yyout = out_str ;
+    yyout = _out_str ;
 }
 
 int yyget_debug  (yyscan_t yyscanner)
@@ -2436,10 +2460,10 @@ int yyget_debug  (yyscan_t yyscanner)
     return yy_flex_debug;
 }
 
-void yyset_debug (int  bdebug , yyscan_t yyscanner)
+void yyset_debug (int  _bdebug , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    yy_flex_debug = bdebug ;
+    yy_flex_debug = _bdebug ;
 }
 
 /* %endif */
@@ -2617,7 +2641,10 @@ int yylex_destroy  (yyscan_t yyscanner)
 #ifndef yytext_ptr
 static void yy_flex_strncpy (char* s1, yyconst char * s2, int n , yyscan_t yyscanner)
 {
-	register int i;
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
+
+	int i;
 	for ( i = 0; i < n; ++i )
 		s1[i] = s2[i];
 }
@@ -2626,7 +2653,7 @@ static void yy_flex_strncpy (char* s1, yyconst char * s2, int n , yyscan_t yysca
 #ifdef YY_NEED_STRLEN
 static int yy_flex_strlen (yyconst char * s , yyscan_t yyscanner)
 {
-	register int n;
+	int n;
 	for ( n = 0; s[n]; ++n )
 		;
 
@@ -2636,11 +2663,16 @@ static int yy_flex_strlen (yyconst char * s , yyscan_t yyscanner)
 
 void *yyalloc (yy_size_t  size , yyscan_t yyscanner)
 {
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
 	return (void *) malloc( size );
 }
 
 void *yyrealloc  (void * ptr, yy_size_t  size , yyscan_t yyscanner)
 {
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
+
 	/* The cast to (char *) in the following accommodates both
 	 * implementations that use char* generic pointers, and those
 	 * that use void* generic pointers.  It works with the latter
@@ -2653,6 +2685,8 @@ void *yyrealloc  (void * ptr, yy_size_t  size , yyscan_t yyscanner)
 
 void yyfree (void * ptr , yyscan_t yyscanner)
 {
+	struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
+	(void)yyg;
 	free( (char *) ptr );	/* see yyrealloc() for (char *) cast */
 }
 
@@ -2663,7 +2697,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 /* %ok-for-header */
 
-#line 115 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 116 "etc/slow_blink/ext_schema_parser/parser.l"
 
 
 

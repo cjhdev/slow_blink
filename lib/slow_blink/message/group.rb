@@ -45,11 +45,11 @@ module SlowBlink::Message
         end
 
         # @private
-        # @param input [String] Blink compact form
+        # @param input [StringIO] Blink compact form
         # @param stack [Array] used to measure depth of recursion 
         # @return [Group, nil]
         # @raise [Error] recursion depth limit
-        def self.from_compact!(input, stack)            
+        def self.from_compact(input, stack)            
 
             fields = {}
             extensions = []
@@ -61,21 +61,21 @@ module SlowBlink::Message
             end
             
             @fields.each do |fn, fd|
-                fields[fn] = fd.from_compact!(input, stack)
+                fields[fn] = fd.from_compact(input, stack)
             end
 
-            if input.size > 0                
-                expected = input.getU32!
+            if !input.eof?
+                expected = input.getU32
                 if expected       
                     while extensions.size != expected do
-                        extensions << @extensionObject.from_compact!(input, stack)                    
+                        extensions << @extensionObject.from_compact(input, stack)                    
                     end
                 else
                     raise ExtensionPadding
                 end
             end
             
-            if input.size != 0
+            if !input.eof?
                 raise ExtensionPadding
             end
 
@@ -178,17 +178,17 @@ module SlowBlink::Message
         end
 
         # @return [String] Blink Protocol compact form
-        def encode_compact
+        def encode_compact            
             if self.class.id
-                to_compact("")            
+                to_compact("")
             else
                 raise UntaggedGroup.new "cannot encode a group without an ID"
             end
         end
 
         # @private
-        def to_compact(out)            
-            group = "".putU64(self.class.id)
+        def to_compact(out)
+            group = String.new.putU64(self.class.id)
             @value.each do |fn, fv|
                 fv.to_compact(group)
             end
@@ -235,7 +235,7 @@ module SlowBlink::Message
         # @param stack [Array] used to measure depth of recursion 
         # @return [Group, nil]
         # @raise [Error] recursion depth limit
-        def self.from_compact!(input, stack)
+        def self.from_compact(input, stack)
 
             if stack.size < @maxRecursion
                 stack << self
@@ -251,7 +251,7 @@ module SlowBlink::Message
             if present
                 fields = {}
                 @fields.each do |fn, fd|
-                    fields[fn] = fd.from_compact!(input, stack)
+                    fields[fn] = fd.from_compact(input, stack)
                 end
                 result = self.new(fields)            
             else
@@ -283,7 +283,7 @@ module SlowBlink::Message
         # @note StaticGroup cannot be encoded as a top level message
         # @raise [NoMethodError]
         def encode_compact
-            raise NoMethodError.new "StaticGroup does not inmplement #{__method__}"
+            raise NoMethodError.new "StaticGroup does not implement #{__method__}"
         end
 
     end
@@ -309,11 +309,11 @@ module SlowBlink::Message
         end
 
         # @private
-        # @param input [String] Blink compact form
+        # @param input [StringIO] Blink compact form
         # @param stack [Array] used to measure depth of recursion 
         # @return [Group, nil]
         # @raise [Error] recursion depth limit
-        def self.from_compact!(input, stack)
+        def self.from_compact(input, stack)
 
             if stack.size < @maxRecursion
                 stack << self
@@ -321,13 +321,15 @@ module SlowBlink::Message
                 raise RecursionLimit
             end
         
-            buf = input.getBinary!
+            buf = input.getBinary
+            
             if buf.size > 0
-                id = buf.getU64!
+                buf = StringIO.new(buf)
+                id = buf.getU64
                 group = @taggedGroups[id]
                 if group
                     if @permitted.include? group.id
-                        result = self.new(group.from_compact!(buf, stack))
+                        result = self.new(group.from_compact(buf, stack))
                     else
                         raise WeakError15.new "W15: Group is known but unexpected"
                     end

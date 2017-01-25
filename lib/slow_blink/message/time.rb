@@ -27,8 +27,8 @@ module SlowBlink::Message
     class MILLI_TIME
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getI64!
+        def self.from_compact(input, stack)
+            value = input.getI64
             if value
                 self.new(value)
             else

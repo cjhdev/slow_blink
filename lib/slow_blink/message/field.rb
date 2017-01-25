@@ -48,8 +48,8 @@ module SlowBlink::Message
         # @param input [String] Blink compact form
         # @param stack [Array]
         # @return [Field] instance of anonymous subclass of Field
-        def self.from_compact!(input, stack)        
-            self.new(@type.from_compact!(input, stack))
+        def self.from_compact(input, stack)        
+            self.new(@type.from_compact(input, stack))
         end
 
         # @note calls {#set}(value)
@@ -92,8 +92,8 @@ module SlowBlink::Message
         end
 
         # @private
-        # @param out [String] output appended to this string
-        # @return [String]
+        # @param out [StringIO]
+        # @return [StringIO]
         def to_compact(out)
             if @value
                 @value.to_compact(out)

@@ -71,7 +71,6 @@ static VALUE cFieldRef;
 static VALUE cFieldTypeRef;
 
 static VALUE cLog;
-
 static VALUE cParseError;
 
 /* generated **********************************************************/

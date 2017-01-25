@@ -25,31 +25,19 @@
 #include <ruby.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include <assert.h>
 
-#include "compact_encoder.h"
+#include "blink_compact.h"
+#include "blink_stream.h"
 
 /* defines ************************************************************/
-
-
-#define MIN8    -128L
-#define MAX8    127L
-#define MIN16   -32768L
-#define MAX16   32767L
-#define MIN32   -2147483648L
-#define MAX32   2147483647L
-#define MIN64   -9223372036854775808L
-#define MAX64   9223372036854775807L
-#define MAXU8   0xffUL
-#define MAXU16  0xffffUL
-#define MAXU32  0xffffffffUL
-#define MAXU64  0xffffffffffffffffUL
 
 /* static function prototypes *****************************************/
 
 static VALUE putNull(VALUE self);
 
-static VALUE putPresent(VALUE self, VALUE val);
+static VALUE putPresent(VALUE self);
 static VALUE getPresent(VALUE self);
 
 static VALUE putU8(VALUE self, VALUE val);
@@ -84,8 +72,8 @@ static VALUE getString(VALUE self);
 static VALUE getFixed(VALUE self, VALUE size);
 static VALUE getFixedOptional(VALUE self, VALUE size);
 
-static VALUE putInt(VALUE self, VALUE val, int64_t min, int64_t max, bool isSigned);
-static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned);
+static bool myRead(void *state, void *buf, size_t nbyte);
+static bool myWrite(void *state, const void *buf, size_t nbyte);
 
 /* static variables ***************************************************/
 
@@ -96,7 +84,10 @@ static VALUE cWeakError4;
 static VALUE cWeakError9;
 static VALUE cWeakError11;
 
-
+static struct blink_stream_user cUserStream = {
+    .read = myRead,
+    .write = myWrite
+};
 
 /* functions **********************************************************/
 
@@ -104,9 +95,11 @@ void Init_ext_compact_encoder(void)
 {
     VALUE cSlowBlink;
     VALUE cMessage;
+    VALUE cStringIO;
 
     cSlowBlink = rb_define_module("SlowBlink");
     cMessage = rb_const_get(cSlowBlink, rb_intern("Message"));
+    cStringIO = rb_const_get(rb_cObject, rb_intern("StringIO"));
 
     cStrongError1 = rb_const_get(cMessage, rb_intern("StrongError1"));
 
@@ -117,7 +110,7 @@ void Init_ext_compact_encoder(void)
     
     rb_define_method(rb_cString, "putNull", putNull, 0);
     rb_define_method(rb_cString, "putPresent", putPresent, 0);
-    rb_define_method(rb_cString, "getPresent", getPresent, 0);
+    rb_define_method(cStringIO, "getPresent", getPresent, 0);
 
     rb_define_method(rb_cString, "putU8", putU8, 1);
     rb_define_method(rb_cString, "putU16", putU16, 1);
@@ -137,119 +130,270 @@ void Init_ext_compact_encoder(void)
     rb_define_method(rb_cString, "putFixed", putFixed, 1);
     rb_define_method(rb_cString, "putFixedOptional", putFixedOptional, 1);
 
-    rb_define_method(rb_cString, "getU8!", getU8, 0);
-    rb_define_method(rb_cString, "getU16!", getU16, 0);
-    rb_define_method(rb_cString, "getU32!", getU32, 0);
-    rb_define_method(rb_cString, "getU64!", getU64, 0);
-    rb_define_method(rb_cString, "getI8!", getI8, 0);
-    rb_define_method(rb_cString, "getI16!", getI16, 0);
-    rb_define_method(rb_cString, "getI32!", getI32, 0);
-    rb_define_method(rb_cString, "getI64!", getI64, 0);
+    rb_define_method(cStringIO, "getU8", getU8, 0);
+    rb_define_method(cStringIO, "getU16", getU16, 0);
+    rb_define_method(cStringIO, "getU32", getU32, 0);
+    rb_define_method(cStringIO, "getU64", getU64, 0);
+    rb_define_method(cStringIO, "getI8", getI8, 0);
+    rb_define_method(cStringIO, "getI16", getI16, 0);
+    rb_define_method(cStringIO, "getI32", getI32, 0);
+    rb_define_method(cStringIO, "getI64", getI64, 0);
 
-    rb_define_method(rb_cString, "getF64!", getF64, 0);
+    rb_define_method(cStringIO, "getF64", getF64, 0);
 
-    rb_define_method(rb_cString, "getBool!", getBool, 0);
+    rb_define_method(cStringIO, "getBool", getBool, 0);
 
-    rb_define_method(rb_cString, "getString!", getString, 0);    
-    rb_define_method(rb_cString, "getBinary!", getBinary, 0);    
-    rb_define_method(rb_cString, "getFixed!", getFixed, 1);    
-    rb_define_method(rb_cString, "getFixedOptional!", getFixedOptional, 1);    
+    rb_define_method(cStringIO, "getString", getString, 0);    
+    rb_define_method(cStringIO, "getBinary", getBinary, 0);    
+    rb_define_method(cStringIO, "getFixed", getFixed, 1);    
+    rb_define_method(cStringIO, "getFixedOptional", getFixedOptional, 1);    
 }
 
 /* static functions ***************************************************/
 
-static VALUE putU8(VALUE self, VALUE val)
+static bool myRead(void *state, void *buf, size_t nbyte)
 {
-    return putInt(self, val, 0, MAXU8, false);
-}
-static VALUE putU16(VALUE self, VALUE val)
-{
-    return putInt(self, val, 0, MAXU16, false);
-}
-static VALUE putU32(VALUE self, VALUE val)
-{
-    return putInt(self, val, 0, MAXU32, false);
-}
-static VALUE putU64(VALUE self, VALUE val)
-{
-    return putInt(self, val, 0, MAXU64, false);
-}
-static VALUE putI8(VALUE self, VALUE val)
-{
-    return putInt(self, val, MIN8, MAX8, true);
-}
-static VALUE putI16(VALUE self, VALUE val)
-{
-    return putInt(self, val, MIN16, MAX16, true);
-}
-static VALUE putI32(VALUE self, VALUE val)
-{
-    return putInt(self, val, MIN32, MAX32, true);
-}
-static VALUE putI64(VALUE self, VALUE val)
-{
-    return putInt(self, val, MIN64, MAX64, true);
-}
-static VALUE putF64(VALUE self, VALUE val)
-{    
-    VALUE retval;
-    uint8_t out[10U];
+    bool retval = false;
+    VALUE stringIO = *(VALUE *)state;
+    
+    VALUE out = rb_funcall(stringIO, rb_intern("read"), 1, SIZET2NUM(nbyte));
 
-    if(val == Qnil){
+    if((size_t)RSTRING_LEN(out) == nbyte){
 
-        retval = putNull(self);
+        (void)memcpy(buf, RSTRING_PTR(out), (size_t)RSTRING_LEN(out));
+        retval = true;
     }
     else{
 
-        double value = NUM2DBL(val);
-        retval = rb_str_buf_cat(self, (const char *)out, BLINK_putVLC(*((uint64_t *)(&value)), false, out, sizeof(out)));
+        rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
     }
 
     return retval;
+}
+
+static bool myWrite(void *state, const void *buf, size_t nbyte)
+{
+    return rb_str_buf_cat(*(VALUE *)state, buf, nbyte);    
+}
+
+static VALUE putU8(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+        if(NUM2ULL(val) <= UINT8_MAX){
+
+            struct blink_stream stream;
+            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+            (void)BLINK_Compact_encodeU8((uint8_t)NUM2ULL(val), &stream);
+        }
+        else{
+
+            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
+        }
+    }
+    
+    return self;
+}
+static VALUE putU16(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+        if(NUM2ULL(val) <= UINT16_MAX){
+
+            struct blink_stream stream;
+            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+            (void)BLINK_Compact_encodeU16((uint16_t)NUM2ULL(val), &stream);
+        }
+        else{
+
+            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
+        }
+    }
+    
+    return self;
+}
+static VALUE putU32(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+        if(NUM2ULL(val) <= UINT32_MAX){
+
+            struct blink_stream stream;
+            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+            (void)BLINK_Compact_encodeU32((uint32_t)NUM2ULL(val), &stream);
+        }
+        else{
+
+            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
+        }
+    }
+
+    return self;
+}
+static VALUE putU64(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+        if(NUM2ULL(val) <= UINT64_MAX){
+
+            struct blink_stream stream;
+            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+            (void)BLINK_Compact_encodeU64(NUM2ULL(val), &stream);
+        }
+        else{
+
+            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
+        }
+    }
+    
+    return self;
+}
+static VALUE putI8(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+        if((NUM2LL(val) >= INT8_MIN) && (NUM2LL(val) <= INT8_MAX)){
+
+            struct blink_stream stream;
+            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+            (void)BLINK_Compact_encodeI8((int8_t)NUM2LL(val), &stream);
+        }
+        else{
+
+            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
+        }
+    }
+    return self;
+}
+static VALUE putI16(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+
+        if((NUM2LL(val) >= INT16_MIN) && (NUM2LL(val) <= INT16_MAX)){
+
+            struct blink_stream stream;
+            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+            (void)BLINK_Compact_encodeI16((int16_t)NUM2LL(val), &stream);
+        }
+        else{
+
+            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
+        }
+    }
+    return self;
+}
+static VALUE putI32(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+        
+        if((NUM2LL(val) >= INT32_MIN) && (NUM2LL(val) <= INT32_MAX)){
+
+            struct blink_stream stream;
+            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+            (void)BLINK_Compact_encodeI32((int32_t)NUM2LL(val), &stream);
+        }
+        else{
+
+            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
+        }
+    }
+    return self;
+}
+static VALUE putI64(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+
+        if((NUM2LL(val) >= INT64_MIN) && (NUM2LL(val) <= INT64_MAX)){
+
+            struct blink_stream stream;
+            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+            (void)BLINK_Compact_encodeI64(NUM2LL(val), &stream);
+        }
+        else{
+
+            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
+        }
+    }
+    return self;
+}
+static VALUE putF64(VALUE self, VALUE val)
+{
+    if(val == Qnil){
+
+        (void)putNull(self);
+    }
+    else{
+    
+        struct blink_stream stream;
+        (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+        (void)BLINK_Compact_encodeF64(NUM2DBL(val), &stream);
+    }
+    return self;
 }
 
 static VALUE putBool(VALUE self, VALUE val)
 {
-    VALUE retval;
-    
     if(val == Qnil){
 
-        retval = putNull(self);
+        (void)putNull(self);
     }
     else{
         
-        retval = putU8(self, (val == Qfalse) ? INT2FIX(0) : INT2FIX(1));
+        struct blink_stream stream;
+        (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+        (void)BLINK_Compact_encodeBool((val == Qfalse) ? false : true, &stream);
     }
-
-    return retval;        
+    return self;
 }
 
 static VALUE putNull(VALUE self)
 {
-    uint8_t str[] = {0xc0};
-    return rb_str_buf_cat(self, (const char *)str, sizeof(str));
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    (void)BLINK_Compact_encodeNull(&stream);
+    return self;    
 }
 
-static VALUE putPresent(VALUE self, VALUE val)
+static VALUE putPresent(VALUE self)
 {
-    VALUE retval;
-    
-    if(val == Qfalse){
-
-        retval = putNull(self);
-    }
-    else{
-
-        uint8_t str[] = {0x1};
-        retval = rb_str_buf_cat(self, (const char *)str, sizeof(str));
-    }
-
-    return retval;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    (void)BLINK_Compact_encodePresent(&stream);
+    return self;
 }
 
 static VALUE putBinary(VALUE self, VALUE val)
-{
-    VALUE retval;
+{  
+    VALUE retval = Qnil;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
 
     if(val == Qnil){
 
@@ -257,11 +401,17 @@ static VALUE putBinary(VALUE self, VALUE val)
     }
     else{
 
-        retval = putU32(self, UINT2NUM(RSTRING_LEN(val)));
-        retval = rb_str_concat(retval, val);        
+        if(RSTRING_LEN(val) <= UINT32_MAX){
+        
+            (void)BLINK_Compact_encodeU32((uint32_t)RSTRING_LEN(val), &stream);
+            retval = rb_str_buf_cat(self, RSTRING_PTR(val), RSTRING_LEN(val));                
+        }
+        else{
 
+            rb_raise(rb_eRangeError, "String is too long");
+        }
     }
-
+    
     return retval;
 }
 
@@ -281,9 +431,7 @@ static VALUE putFixedOptional(VALUE self, VALUE val)
     }
     else{
 
-        uint8_t str[] = {0x01};
-        retval = rb_str_new((const char *)str, sizeof(str));
-        rb_str_concat(retval, val);        
+        retval = rb_str_buf_cat(putPresent(self), RSTRING_PTR(val), (size_t)RSTRING_LEN(val));
     }
 
     return retval;
@@ -291,160 +439,242 @@ static VALUE putFixedOptional(VALUE self, VALUE val)
 
 static VALUE putFixed(VALUE self, VALUE val)
 {
-    return rb_str_dup(val);
-}
-
-static VALUE putInt(VALUE self, VALUE val, int64_t min, int64_t max, bool isSigned)
-{
-    uint8_t out[10U];
-    VALUE retval;
-
-    if(val == Qnil){
-
-        retval = putNull(self);
-    }
-    else{
-
-        if(isSigned){
-
-            int64_t value = NUM2LL(val);
-
-            if((value < min) || (value > max)){
-
-                rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
-            }
-
-            retval = rb_str_buf_cat(self, (const char *)out, BLINK_putVLC((uint64_t)value, true, out, sizeof(out)));
-        }
-        else{
-
-            uint64_t value = NUM2ULL(val);
-
-            if(value > (uint64_t)max){
-
-                rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
-            }
-
-            retval = rb_str_buf_cat(self, (const char *)out, BLINK_putVLC(value, false, out, sizeof(out)));
-        }
-    }
-
-    return retval;
+    return rb_str_buf_cat(self, RSTRING_PTR(val), (size_t)RSTRING_LEN(val));
 }
 
 static VALUE getU8(VALUE self)
 {
-    return getInt(self, 0, MAXU8, false);
+    VALUE retval = Qnil;
+    uint8_t val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeU8(&stream, &val, &isNull)){
+
+        retval = (isNull) ? Qnil : UINT2NUM(val);
+    }
+    else{
+
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getU16(VALUE self)
 {
-    return getInt(self, 0, MAXU16, false);
+    VALUE retval = Qnil;
+    uint16_t val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeU16(&stream, &val, &isNull)){
+
+        retval = (isNull) ? Qnil : UINT2NUM(val);
+    }
+    else{
+
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getU32(VALUE self)
 {
-    return getInt(self, 0, MAXU32, false);
+    VALUE retval = Qnil;
+    uint32_t val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeU32(&stream, &val, &isNull)){
+
+        retval = (isNull) ? Qnil : UINT2NUM(val);
+    }
+    else{
+
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getU64(VALUE self)
 {
-    return getInt(self, 0, MAXU64, false);
+    VALUE retval = Qnil;
+    uint64_t val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeU64(&stream, &val, &isNull)){
+
+        retval = (isNull) ? Qnil : ULL2NUM(val);
+    }
+    else{
+
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getI8(VALUE self)
 {
-    return getInt(self, MIN8, MAX8, true);
+    VALUE retval = Qnil;
+    int8_t val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeI8(&stream, &val, &isNull)){
+
+        retval = (isNull) ? Qnil : INT2NUM(val);
+    }
+    else{
+
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getI16(VALUE self)
 {
-    return getInt(self, MIN16, MAX16, true);
+    VALUE retval = Qnil;
+    int16_t val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeI16(&stream, &val, &isNull)){
+
+        retval = (isNull) ? Qnil : INT2NUM(val);
+    }
+    else{
+
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getI32(VALUE self)
 {
-    return getInt(self, MIN32, MAX32, true);
+    VALUE retval = Qnil;
+    int32_t val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeI32(&stream, &val, &isNull)){
+
+        retval = (isNull) ? Qnil : INT2NUM(val);
+    }
+    else{
+
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getI64(VALUE self)
 {
-    return getInt(self, MIN64, MAX64, true);
+    VALUE retval = Qnil;
+    int64_t val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeI64(&stream, &val, &isNull)){
+
+        retval = (isNull) ? Qnil : LL2NUM(val);
+    }
+    else{
+
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getF64(VALUE self)
 {
-    bool isNull;
-    double out;
-    uint32_t ret;
     VALUE retval = Qnil;
+    double val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeF64(&stream, &val, &isNull)){
 
-    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(self), RSTRING_LEN(self), false, (uint64_t *)&out, &isNull);
-
-    if(ret > 0){
-
-        rb_str_drop_bytes(self, ret);
-        if(!isNull){
-
-            retval = rb_float_new(out);
-        }        
+        retval = (isNull) ? Qnil : DBL2NUM(val);
     }
     else{
 
-        rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
+        rb_raise(rb_eRangeError, "out of range");
     }
-
+        
     return retval;
 }
 
 static VALUE getPresent(VALUE self)
 {
-    VALUE retval = getInt(self, 0, 1, false);
+    VALUE retval = Qnil;
+    bool val;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodePresent(&stream, &val)){
 
-    if(retval != Qnil){
-
-        retval = Qtrue;
+        retval = (val) ? Qtrue : Qfalse;
     }
+    else{
 
-    return retval;    
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
+    return retval;
 }
 
 static VALUE getBool(VALUE self)
 {
-    VALUE retval;
-    VALUE value = getInt(self, 0, MAXU8, false);
+    VALUE retval = Qnil;
+    bool val;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+    if(BLINK_Compact_decodeBool(&stream, &val, &isNull)){
 
-    if(value == UINT2NUM(0)){
-
-        retval = Qfalse;
-    }
-    else if(value == UINT2NUM(1)){
-
-        retval = Qtrue;
+        retval = (val) ? Qtrue : Qfalse;
     }
     else{
 
-        rb_raise(cWeakError11, "W11: Decoded value is not 0x00 or 0x01");
+        rb_raise(cWeakError11, "out of range");
     }
-
+        
     return retval;
 }
 
 static VALUE getBinary(VALUE self)
 {
     VALUE retval = Qnil;
-    VALUE size = getInt(self, 0, MAXU32, false);
+    uint32_t size;
+    bool isNull;
+    struct blink_stream stream;
+    (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
 
-    if(size != Qnil){
+    if(BLINK_Compact_decodeU32(&stream, &size, &isNull)){
 
-        if(NUM2UINT(size) > RSTRING_LEN(self)){
-            rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
+        if(!isNull){
+
+            retval = rb_funcall(self, rb_intern("read"), 1, UINT2NUM(size));
+
+            if((retval == Qnil) || ((uint32_t)NUM2UINT(rb_funcall(retval, rb_intern("size"), 0)) != size)){
+
+                rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
+            }
         }
-
-        retval = rb_str_substr(self, 0, NUM2UINT(size));
-        rb_str_drop_bytes(self, NUM2UINT(size));
     }
+    else{
 
+        rb_raise(rb_eRangeError, "out of range");
+    }
+        
     return retval;
 }
 
@@ -462,108 +692,23 @@ static VALUE getString(VALUE self)
 
 static VALUE getFixed(VALUE self, VALUE size)
 {
-    VALUE retval;
+    VALUE retval = rb_funcall(self, rb_intern("read"), 1, UINT2NUM(size));
 
-    if(NUM2UINT(size) > RSTRING_LEN(self)){
+    if((retval == Qnil) || ((uint32_t)NUM2UINT(rb_funcall(retval, rb_intern("size"), 0)) != NUM2UINT(size))){
 
         rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
     }
 
-    retval = rb_str_substr(self, 0, NUM2UINT(size));
-    rb_str_drop_bytes(self, NUM2UINT(size));
-
-    return retval;
+    return retval;    
 }
 
 static VALUE getFixedOptional(VALUE self, VALUE size)
 {
     VALUE retval = Qnil;
-    uint32_t ret;
-    bool isNull;
-    uint64_t present;
+    
+    if(getPresent(self)){
 
-    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(self), RSTRING_LEN(self), false, (uint64_t *)&present, &isNull);
-
-    if(ret > 0){
-
-        rb_str_drop_bytes(self, ret);
-
-        if(isNull){
-
-           retval = Qnil; 
-        }
-        else if(present == 0x01){
-
-            retval = rb_str_substr(self, 0, NUM2UINT(size));
-
-            if(RSTRING_LEN(retval) != NUM2UINT(size)){
-
-                rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
-            }
-
-            rb_str_drop_bytes(self, NUM2UINT(size));
-        }
-        else{
-
-            rb_raise(cWeakError9, "W9: Presence flag is not 0xC0 or 0x01");
-        }   
-    }
-    else{
-
-        rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
-    }
-
-    return retval;
-}
-
-static VALUE getInt(VALUE input, int64_t min, int64_t max, bool isSigned)
-{
-    bool isNull;
-    uint64_t out;
-    VALUE retval = Qnil;
-    uint32_t ret;
-
-    ret = BLINK_getVLC((const uint8_t *)RSTRING_PTR(input), RSTRING_LEN(input), isSigned, &out, &isNull);
-
-    if(ret > 0){
-
-        rb_str_drop_bytes(input, ret);
-
-        if(!isNull){
-
-            if(isSigned){
-
-                if(((int64_t)out < min) || ((int64_t)out > max)){
-
-                    rb_raise(cWeakError3, "W3: Decoded value overflows range");            
-                }
-
-                if(BLINK_getSizeSigned((int64_t)out) != ret){
-
-                    rb_raise(cWeakError4, "W4: VLC entity contains more bytes than needed to express full width of type");
-                }
-
-                retval = LL2NUM((int64_t)out);
-            }
-            else{
-                
-                if(out > (uint64_t)max){
-
-                    rb_raise(cWeakError3, "W3: Decoded value overflows range");            
-                }
-
-                if(BLINK_getSizeUnsigned(out) != ret){
-
-                    rb_raise(cWeakError4, "W4: VLC entity contains more bytes than needed to express full width of type");
-                }
-
-                retval = ULL2NUM(out);
-            }
-        }        
-    }
-    else{
-
-        rb_raise(cStrongError1, "S1: Group encoding ends prematurely");
+        retval = getFixed(self, size);
     }
 
     return retval;

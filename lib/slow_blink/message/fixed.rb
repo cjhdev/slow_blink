@@ -31,11 +31,11 @@ module SlowBlink::Message
         end
 
         # @private
-        def self.from_compact!(input, stack)
+        def self.from_compact(input, stack)
             if @opt
-                value = input.getFixedOptional!
+                value = input.getFixedOptional
             else
-                value = input.getFixed!
+                value = input.getFixed
             end
             if value
                 self.new(value)

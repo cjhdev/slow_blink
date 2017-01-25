@@ -30,8 +30,8 @@ module SlowBlink::Message
         end
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getI32!
+        def self.from_compact(input, stack)
+            value = input.getI32
             if value
                 symbol = @symbols.key(value)
                 if symbol

@@ -27,10 +27,10 @@ module SlowBlink::Message
     class DECIMAL
 
         # @private
-        def self.from_compact!(input, stack)
-            e = input.getI8!
+        def self.from_compact(input, stack)
+            e = input.getI8
             if e
-                m = input.getI64!
+                m = input.getI64
                 if m
                     self.new("#{m}E#{e}")                    
                 else

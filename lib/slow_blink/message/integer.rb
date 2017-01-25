@@ -62,8 +62,8 @@ module SlowBlink::Message
     class U8 < INTEGER
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getU8!
+        def self.from_compact(input, stack)
+            value = input.getU8
             if value
                 self.new(value)
             else
@@ -82,8 +82,8 @@ module SlowBlink::Message
     class U16 < INTEGER
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getU16!
+        def self.from_compact(input, stack)
+            value = input.getU16
             if value
                 self.new(value)
             else
@@ -102,8 +102,8 @@ module SlowBlink::Message
     class U32 < INTEGER
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getU32!
+        def self.from_compact(input, stack)
+            value = input.getU32
             if value
                 self.new(value)
             else
@@ -122,8 +122,8 @@ module SlowBlink::Message
     class U64 < INTEGER
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getU64!
+        def self.from_compact(input, stack)
+            value = input.getU64
             if value
                 self.new(value)
             else
@@ -142,8 +142,8 @@ module SlowBlink::Message
     class I8 < INTEGER
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getI8!
+        def self.from_compact(input, stack)
+            value = input.getI8
             if value
                 self.new(value)
             else
@@ -162,8 +162,8 @@ module SlowBlink::Message
     class I16 < INTEGER
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getI16!
+        def self.from_compact(input, stack)
+            value = input.getI16
             if value
                 self.new(value)
             else
@@ -182,8 +182,8 @@ module SlowBlink::Message
     class I32 < INTEGER
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getI32!
+        def self.from_compact(input, stack)
+            value = input.getI32
             if value
                 self.new(value)
             else
@@ -202,8 +202,8 @@ module SlowBlink::Message
     class I64 < INTEGER
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getI64!
+        def self.from_compact(input, stack)
+            value = input.getI64
             if value
                 self.new(value)
             else

@@ -19,6 +19,7 @@
 #   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+
 module SlowBlink
 
     # This module is concerned with generating models from Schema that are optimised for encoding/decoding and enforcing constraints
@@ -149,20 +150,27 @@ module SlowBlink
             # @api user
             #
             # Initialise a {Group} from a compact form string
-            # @param input [String] Blink Protocol compact form
+            # @param input [StringIO] Blink Protocol compact form
             # @return [Group] anonymous subclass instance of Group
             # @raise [WeakError,StrongError]
             # @raise [RecursionLimit]
             # @raise []
             def decode_compact(input)
+                
                 stack = []
-                inputSize = input.size
-                buf = input.getBinary!
+
+                if input.kind_of? String
+                    input = StringIO.new(input)
+                end
+                    
+                buf = input.getBinary
+                
                 if buf.size > 0
-                    id = buf.getU64!
-                    groupClass = @taggedGroups[id]                    
+                    buf = StringIO.new(buf)
+                    id = buf.getU64
+                    groupClass = @taggedGroups[id]                        
                     if groupClass                        
-                        group = groupClass.from_compact!(buf, stack)                        
+                        group = groupClass.from_compact(buf, stack)                        
                     else
                         raise WeakError2.new "W2: Group id #{group.id} is unknown"
                     end                    

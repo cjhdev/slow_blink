@@ -30,7 +30,7 @@ module SlowBlink::Message
         end
 
         # @private
-        def self.from_compact!(input, stack)
+        def self.from_compact(input, stack)
 
             if stack.size < @maxRecursion
                 stack << self
@@ -39,10 +39,10 @@ module SlowBlink::Message
             end
         
             value = []
-            size = input.getU32!
+            size = input.getU32
             if size
                 while value.size < size do
-                    value << @type.from_compact!(input, stack)
+                    value << @type.from_compact(input, stack)
                 end
                 result = self.new(value)
             else

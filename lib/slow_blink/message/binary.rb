@@ -25,8 +25,8 @@ module SlowBlink::Message
     class BINARY
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getBinary!
+        def self.from_compact(input, stack)
+            value = input.getBinary
             if value
                 if !@size or value.size <= @size
                     self.new(value)

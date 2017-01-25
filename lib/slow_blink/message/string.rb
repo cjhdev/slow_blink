@@ -25,8 +25,8 @@ module SlowBlink::Message
     class STRING
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getString!
+        def self.from_compact(input, stack)
+            value = input.getString
             if value
                 if !@type.size or value.size <= @type.size
                     self.new(value)

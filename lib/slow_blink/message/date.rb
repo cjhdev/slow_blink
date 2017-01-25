@@ -25,8 +25,8 @@ module SlowBlink::Message
     class DATE
 
         # @private
-        def self.from_compact!(input, stack)
-            value = input.getI32!
+        def self.from_compact(input, stack)
+            value = input.getI32
             if value
                 self.new(value)
             else
