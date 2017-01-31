@@ -26,8 +26,7 @@ module SlowBlink::Message
 
         # @private
         def self.from_compact(input, stack)
-            value = input.getU32
-            if value
+            if value = input.getU32
                 self.new(value)
             else
                 value
@@ -54,12 +53,7 @@ module SlowBlink::Message
 
         # @note calls {#set}(value)
         def initialize(value)
-            @opt = self.class.opt?
-            if value
-                set(value)
-            else
-                @value = nil
-            end
+            set(value)
         end
 
         # @private
@@ -74,8 +68,7 @@ module SlowBlink::Message
 
         # @private
         def self.from_compact(input, stack)
-            value = input.getU64
-            if value
+            if value = input.getU64
                 self.new(value)
             else
                 value

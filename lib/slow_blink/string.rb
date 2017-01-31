@@ -29,11 +29,9 @@ module SlowBlink
         # @return [nil] no maximum size
         attr_reader :size
 
-        # @param size [Integer] maximum size
-        # @param location [String]    
-        def initialize(size, location)
-            @size = size
-            super(location)
+        def initialize(attr)
+            super(attr)
+            @size = attr[:size]            
         end
 
     end

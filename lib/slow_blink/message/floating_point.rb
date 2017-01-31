@@ -26,11 +26,10 @@ module SlowBlink::Message
 
         # @private
         def self.from_compact(input, stack)
-            value = input.getF64
-            if value
+            if value = input.getF64
                 self.new(value)
             else
-                value
+                nil
             end
         end
 

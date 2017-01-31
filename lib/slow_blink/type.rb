@@ -24,34 +24,24 @@ module SlowBlink
 
     class Type
 
-        include Annotatable
+        def location
+            @location
+        end
 
-        # @macro location
-        attr_reader :location
+        def sequence?
+            @sequence
+        end
 
         def self.===(other)
             self == other                
         end
 
-        # @param location [String]
-        def initialize(location)
-            @schema = nil
-            @annotes = {}
-            @location = location
+        def initialize(attr)
+            @location = attr[:loc].freeze
+            @sequence = attr[:sequence]
+            @ns = attr[:ns].freeze
         end
 
-        # @api private
-        #
-        # Resolve references, enforce constraints, and detect cycles
-        #
-        # @param schema [Schema] schema this definition belongs to
-        # @param ns [Namespace] namespace this definition belongs to
-        # @param stack [nil, Array] objects that depend on this object
-        # @return [true,false] linked?
-        def link(schema, ns, stack=[])
-            @schema = schema
-        end
-    
     end
     
 end

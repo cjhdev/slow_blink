@@ -22,70 +22,28 @@
 
 module SlowBlink
 
+    # either a type or enum definition
     class Definition
 
-        include Annotatable
+        attr_reader :type
+        attr_reader :location
+        attr_reader :name
+        attr_reader :id
 
         def self.===(other)
             self == other                
         end
 
-        # @macro location
-        attr_reader :location
-
-        # @return [NameWithID]
-        attr_reader :nameWithID
-
-        # @return [Type,ENUMERATION]
-        attr_reader :type
-
-        # @param namespace [Namespace]
-        def namespace=(namespace)
-            @ns = namespace
-        end
-
-        # @param nameWithID [NameWithID]
-        # @param type [ENUMERATION, Type]
-        # @param location [String]
-        def initialize(nameWithID, type, location)
-            @annotes = {}
-            @type = type
-            @location = location
-            @nameWithID = nameWithID
-            @ns = nil
-        end
-
-        # @api private
-        # Resolve references, enforce constraints, and detect cycles
-        #
-        # @param schema [Schema] schema this definition belongs to
-        # @param stack [nil, Array] objects that depend on this object
-        # @return [true,false] linked?
-        def link(schema, stack=[])
-                     
-            # a definition can resolve to a definition only if there is a dynamic
-            # link somewhere in the chain
-            sf = stack.each
-            begin
-                loop do
-                    if sf.next == self
-                        loop do
-                            begin
-                                f = sf.next
-                                if f.respond_to? "dynamic?".to_sym and f.dynamic?
-                                    return schema
-                                end
-                            rescue StopIteration
-                                raise ParseError.new "#{self.location}: error: invalid cycle detected"
-                            end                                   
-                        end
-                    end
-                end
-            rescue StopIteration
+        def initialize(attr)
+            @location = attr[:loc].freeze
+            @ns = attr[:ns].freeze
+            @name = attr[:name][:name].dup
+            if @ns
+                @name.prepend "#{@ns}::"
             end
-
-            @type.link(schema, @ns, stack << self)
-            
+            @name.freeze
+            @id = attr[:name][:id]
+            @type = SlowBlink.const_get(attr[:type][:class]).new(attr[:type].merge({:table => attr[:table], :ns => attr[:ns]}))
         end
 
     end

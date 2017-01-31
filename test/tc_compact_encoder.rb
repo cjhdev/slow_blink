@@ -109,18 +109,6 @@ class TestCompactEncoder < Test::Unit::TestCase
         assert_equal("hello world".force_encoding("ASCII-8BIT"), output)
     end
 
-    def test_putFixedOptional
-        input = "hello world"
-        output = String.new.putFixedOptional(input)
-        assert_equal("\x01hello world".force_encoding("ASCII-8BIT"), output)
-    end
-
-    def test_putFixedOptional_null
-        input = nil
-        output = String.new.putFixedOptional(input)
-        assert_equal("\xc0".force_encoding("ASCII-8BIT"), output)
-    end
-
     def test_putString
         input = "hello world"
         output = String.new.putString(input)
@@ -300,27 +288,6 @@ class TestCompactEncoder < Test::Unit::TestCase
         input = StringIO.new
         assert_raise Message::StrongError1 do
             input.getFixed(1)
-        end
-    end
-
-    def test_getFixedOptional
-        input = StringIO.new("\x01hello world")
-        output = input.getFixedOptional("hello world".size)
-        assert_equal("hello world", output)
-        
-    end
-
-    def test_getFixedOptional_null
-        input = StringIO.new("\xc0")
-        output = input.getFixedOptional("hello world".size)
-        assert_equal(nil, output)
-        
-    end
-
-    def test_getFixedOptional_eof
-        input = StringIO.new("\x01")
-        assert_raise Message::StrongError1 do
-            input.getFixedOptional(1)
         end
     end
 

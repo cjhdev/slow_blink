@@ -25,127 +25,38 @@ module SlowBlink
     # Blink Specification 7.3
     class IncrementalAnnotation
 
-        # @return [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef]
-        attr_reader :componentReference
+        include Enumerable
 
-        # @return [Array<Integer,Annotation>]
-        attr_reader :annotes
+        attr_reader :ref
 
-        # @macro location
+        def type?
+            @type
+        end
+
+        attr_reader :name
+
         attr_reader :location
 
-        # @param componentReference [SchemaRef, DefinitionRef, DefinitionTypeRef, FieldRef, FieldTypeRef] annotation target
-        # @param annotes [Array<Integer,Annotation>]
-        # @param location [String]    
-        def initialize(componentReference, annotes, location)
-            @componentReference = componentReference
-            @annotes = annotes
-            @location = location
-            @schema = nil
+        def each(&block)
+            @annotes.each(&block)
         end
 
-        # @api private
-        #
-        # Apply annotes to targets
-        #
-        # @param schema [Schema]
-        # @param namespace [Namespace] the namespace this annotation was defined in
-        #
-        def apply(schema, namespace)
-            if @schema.nil?
-                case @componentReference.class
-                when SchemaRef # this actually refers to the Namespace
-                    namespace.annote(@annotes)
-                    @schema = schema
-                when DefinitionRef
-                    object = schema.resolve(@componentReference.namespace, @componentReference.name)
-                    if object
-                        object.annote(@annotes)
-                        @schema = schema
-                    end
-                when DefinitionTypeRef
-                    object = schema.resolve(@componentReference.namespace, @componentReference.name)
-                    if object
-                        object.type.annote(@annotes)
-                        @schema = schema
-                    end
-                when FieldRef
-                    object = schema.resolve(@componentReference.namespace, @componentReference.name)
-                    if object
-                        field = object.field(@componentReference.subname)
-                        if field
-                            field.annote(@annotes)
-                            @schema = schema
-                        end                    
-                    end                
-                when FieldTypeRef
-                    object = schema.resolve(@componentReference.namespace, @componentReference.name)
-                    if object
-                        field = object.field(@componentReference.subname)
-                        if field
-                            field.type.annote(@annotes)
-                            @schema = schema
-                        end                    
-                    end                
-                else
-                    raise ParseError.new "unknown component reference #{@componentReference.class}".freeze
-                end                    
-            end
-            @schema                
-        end        
-        
-    end
-
-    # SCHEMA
-    class SchemaRef
-        def self.===(other)
-            self == other
-        end
-    end
-
-    # qName
-    class DefinitionRef < SchemaRef
-        attr_reader :namespace
-        attr_reader :name
-        attr_reader :qname
-        # @param qName [String] name of the definition to annotate
-        def initialize(qname)
-            @qname = qname
-            if qname.split(":").size == 1
-                @namespace = nil
-                @name = qname                
-            else                
-                @namespace = qname.split(":").first
-                @name = qName.split(":").last
+        def initialize(attr)
+            @ns = attr[:ns]
+            @ref = attr[:ref]
+            @type = attr[:type]
+            @name = attr[:name]||false
+            @location = attr[:loc]
+            @annotes = []
+            attr[:annotes].each do |a|
+                if a.is_a? Hash
+                    @annotes << {a[:key] => a[:value]}
+                elsif a.kind_of? Integer
+                    @annotes << a
+                end                
             end
         end
-    end
 
-    # qName.TYPE
-    class DefinitionTypeRef < DefinitionRef
-    end
-
-    # qName.name
-    class FieldRef < SchemaRef
-        attr_reader :namespace
-        attr_reader :name
-        attr_reader :qname
-        attr_reader :subname
-        def initialize(qname, name)
-            @qname = qname
-            if qname.split(":").size == 1
-                @namespace = nil
-                @name = qname                
-            else                
-                @namespace = qname.split(":").first
-                @name = qName.split(":").last
-            end
-            @subname = name
-        end
-    end
-
-    # qName.name.TYPE
-    class FieldTypeRef < FieldRef
     end
     
 end

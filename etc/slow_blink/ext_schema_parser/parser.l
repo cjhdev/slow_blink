@@ -10,6 +10,7 @@
 #include <float.h>
 #include <ruby.h>
 #include <inttypes.h>
+#include <assert.h>
 #include "parser.h"
 
 /* static prototypes **************************************************/
@@ -103,9 +104,9 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 "->"                { return TOK_RIGHT_ARROW; }
 "<-"                { return TOK_LEFT_ARROW; }
 
-[0][x][0-9a-fA-F]+      { uint64_t tmp = 0; sscanf(yytext, "%" SCNx64, &tmp); *yylval = ULONG2NUM(tmp); return TOK_HEX; }
-[0-9]+                  { uint64_t tmp = 0; sscanf(yytext, "%" SCNu64, &tmp); *yylval = ULONG2NUM(tmp); return TOK_UINT; }
-[-][1-9][0-9]*          { int64_t tmp = 0; sscanf(yytext, "%" SCNi64, &tmp); *yylval = LONG2NUM(tmp); return TOK_INT; }
+[0][x][0-9a-fA-F]+      { uint64_t tmp = 0; int ret = sscanf(yytext, "%" SCNx64, &tmp); assert(ret == 1); *yylval = ULONG2NUM(tmp); return TOK_HEX; }
+[0-9]+                  { uint64_t tmp = 0; int ret = sscanf(yytext, "%" SCNu64, &tmp); assert(ret == 1); *yylval = ULONG2NUM(tmp); return TOK_UINT; }
+[-][1-9][0-9]*          { int64_t tmp = 0; int ret = sscanf(yytext, "%" SCNi64, &tmp); assert(ret == 1); *yylval = LONG2NUM(tmp); return TOK_INT; }
 
 [_a-zA-Z][_a-zA-Z0-9]*[:][_a-zA-Z][_a-zA-Z0-9]* { *yylval = rb_str_new(yytext, yyleng); return TOK_C_NAME; }
 [_a-zA-Z][_a-zA-Z0-9]*      { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }

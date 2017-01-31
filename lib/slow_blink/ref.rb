@@ -22,88 +22,38 @@
 
 module SlowBlink
 
+    # A REF is a type that points to a Group, TypeDef, or Enum
+    # by name.
+    #
+    # It may be static or dynamic
+    #
     class REF < Type
 
-        # @return referenced object
         attr_reader :ref
 
-        # @return [true] dynamic group reference
-        # @return [false] static reference
         def dynamic?
             @dynamic
         end
 
-        # Either this reference is dynamic or an intermediate reference is dynamic
-        #
-        # @return [true,false]
-        def dynamic_reference?
-            @dynamic or @dynamic_reference                           
-        end
-
-        # @return [String]
-        attr_reader :qname
-
-        # @param qname [String] 
-        # @param dynamic [true,false]
-        # @param location [String]    
-        def initialize(qname, dynamic, location)
-            @qname = qname
-            if qname.split(":").size == 1
-                @namespace = nil
-                @name = qname                
-            else                
-                @namespace = qname.split(":").first
-                @name = qname.split(":").last
-            end
-            @dynamic = dynamic
-            @ref = nil
-            @dynamic_reference = false
-            super(location)
-        end
-
-        # @api private
-        #
-        # Resolve references, enforce constraints, and detect cycles
-        #
-        # @param schema [Schema] schema this definition belongs to
-        # @param ns [Namespace] namespace this definition belongs to
-        # @param stack [nil, Array] objects that depend on this object
-        # @return [true,false] linked?
-        def link(schema, ns, stack=[])
-            if @schema.nil?
-                if @namespace
-                    ref = schema.resolve(@namespace, @name)                    
-                else
-                    ref = ns.resolve(@name) or schema.resolve(@namespace, @name)
-                end
-                if ref and ref.link(schema, stack << self)
-                    # follow reference
-                    loop do
-                        if ref.kind_of? Definition
-                            if ref.type.kind_of? REF
-                                if ref.type.dynamic?
-                                    @dynamic_reference = true
-                                end
-                                ref = ref.type.ref                                
-                                next
-                            else
-                                ref = ref.type
-                            end
-                        end
-                        break
+        def resolve
+            result = nil
+            if @table
+                #Log.info "try to resolve #{@ref}"
+                if (result = @table[@ref]).nil?                    
+                    if @ns and @ref.split("::").size == 1
+                        result = @table[@ns + "::" + @ref]
+                        #Log.info "try to resolve #{@ns + "::" + @ref}"
                     end
-                                
-                    if @dynamic and !ref.kind_of? Group
-                        Log.error "#{@location}: error: a dynamic reference must resolve to a group that has an identifier"
-                    else
-                        @ref = ref
-                        @schema = schema
-                    end
-                else                    
-                    Log.error "#{@location}: error: unresolved reference ('#{@qname}' is not defined as a group, type, or enum)"
                 end                
             end
-            @schema
+            result
+        end                    
+
+        def initialize(attr)
+            super(attr)
+            @ref = attr[:ref].freeze
+            @dynamic = attr[:dynamic]            
+            @table = attr[:table]
         end
         
     end

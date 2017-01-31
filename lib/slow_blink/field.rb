@@ -23,50 +23,76 @@
 module SlowBlink
 
     class Field
-        
-        include Annotatable
 
-        # @macro location
+        attr_reader :id
+        attr_reader :name
         attr_reader :location
 
-        # @return [Type]
-        attr_reader :type
+        # @return [DynamicGroup, StaticGroup, Enum, Bool, U8, ]
+        # 
+        #
+        #
+        def type
+            result = nil
+            if @type.is_a? REF
+        
+                ptr = @type.resolve
+                stack = []
+                sequence = @type.sequence?
+                dynamic = @type.dynamic?
 
-        # @return [NameWithID]
-        attr_reader :nameWithID
+                while ptr and ptr.is_a? Definition and ptr.type.is_a? REF do
 
-        # @return [true] field is optional
-        # @return [false] field is mandatory
+                    if stack.include? ptr
+                        raise ParseError.new "#{ptr.location}: circular reference detected"
+                    else
+                        if ptr.type.dynamic?
+                            # assumption: double dynamic is still dynamic
+                            dynamic = true
+                        end
+                        if ptr.type.sequence?
+                            if sequence
+                                raise ParseError.new "#{ptr.location}: sequence of sequences detected while resolving from '#{@type.location}'"
+                            end
+                            sequence = true                            
+                        end
+                        stack << ptr
+                        ptr = ptr.type.resolve
+                    end
+                end
+
+                if ptr.nil?
+                    if stack.size == 0
+                        stack << @type
+                    end
+                    raise ParseError.new "#{stack.last.location}: reference does not resolve"
+                elsif ptr.is_a? Group
+                    if dynamic
+                        result = DynamicGroup.new(:group => ptr, :sequence => sequence, :table => @table)
+                    else
+                        result = StaticGroup.new(:group => ptr, :sequence => sequence, :table => @table)
+                    end
+                else
+                    result = ptr.type
+                end
+            else
+                result = @type
+            end
+
+            result
+        end
+    
         def opt?
             @opt
         end
 
-        # @param nameWithID [NameWithID]
-        # @param type   [Type]
-        # @param opt    [true,false] field is optional?
-        # @param location [String]
-        def initialize(nameWithID, type, opt, location)
-            @annotes = {}
-            @schema = nil
-            @type = type
-            @opt = opt
-            @location = location
-            @nameWithID = nameWithID
-        end
-
-        # @api private
-        #
-        # Resolve references, enforce constraints, and detect cycles
-        #
-        # @param schema [Schema] schema this definition belongs to
-        # @param ns [Namespace] namespace this definition belongs to
-        # @param stack [nil, Array] objects that depend on this object
-        # @return [true,false] linked?
-        def link(schema,ns, stack=[])
-            if @schema.nil?
-                @schema = @type.link(schema, ns, stack << self)
-            end
-            @schema
+        def initialize(attr)        
+            @name = attr[:name][:name].freeze
+            @id = attr[:name][:id]
+            @opt = attr[:opt]
+            @location = attr[:location].freeze
+            @type = SlowBlink.const_get(attr[:type][:class]).new(attr[:type].merge({:table => attr[:table], :ns => attr[:ns]}))
+            @table = attr[:table]
         end
         
     end

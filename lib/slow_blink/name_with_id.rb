@@ -23,8 +23,6 @@
 module SlowBlink
     class NameWithID
 
-        include Annotatable
-
         # @return [String]
         attr_reader :name
 

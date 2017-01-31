@@ -24,133 +24,144 @@ module SlowBlink
 
     class Group
 
-        include Annotatable
-
         def self.===(other)
             self == other                
         end
 
-        # @macro location
+        attr_reader :id
+        attr_reader :name
         attr_reader :location
-
-        # @return [NameWithID]
-        attr_reader :nameWithID
-
+        
         # @return [Array<Field>]
         def fields
-            @fields.values
-        end
 
-        # @param namespace [Namespace]
-        def namespace=(namespace)
-            @ns = namespace
-        end
-
-        # @param nameWithID [NameWithID]
-        # @param superGroup [REF, nil]
-        # @param fields [Array<Field>]
-        # @param location [String]
-        def initialize(nameWithID, superGroup, fields, location)
-            @annotes = {}
-            @schema = nil
-            @superGroup = superGroup
-            @rawFields = fields
-            @location = location
-            @fields = []
-            @nameWithID = nameWithID
-            @ns = nil
-        end
-
-        # @api private
-        #
-        # Resolve references, enforce constraints, and detect cycles
-        #
-        # @param schema [Schema] schema this definition belongs to
-        # @param stack [nil, Array] objects that depend on this object
-        # @return [true,false] linked?
-        def link(schema,stack=[])
-            
-            if @schema.nil?
-
-                # a definition can resolve to a definition only if there is a dynamic
-                # link somewhere in the chain
-                sf = stack.each
-                begin
-                    loop do
-                        if sf.next == self
-                            loop do
-                                begin
-                                    f = sf.next
-                                    if f.respond_to? "dynamic?".to_sym and f.dynamic?
-                                        return schema
-                                    end
-                                rescue StopIteration
-                                    raise ParseError.new "#{self.location}: error: invalid cycle detected"
-                                end
-                            end
-                        end
-                    end
-                rescue StopIteration
-                end
-
-                error = false
-                @fields = {}
-                if !@superGroup or (@superGroup and @superGroup.link(schema, @ns, stack << self))                    
-                    if !@superGroup or @superGroup.ref.is_a?(Group)
-                        if @superGroup
-                            if @superGroup.dynamic_reference?
-                                Log.error "#{@superGroup.location}: error: reference to supergroup must not be dynamic"
-                                error = true                                
-                            else
-                                @superGroup.ref.fields.each do |f|
-                                    @fields[f.nameWithID.name] = f
-                                end
-                            end
-                        end
-                        if !error
-                            @rawFields.each do |f|
-                                if @fields[f.nameWithID.name]
-                                    Log.error "#{f.location}: error: field names must be unique within a group ('#{f.nameWithID.name}' first appears at #{@fields[f.nameWithID.name].location})"
-                                    error = true
-                                else
-                                    if f.link(schema, @ns, stack.dup << self)                                    
-                                        @fields[f.nameWithID.name] = f
-                                    else
-                                        error = true
-                                    end
-                                end
-                            end
-                        end
-                    else
-                        Log.error "#{@superGroup.location}: error: reference to supergroup must resolve to group definition"
-                        error = true
-                    end
-                else
-                    error = true
-                end
-
-                if !error
-                    @schema = schema
-                end
-                
+            # collect all ancestors
+            ancestors = []
+            ptr = superGroup
+            while ptr do
+                ancestors.unshift ptr
+                ptr = ptr.superGroup
             end
-            
-            @schema
+
+            result = {}
+
+            ancestors.each do |g|
+                g.rawFields.each do |f|
+                    result[f.name] = f                    
+                end
+            end
+
+            @fields.each do |fn, fv|
+                if result[fn]
+                    raise ParseError.new "#{fv.location}: field name shadowed by supergroup"
+                else
+                    result[fn] = fv
+                end
+            end
+
+            result.values
         end
 
-        # @param name [String] name of field
-        # @return [Field] field exists
-        # @return [nil] field does not exist
-        def field(name)
-            @fields[name]
+        def ancestors
+            result = []
+            ptr = superGroup
+            while ptr do
+                result << ptr
+                ptr = ptr.superGroup
+            end
+            result
+        end
+           
+        def superGroup
+
+            result = nil
+
+            if @super
+
+                ptr = @super.resolve
+                stack = []
+                sequence = false
+                dynamic = false
+
+                while ptr and ptr.is_a? Definition and ptr.type.is_a? REF do
+
+                    if stack.include? ptr
+                        raise ParseError.new "#{@super.location}: supergoup circular reference"
+                    else
+                        if ptr.type.dynamic?
+                            dynamic = true
+                        end
+                        if ptr.type.sequence?
+                            if sequence
+                                raise ParseError.new "#{@super.location}: sequence of sequence detected at '#{ptr.type.location}'"
+                            end
+                            sequence = true                            
+                        end
+                        stack << ptr
+                        ptr = ptr.type.resolve                        
+                    end
+                end
+
+                if ptr.nil?
+                    raise ParseError.new "#{@super.location}: supergroup reference '#{@super.ref}' does not resolve"
+                elsif ptr.is_a? Definition
+                    if dynamic
+                        raise ParseError.new "#{@super.location}: supergroup reference cannot resolve dynamic reference to a #{ptr.type.class} makes no sense"
+                    end
+                    raise ParseError.new "#{@super.location}: supergroup reference must resolve to a group"
+                else
+                    if dynamic
+                        raise ParseError.new "#{@super.location}: supergroup reference cannot be dynamic"
+                    end
+                    if sequence
+                        raise ParseError.new "#{@super.location}: supergroup reference cannot be a sequence"
+                    end
+                    if ptr == self
+                        raise ParseError.new "#{@super.location}: supergroup cannot be own group"
+                    end
+                    result = ptr
+                end
+            end
+
+            result
+        end
+                
+        def initialize(attr)
+
+            @ns = attr[:ns].freeze
+            @name = attr[:name][:name].dup
+            if @ns
+                @name.prepend "#{@ns}::"
+            end
+            @name.freeze 
+            @id = attr[:name][:id]
+            @location = attr[:name][:loc].freeze
+            @fields = {}
+
+            if attr[:super]
+                @super = REF.new(attr[:super].merge(:table=>attr[:table], :ns=>attr[:ns]))
+                if @super.ref == @name or @super.ref.split("::").last == @name
+                    raise ParseError.new "#{@location}: supergroup cannot be own group"
+                end
+            else
+                @super = nil
+            end
+
+            attr[:fields].each do |f|
+                if @fields[f[:name][:name]]
+                    raise ParseError.new "#{f[:location]}: duplicate field name"
+                else
+                    @fields[f[:name][:name]] = Field.new(f.merge({:table => attr[:table], :ns => attr[:ns]}))
+                end
+            end
+
         end
 
-        # @api private
-        # @param superGroup [Group]
-        # @return [true,false]
-        def group_kind_of?(superGroup)
-            (self == superGroup) or (@superGroup and @superGroup.ref.group_kind_of?(superGroup))            
-        end
+        protected
+
+            def rawFields
+                @fields.values
+            end
 
     end
 end

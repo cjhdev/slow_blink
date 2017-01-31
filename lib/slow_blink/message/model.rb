@@ -113,37 +113,33 @@ module SlowBlink
                 @maxRecursion = opts[:maxRecursion]||DEFAULT_MAX_RECURSION
                 maxRecursion = @maxRecursion
 
-                # define the extension object
-                groups = @groups
-                taggedGroups = @taggedGroups
-                permitted = schema.tagged.keys
-                @extensionObject = Class.new(DynamicGroup) do
-                    @maxRecursion = maxRecursion
-                    @extensionObject = self
-                    @opt = false
-                    @groups = groups
-                    @taggedGroups = taggedGroups
-                    @permitted = permitted                        
-                end
-                extensionObject = @extensionObject
+                # any of the groups
                 
-                schema.groups.each do |name, g|
-                    fields = {}
-                    g.fields.each do |f|
-                        fields[f.nameWithID.name] = _model_field(f)
-                    end                    
-                    @groups[name] = Class.new(Group) do
-                        @extensionObject = extensionObject
+                taggedGroups = @taggedGroups
+                
+                @anyTaggedGroup = Class.new(DynamicGroup) do
+                    @maxRecursion = maxRecursion
+                    @anyTaggedGroup = self
+                    @taggedGroups = taggedGroups
+                    @permittedID = schema.groups.map{|g|g.id}.select{|g|g}
+                end
+                    
+                anyTaggedGroup = @anyTaggedGroup
+                
+                # create an anon class for each group defined in schema                
+                schema.groups.each do |g|
+                    fields = g.fields.map{|f| _model_field(f)}
+                    @groups[g.name] = Class.new(Group) do
                         @maxRecursion = maxRecursion
-                        @name = g.nameWithID.name
-                        @id = g.nameWithID.id
-                        @fields = fields                    
+                        @anyTaggedGroup = anyTaggedGroup                        
+                        @name = g.name
+                        @id = g.id
+                        @fields = fields
                     end
-                    if g.nameWithID.id
-                        @taggedGroups[g.nameWithID.id] = @groups[name]
+                    if g.id
+                        @taggedGroups[g.id] = @groups[g.name]
                     end
                 end
-
 
             end
 
@@ -154,29 +150,8 @@ module SlowBlink
             # @return [Group] anonymous subclass instance of Group
             # @raise [WeakError,StrongError]
             # @raise [RecursionLimit]
-            # @raise []
             def decode_compact(input)
-                
-                stack = []
-
-                if input.kind_of? String
-                    input = StringIO.new(input)
-                end
-                    
-                buf = input.getBinary
-                
-                if buf.size > 0
-                    buf = StringIO.new(buf)
-                    id = buf.getU64
-                    groupClass = @taggedGroups[id]                        
-                    if groupClass                        
-                        group = groupClass.from_compact(buf, stack)                        
-                    else
-                        raise WeakError2.new "W2: Group id #{group.id} is unknown"
-                    end                    
-                else
-                    raise WeakError1.new "W1: Top level group cannot be null"
-                end
+                @anyTaggedGroup.from_compact(input, []).get
             end
 
             # @api user
@@ -187,11 +162,10 @@ module SlowBlink
             # @return [Group] anonymous subclass of Group
             # @raise [RangeError] unknown group
             def group(name)
-                group = @groups[name]
-                if group
-                    group
-                else
+                if (group = @groups[name]).nil?
                     raise RangeError.new "group '#{name}' is unknown"
+                else
+                    group
                 end                
             end
 
@@ -202,89 +176,47 @@ module SlowBlink
                 # @param field [SlowBlink::Field] field definition
                 # @return [Class] anonymous subclass of {Field}
                 def _model_field(field)
-                    type = _model_type(field.type, field.opt?)
+
+                    type = _model_type(field.type)
                     Class.new(Field) do
-                        @opt = field.opt?
-                        @name = field.nameWithID.name
-                        @id = field.nameWithID.id
+                        @optional = field.opt?
+                        @name = field.name
+                        @id = field.id
                         @type = type
-                    end                
+                        @sequence = field.type.sequence?                        
+                    end
                 end
 
                 # Create a model for a type
                 #
                 # @param type [SlowBlink::Type] type definition
                 # @param opt  [true,false] parent definition may allow this type to be optional
-                def _model_type(type, opt)
-                    extensionObject = @extensionObject
+                def _model_type(type)
+                    anyTaggedGroup = @anyTaggedGroup
                     maxRecursion = @maxRecursion
+
                     case type.class
                     when SlowBlink::OBJECT
-                        groups = @groups
+                        @anyTaggedGroup                    
+                    when SlowBlink::DynamicGroup
                         taggedGroups = @taggedGroups
-                        permitted = @taggedGroups.keys
                         Class.new(DynamicGroup) do
-                            @extensionObject = extensionObject
+                            @anyTaggedGroup = anyTaggedGroup
                             @maxRecursion = maxRecursion
-                            @opt = opt
-                            @groups = groups
                             @taggedGroups = taggedGroups
-                            @permitted = permitted                        
-                        end                     
-                    when SlowBlink::REF
-                        if type.ref.kind_of? SlowBlink::Group
-                            if type.dynamic?
-                                taggedGroups = @taggedGroups
-                                groups = @groups
-                                permitted = @taggedGroups.keys
-                                @schema.tagged.each do |id, g|
-                                    if g.group_kind_of?(type)
-                                        permitted << id
-                                    end
-                                end
-                                Class.new(DynamicGroup) do
-                                    @extensionObject = extensionObject
-                                    @maxRecursion = maxRecursion
-                                    @opt = opt
-                                    @taggedGroups = taggedGroups
-                                    @groups = groups
-                                    @permitted = permitted
-                                end                               
-                            else
-                                fields = {}
-                                type.ref.fields.each do |f|
-                                    fields[f.nameWithID.name] = _model_field(f)
-                                end                                                            
-                                Class.new(StaticGroup) do
-                                    @extensionObject = extensionObject
-                                    @maxRecursion = maxRecursion
-                                    @name = type.ref.nameWithID.name
-                                    @id = nil
-                                    @opt = opt
-                                    @fields = fields                                
-                                end                                                   
-                            end
-                        else
-                            _model_type(type.ref, false)
+                            @permittedID = type.groups.map{|g|g.id}
                         end
-                    when SlowBlink::SEQUENCE
-                        t = _model_type(type.type, false)
-                        Class.new(SEQUENCE) do
-                            @maxRecursion = maxRecursion
-                            @type = t
-                        end
-                    when SlowBlink::ENUMERATION
-                        symbols = {}
-                        type.symbols.each do |n,v|
-                            symbols[n] = v.val
-                        end
-                        Class.new(ENUMERATION) do
-                            @symbols = symbols
-                        end                        
-                    else
+                    when SlowBlink::StaticGroup
+                        fields = type.fields.map{|f| _model_field(f)}
+                        Class.new(StaticGroup) do
+                            @maxRecursion = maxRecursion                 
+                            @name = type.name
+                            @id = type.id
+                            @fields = fields                          
+                        end                                                                           
+                    else                    
                         Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
-                            @opt = opt
-                            @type = type                                        
+                            @type = type                                       
                         end                    
                     end
                 end
@@ -302,9 +234,8 @@ require "slow_blink/message/string"
 require "slow_blink/message/binary"
 require "slow_blink/message/fixed"
 require "slow_blink/message/boolean"
-require "slow_blink/message/enumeration"
+require "slow_blink/message/enum"
 require "slow_blink/message/floating_point"
-require "slow_blink/message/sequence"
 require "slow_blink/message/group"
 require "slow_blink/message/time"
 require "slow_blink/message/time_of_day"

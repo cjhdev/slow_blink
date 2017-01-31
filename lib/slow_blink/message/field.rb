@@ -25,13 +25,13 @@ module SlowBlink::Message
     class Field
         
         # @return [true,false] field is optional?
-        def self.opt?
-            @opt
+        def self.optional?
+            @optional
         end
 
         # @return [String] field name
         def self.name
-            @name
+            @name.to_s
         end
 
         # @return [Integer,nil] field ID
@@ -44,48 +44,81 @@ module SlowBlink::Message
             @type
         end
 
+        # @return [true,false] true if this field contains a sequence type
+        def self.sequence?
+            @sequence
+        end
+
         # @private
         # @param input [String] Blink compact form
         # @param stack [Array]
         # @return [Field] instance of anonymous subclass of Field
-        def self.from_compact(input, stack)        
-            self.new(@type.from_compact(input, stack))
+        def self.from_compact(input, stack)
+            if sequence?
+                if size = input.getU32
+                    value = []
+                    while value.size < size do
+                        value << @type.from_compact(input, stack).get
+                    end
+                    self.new(value)
+                else
+                    nil
+                end
+            elsif optional? and (type.kind_of? StaticGroup or type.kind_of? FIXED)
+                if input.get_present(input)
+                    self.new(@type.from_compact(input, stack).get)
+                else
+                    nil
+                end
+            else
+                self.new(@type.from_compact(input, stack).get)
+            end
         end
 
         # @note calls {#set}(value)
         def initialize(value)
-            @opt = self.class.opt?
+
+            @optional = self.class.optional?
+            @sequence = self.class.sequence?
             @type = self.class.type
-            if value.is_a? self.class.type
-                @value = value
-            elsif value
-                @value = self.class.type.new(value)
+
+            if value
+                set(value)
             else
                 @value = nil
             end
+                        
         end
-
         
         def set(value)
-            if value
-                if value.is_a? self.class.type
-                    @value = value                    
-                elsif @value                
-                    @value.set(value)
+            if value.nil?
+                if optional?
+                    @value = nil
                 else
-                    @value = self.class.type.new(value)                
+                    raise ArgumentError.new "field is not optional, value cannot be nil"
+                end                
+            elsif self.class.sequence?                
+                if value.kind_of? Array
+                    @value = []
+                    value.each do |v|
+                        @value << @type.new(v)
+                    end
+                else
+                    raise ArgumentError.new "field value must be an array of type"
                 end
-            elsif @opt
-                @value = nil
             else
-                raise TypeError.new "field can not be set to null"
-            end            
+                @value = @type.new(value)
+            end
         end
 
         # @return field value or nil
         def get
             if @value
-                @value.get
+                if self.class.sequence?
+                    @value.map{|v|v.get}                
+                else
+                    @value.get
+                end
             else
                 nil
             end
@@ -96,13 +129,30 @@ module SlowBlink::Message
         # @return [StringIO]
         def to_compact(out)
             if @value
-                @value.to_compact(out)
+                if self.class.sequence?
+                    out.putU32(@value.size)
+                    @value.each do |v|
+                        v.to_compact(out)
+                    end
+                else
+                    if self.class.optional? and (self.type.kind_of? StaticGroup or self.type.kind_of? FIXED)
+                        out.putPresent
+                    end
+                    @value.to_compact(out)
+                end
             elsif @opt
                 out.putNull
             else
-                raise IncompleteGroup.new "field '#{self.name}' must not be null"
+                raise IncompleteGroup.new "'#{self.name}' must not be null"
             end
         end
+
+        private
+
+            def sequenceOfSameType(value)
+                value.each do ||
+                end
+            end
 
     end
 

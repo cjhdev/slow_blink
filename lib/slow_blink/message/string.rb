@@ -26,15 +26,14 @@ module SlowBlink::Message
 
         # @private
         def self.from_compact(input, stack)
-            value = input.getString
-            if value
+            if value = input.getString
                 if !@type.size or value.size <= @type.size
                     self.new(value)
                 else
                     raise WeakError7.new "W7: String value exceeds maximum size"
                 end
             else
-                value
+                nil
             end               
         end
 

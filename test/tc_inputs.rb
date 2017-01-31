@@ -16,16 +16,14 @@ testClass = Class.new(Test::Unit::TestCase) do
         next if filename == ".." or filename == "."
 
         test_name = "test_#{filename.sub(".blink", "")}"
-        inputs[test_name.to_sym] = {:fileName => filename, :buffer => File.new("#{root}/#{filename}", "r").read}
+        inputs[test_name.to_sym] = "#{root}/#{filename}"
 
         define_method( test_name ) do
-
-            output = nil
 
             # run and intercept stderr output
             err = capture_stderr do
 
-                schema = SlowBlink::Schema.new(SlowBlink::SchemaBuffer.new(inputs[__method__][:buffer], filename: inputs[__method__][:fileName]))
+                SlowBlink::Schema.read(inputs[__method__])
 
             end
 

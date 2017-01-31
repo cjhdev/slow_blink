@@ -478,7 +478,7 @@ extern int yylex \
 #undef YY_DECL
 #endif
 
-#line 116 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 117 "etc/slow_blink/ext_schema_parser/parser.l"
 
 
 #line 485 "ext/slow_blink/ext_schema_parser/lexer.h"

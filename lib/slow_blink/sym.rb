@@ -22,8 +22,6 @@
 module SlowBlink
     class Sym
 
-        include Annotatable
-
         # @macro location
         attr_reader :location
 
@@ -31,32 +29,13 @@ module SlowBlink
         attr_reader :name
 
         # @return [Integer]
-        attr_reader :val
+        attr_reader :value
 
-        # @api private
-        def val=(value)
-            @val = value.to_i
-        end
-
-        # @param name [String]
-        # @param val [nil,Integer] explicit value
-        # @param location [String]
-        def initialize(name, val, location)
-            @name = name
-            @val = val
-            @annotes = {}
-            @location = location
-            @implicit = (val ? false : true)
-        end
-
-        # @api private
-        # Resolve references, enforce constraints, and detect cycles
-        #
-        # @param schema [Schema] schema this definition belongs to
-        # @param stack [nil, Array] objects that depend on this object
-        # @return [true,false] linked?
-        def link(schema, stack=[])
-            @schema = schema
+        def initialize(attr)
+            @name = attr[:name].to_s
+            @value = attr[:value]
+            @location = attr[:loc]
+            @implicit = attr[:implicit]
         end
         
     end

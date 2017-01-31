@@ -24,27 +24,16 @@ module SlowBlink::Message
     # @abstract
     class FIXED
 
-        # @note optionality affects how instances of this type are encoded
-        # @return [true,false] is optional
-        def self.opt?
-            @opt
-        end
-
         # @private
         def self.from_compact(input, stack)
-            if @opt
-                value = input.getFixedOptional
-            else
-                value = input.getFixed
-            end
-            if value
+            if value = input.getFixed(size)
                 self.new(value)
             else                    
-                value
+                nil
             end
         end
 
-        # @return [Integer,nil] size of fixed type in bytes
+        # @return [Integer] size of fixed type in bytes
         def self.size
             @type.size
         end
@@ -72,17 +61,12 @@ module SlowBlink::Message
 
         # @note calls {#set}(value)
         def initialize(value)
-            @opt = self.class.opt?
             set(value)                
         end
 
         # @private
         def to_compact(out)
-            if @opt
-                out.putFixedOptional(@value)
-            else
-                out.putFixed(@value)
-            end
+            out.putFixed(@value)
         end
 
     end

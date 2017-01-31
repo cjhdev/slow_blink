@@ -28,10 +28,8 @@ module SlowBlink::Message
 
         # @private
         def self.from_compact(input, stack)
-            e = input.getI8
-            if e
-                m = input.getI64
-                if m
+            if e = input.getI8
+                if m = input.getI64
                     self.new("#{m}E#{e}")                    
                 else
                     raise NullMantissa

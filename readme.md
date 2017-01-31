@@ -22,9 +22,8 @@ This list is not exhaustive:
 
 - More tests
 - Support `SlowBlink::Message::DATE`
-- Improve `SlowBlink::Message::SEQUENCE` interface
 - More debug features (error messages involving anonymous classes are confusing)
-- Incremental annotation is parsed but not applied
+- Annotations are parsed but ignored
 
 ## Installation
 

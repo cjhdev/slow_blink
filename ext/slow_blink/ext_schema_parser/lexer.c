@@ -671,12 +671,12 @@ static yyconst flex_int16_t yy_chk[430] =
 
 static yyconst flex_int16_t yy_rule_linenum[53] =
     {   0,
-       55,   57,   58,   59,   61,   62,   63,   65,   66,   67,
-       68,   69,   70,   71,   72,   73,   74,   75,   76,   77,
-       79,   80,   81,   82,   83,   84,   85,   86,   87,   88,
-       89,   90,   91,   92,   93,   94,   95,   96,   97,   98,
-       99,  100,  101,  103,  104,  106,  107,  108,  110,  111,
-      112,  114
+       56,   58,   59,   60,   62,   63,   64,   66,   67,   68,
+       69,   70,   71,   72,   73,   74,   75,   76,   77,   78,
+       80,   81,   82,   83,   84,   85,   86,   87,   88,   89,
+       90,   91,   92,   93,   94,   95,   96,   97,   98,   99,
+      100,  101,  102,  104,  105,  107,  108,  109,  111,  112,
+      113,  115
     } ;
 
 /* The intent behind this definition is that it'll catch
@@ -699,6 +699,7 @@ static yyconst flex_int16_t yy_rule_linenum[53] =
 #include <float.h>
 #include <ruby.h>
 #include <inttypes.h>
+#include <assert.h>
 #include "parser.h"
 
 /* static prototypes **************************************************/
@@ -724,7 +725,7 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 #define YY_NO_INPUT 1
 
 
-#line 728 "ext/slow_blink/ext_schema_parser/lexer.c"
+#line 729 "ext/slow_blink/ext_schema_parser/lexer.c"
 
 #define INITIAL 0
 #define LITERAL_C 1
@@ -1081,10 +1082,10 @@ YY_DECL
 
 	{
 /* %% [7.0] user's declarations go here */
-#line 53 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 54 "etc/slow_blink/ext_schema_parser/parser.l"
 
 
-#line 1088 "ext/slow_blink/ext_schema_parser/lexer.c"
+#line 1089 "ext/slow_blink/ext_schema_parser/lexer.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1166,237 +1167,237 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 55 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 56 "etc/slow_blink/ext_schema_parser/parser.l"
 { /* skip comments */ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 57 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 58 "etc/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(LITERAL_C); }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 58 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 59 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 59 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 60 "etc/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 61 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 62 "etc/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(LITERAL_A); }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 62 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 63 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 63 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 64 "etc/slow_blink/ext_schema_parser/parser.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 case 8:
-#line 66 "etc/slow_blink/ext_schema_parser/parser.l"
-case 9:
 #line 67 "etc/slow_blink/ext_schema_parser/parser.l"
-case 10:
+case 9:
 #line 68 "etc/slow_blink/ext_schema_parser/parser.l"
-case 11:
+case 10:
 #line 69 "etc/slow_blink/ext_schema_parser/parser.l"
-case 12:
+case 11:
 #line 70 "etc/slow_blink/ext_schema_parser/parser.l"
-case 13:
+case 12:
 #line 71 "etc/slow_blink/ext_schema_parser/parser.l"
-case 14:
+case 13:
 #line 72 "etc/slow_blink/ext_schema_parser/parser.l"
-case 15:
+case 14:
 #line 73 "etc/slow_blink/ext_schema_parser/parser.l"
-case 16:
+case 15:
 #line 74 "etc/slow_blink/ext_schema_parser/parser.l"
-case 17:
+case 16:
 #line 75 "etc/slow_blink/ext_schema_parser/parser.l"
-case 18:
+case 17:
 #line 76 "etc/slow_blink/ext_schema_parser/parser.l"
-case 19:
+case 18:
 #line 77 "etc/slow_blink/ext_schema_parser/parser.l"
+case 19:
+#line 78 "etc/slow_blink/ext_schema_parser/parser.l"
 case 20:
 YY_RULE_SETUP
-#line 77 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 78 "etc/slow_blink/ext_schema_parser/parser.l"
 { return *yytext; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 79 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 80 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I8; }  
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 80 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 81 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I16; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 81 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 82 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I32; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 82 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 83 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_I64; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 83 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 84 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U8; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 84 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 85 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U16; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 85 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 86 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U32; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 86 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 87 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_U64; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 87 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 88 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_F64; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 88 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 89 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_DECIMAL; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 89 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 90 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_DATE; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 90 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 91 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TIME_OF_DAY_MILLI; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 91 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 92 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TIME_OF_DAY_NANO; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 92 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 93 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_NANO_TIME; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 93 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 94 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_MILLI_TIME; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 94 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 95 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_BOOLEAN; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 95 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 96 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_STRING; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 96 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 97 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_OBJECT; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 97 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 98 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_NAMESPACE; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 98 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 99 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_TYPE; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 99 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 100 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_SCHEMA; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 100 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 101 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_FIXED; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 101 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 102 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_BINARY; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 103 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 104 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_RIGHT_ARROW; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 104 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 105 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_LEFT_ARROW; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 106 "etc/slow_blink/ext_schema_parser/parser.l"
-{ uint64_t tmp = 0; sscanf(yytext, "%" SCNx64, &tmp); *yylval = ULONG2NUM(tmp); return TOK_HEX; }
+#line 107 "etc/slow_blink/ext_schema_parser/parser.l"
+{ uint64_t tmp = 0; int ret = sscanf(yytext, "%" SCNx64, &tmp); assert(ret == 1); *yylval = ULONG2NUM(tmp); return TOK_HEX; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 107 "etc/slow_blink/ext_schema_parser/parser.l"
-{ uint64_t tmp = 0; sscanf(yytext, "%" SCNu64, &tmp); *yylval = ULONG2NUM(tmp); return TOK_UINT; }
+#line 108 "etc/slow_blink/ext_schema_parser/parser.l"
+{ uint64_t tmp = 0; int ret = sscanf(yytext, "%" SCNu64, &tmp); assert(ret == 1); *yylval = ULONG2NUM(tmp); return TOK_UINT; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 108 "etc/slow_blink/ext_schema_parser/parser.l"
-{ int64_t tmp = 0; sscanf(yytext, "%" SCNi64, &tmp); *yylval = LONG2NUM(tmp); return TOK_INT; }
+#line 109 "etc/slow_blink/ext_schema_parser/parser.l"
+{ int64_t tmp = 0; int ret = sscanf(yytext, "%" SCNi64, &tmp); assert(ret == 1); *yylval = LONG2NUM(tmp); return TOK_INT; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 110 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 111 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_C_NAME; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 111 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 112 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 112 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 113 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(&yytext[1], yyleng-1); return TOK_ESCAPED_NC_NAME; }
 	YY_BREAK
 case 52:
 /* rule 52 can match eol */
 YY_RULE_SETUP
-#line 114 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 115 "etc/slow_blink/ext_schema_parser/parser.l"
 {}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 116 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 117 "etc/slow_blink/ext_schema_parser/parser.l"
 ECHO;
 	YY_BREAK
-#line 1400 "ext/slow_blink/ext_schema_parser/lexer.c"
+#line 1401 "ext/slow_blink/ext_schema_parser/lexer.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(LITERAL_C):
 case YY_STATE_EOF(LITERAL_A):
@@ -2697,7 +2698,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 /* %ok-for-header */
 
-#line 116 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 117 "etc/slow_blink/ext_schema_parser/parser.l"
 
 
 

@@ -50,13 +50,12 @@ module SlowBlink
 
         # @api user
         #
-        # @return [Hash<Group>] groups indexed by qualified name
-        attr_reader :groups
-
-        attr_reader :tagged
-        
-        # @return [Array<Namespace>]
-        attr_reader :ns
+        # @return [Array] groups
+        def groups
+            @defs.values.select do |d|
+                d.is_a? Group
+            end
+        end
 
         # @api user
         #
@@ -68,90 +67,65 @@ module SlowBlink
 
             if buffer.size > 0
                 namespace = []
-                buffer.each do |b|
-                    namespace << Namespace.parse(b.buffer, filename: b.filename)                    
+                    buffer.each do |b|
+                    namespace << SlowBlink.parse_file_buffer(b.buffer, filename: b.filename)                    
                 end
             else
                 raise ArgumentError.new "at least one buffer required"
             end
 
-            @ns = {}
-            @tagged = {}
-            
-            error = false          
+            @defs = {}
 
-            # gather and merge namespaces
-            namespace.each do |ns|
-                if @ns[ns.name]
-                    begin
-                        @ns[ns.name].merge!(ns)
-                    rescue
-                        raise ParseError
+            # create groups and definitions
+            namespace.each do |ns|    
+                ns[:defs].select{|d|d[:class] != :IncrementalAnnotation}.each do |d|
+                    key = d[:name][:name].dup
+                    if ns[:name]
+                        key.prepend "#{ns[:name]}::"
                     end
-                else
-                    @ns[ns.name] = ns
-                end
-            end
-
-            # apply incremental annotation in order of input
-            namespace.each do |ns|
-                ns.incrAnnotations.each do |a|
-                    a.apply(self, ns)
-                end
-            end
-            
-            # gather tagged groups and detect duplicates
-            @ns.each do |name, ns|
-                ns.groups.each do |g|
-                    if g.nameWithID.id
-                        if @tagged[g.nameWithID.id]
-                            Log.error "error: groups that have identifiers must have unique identifiers ('#{@g.nameWithID.id}' was first assigned to '#{@tagged[g.nameWithID.id].nameWithID.name}' at #{@tagged[g.nameWithID.id].location}"
-                            error = true
-                        else
-                            @tagged[g.nameWithID.id] = g
-                        end
-                    end
-                end
-            end
-
-            # resolve all references
-            @ns.each do |name, ns|
-                if !ns.link(self)
-                    error = true
-                end
-            end
-
-            # create list of all groups with qualified names
-            @groups = {}
-            @ns.each do |name, ns|
-                ns.groups.each do |g|
-                    if name
-                        @groups[g.nameWithID.name.prepend "#{name}:"] = g
+                    if @defs[key]
+                        raise ParseError.new "#{d[:loc]}: duplicate definition: '#{key}' first defined at '#{@defs[key].location}'"
                     else
-                        @groups[g.nameWithID.name] = g
-                    end                
+                        @defs[key] = SlowBlink.const_get(d[:class]).new(d.merge({:ns=>ns[:name], :table=>@defs}))
+                    end
                 end
             end
 
-            if error
-                raise ParseError
+            # test that reference definitions resolve and detect circular references
+            @defs.values.each do |d|
+                if d.is_a? Definition and d.type.is_a? REF
+                    ptr = d.type.resolve
+                    if ptr        
+                        stack = [d]
+                        while ptr and ptr.is_a? Definition and ptr.type.is_a? REF do
+                            if stack.include? ptr
+                                raise ParseError.new "#{d.type.location}: '#{d.name}' resolves to a circular reference"
+                            else
+                                ptr = ptr.type.resolve
+                            end
+                        end
+                    else
+                        raise ParseError.new "#{d.type.location}: '#{d.name}' does not resolve"
+                    end
+                end
             end
-            
+
+            # test that groups resolve and meet constraints
+            tagged = {}
+            @defs.values.each do |d|                
+                if d.is_a? Group
+                    d.superGroup
+                    d.fields
+                    if d.id and tagged[d.id]
+                        raise ParseError.new "#{d.type.location}: duplicate tag"
+                    else
+                        tagged[d.id] = d
+                    end                    
+                end
+            end
+
         end
 
-        # Resolve a name to a definition in any namespace
-        #
-        # @param namespace [String,nil]
-        # @param name [String]
-        # @return [Definition,Group]
-        def resolve(namespace, name)
-            if @ns[namespace]
-                @ns[namespace].resolve(name)
-            else
-                nil
-            end               
-        end
-    
     end    
 
 end
@@ -159,15 +133,11 @@ end
 require 'slow_blink/parse_error'
 require 'slow_blink/log'
 require 'slow_blink/schema_buffer'
-require 'slow_blink/annotatable'
-require 'slow_blink/namespace'
 require 'slow_blink/version'
-require 'slow_blink/annotation'
-require 'slow_blink/incremental_annotation'
-require 'slow_blink/group'
 require 'slow_blink/field'
-require 'slow_blink/definition'
 require 'slow_blink/type'
+require 'slow_blink/static_group'
+require 'slow_blink/dynamic_group'
 require 'slow_blink/integer'
 require 'slow_blink/decimal'
 require 'slow_blink/floating_point'
@@ -177,13 +147,14 @@ require 'slow_blink/fixed'
 require 'slow_blink/date'
 require 'slow_blink/time_of_day'
 require 'slow_blink/time'
-require 'slow_blink/sequence'
 require 'slow_blink/ref'
+require 'slow_blink/group'
 require 'slow_blink/object'
 require 'slow_blink/boolean'
-require 'slow_blink/enumeration'
+require 'slow_blink/enum'
 require 'slow_blink/sym'
 require 'slow_blink/name_with_id'
+require 'slow_blink/definition'
 require 'slow_blink/ext_schema_parser'
 
 

@@ -54,7 +54,6 @@ static VALUE putBool(VALUE self, VALUE val);
 static VALUE putBinary(VALUE self, VALUE val);
 static VALUE putString(VALUE self, VALUE val);
 static VALUE putFixed(VALUE self, VALUE val);
-static VALUE putFixedOptional(VALUE self, VALUE val);
 
 static VALUE getU8(VALUE self);
 static VALUE getU16(VALUE self);
@@ -70,7 +69,6 @@ static VALUE getBool(VALUE self);
 static VALUE getBinary(VALUE self);
 static VALUE getString(VALUE self);
 static VALUE getFixed(VALUE self, VALUE size);
-static VALUE getFixedOptional(VALUE self, VALUE size);
 
 static bool myRead(void *state, void *buf, size_t nbyte);
 static bool myWrite(void *state, const void *buf, size_t nbyte);
@@ -128,7 +126,6 @@ void Init_ext_compact_encoder(void)
     rb_define_method(rb_cString, "putString", putString, 1);
     rb_define_method(rb_cString, "putBinary", putBinary, 1);
     rb_define_method(rb_cString, "putFixed", putFixed, 1);
-    rb_define_method(rb_cString, "putFixedOptional", putFixedOptional, 1);
 
     rb_define_method(cStringIO, "getU8", getU8, 0);
     rb_define_method(cStringIO, "getU16", getU16, 0);
@@ -146,7 +143,6 @@ void Init_ext_compact_encoder(void)
     rb_define_method(cStringIO, "getString", getString, 0);    
     rb_define_method(cStringIO, "getBinary", getBinary, 0);    
     rb_define_method(cStringIO, "getFixed", getFixed, 1);    
-    rb_define_method(cStringIO, "getFixedOptional", getFixedOptional, 1);    
 }
 
 /* static functions ***************************************************/
@@ -421,22 +417,6 @@ static VALUE putString(VALUE self, VALUE val)
     return putBinary(self, val);
 }
 
-static VALUE putFixedOptional(VALUE self, VALUE val)
-{
-    VALUE retval;
-
-    if(val == Qnil){
-
-        retval = putNull(self);    
-    }
-    else{
-
-        retval = rb_str_buf_cat(putPresent(self), RSTRING_PTR(val), (size_t)RSTRING_LEN(val));
-    }
-
-    return retval;
-}
-
 static VALUE putFixed(VALUE self, VALUE val)
 {
     return rb_str_buf_cat(self, RSTRING_PTR(val), (size_t)RSTRING_LEN(val));
@@ -700,16 +680,4 @@ static VALUE getFixed(VALUE self, VALUE size)
     }
 
     return retval;    
-}
-
-static VALUE getFixedOptional(VALUE self, VALUE size)
-{
-    VALUE retval = Qnil;
-    
-    if(getPresent(self)){
-
-        retval = getFixed(self, size);
-    }
-
-    return retval;
 }

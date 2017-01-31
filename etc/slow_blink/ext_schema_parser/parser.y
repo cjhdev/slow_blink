@@ -28,48 +28,6 @@ static VALUE newLocation(VALUE filename, const YYLTYPE *location);
 
 static VALUE cSlowBlink;
 
-static VALUE cNameWithID;
-
-static VALUE cNamespace;
-static VALUE cGroup;
-static VALUE cField;
-static VALUE cAnnotation;
-static VALUE cIncrementalAnnotation;
-
-static VALUE cDefinition;
-static VALUE cENUMERATION;
-static VALUE cSym;
-
-static VALUE cI8;
-static VALUE cI16;
-static VALUE cI32;
-static VALUE cI64;
-static VALUE cU8;
-static VALUE cU16;
-static VALUE cU32;
-static VALUE cU64;
-static VALUE cFLOATING_POINT;
-static VALUE cDECIMAL;
-static VALUE cFIXED;
-static VALUE cSEQUENCE;
-static VALUE cSTRING;
-static VALUE cBOOLEAN;
-static VALUE cOBJECT;
-static VALUE cBINARY;
-static VALUE cREF;
-
-static VALUE cDATE;
-static VALUE cTIME_OF_DAY_MILLI;
-static VALUE cTIME_OF_DAY_NANO;
-static VALUE cMILLI_TIME;
-static VALUE cNANO_TIME;
-
-static VALUE cSchemaRef;
-static VALUE cDefinitionRef;
-static VALUE cDefinitionTypeRef;
-static VALUE cFieldRef;
-static VALUE cFieldTypeRef;
-
 static VALUE cLog;
 static VALUE cParseError;
 
@@ -135,14 +93,22 @@ top:
 namespace:    
     defs
     {
-        VALUE args[] = {filename, Qnil, $defs};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cNamespace);            
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("defs")), $defs); 
     }
     |
     nsDecl defs
     {
-        VALUE args[] = {filename, $nsDecl, $defs};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cNamespace);            
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("defs")), $defs); 
+        rb_hash_aset($$, ID2SYM(rb_intern("name")), $nsDecl); 
+    }
+    ;
+
+nsDecl:
+    NAMESPACE name
+    {
+        $$ = $name;
     }
     ;
 
@@ -152,17 +118,7 @@ defs:
         $$ = rb_ary_new();
     }
     |
-    defList
-    ;
-
-defList:
-    def
-    {
-        $$ = rb_ary_new();
-        rb_ary_push($$, $def);
-    }
-    |
-    defList def
+    defs def
     {
         rb_ary_push($$, $def);
     }
@@ -172,63 +128,70 @@ def:
     annots define
     {
         $$ = $define;
-        rb_funcall($$, rb_intern("annote"), 1, $annots);
+        rb_hash_aset($$, ID2SYM(rb_intern("annotes")), $annots);
     }
     |
     annots groupDef
     {
-        $$ = $groupDef;
-        rb_funcall($$, rb_intern("annote"), 1, $annots);
+        $$ = $groupDef;        
+        rb_hash_aset($$, ID2SYM(rb_intern("annotes")), $annots);
     }
     |
     incrAnnot    
     ;
 
 define:
-    nameWithId '=' enum
+    nameWithId[name] '=' enumOrType
     {
-        VALUE enumArgs[] = {$enum};        
-        VALUE args[] = {$nameWithId, rb_class_new_instance(sizeof(enumArgs)/sizeof(*enumArgs),enumArgs, cENUMERATION), newLocation(filename, &@$)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinition);        
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("Definition")));
+        rb_hash_aset($$, ID2SYM(rb_intern("name")), $name);
+        rb_hash_aset($$, ID2SYM(rb_intern("type")), $enumOrType);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
+    ;
+
+enumOrType:
+    enum
     |
-    nameWithId '=' type
-    {
-        VALUE args[] = {$nameWithId, $type, newLocation(filename, &@$)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cDefinition);        
-    }
+    type
     ;
 
 groupDef:
-    nameWithId
+    nameWithId[name] super body
     {
-        VALUE args[] = {$nameWithId, Qnil, rb_ary_new(), newLocation(filename, &@$)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
-    }
-    |
-    nameWithId ':' qName
-    {
-        VALUE refArgs[] = {$qName, Qfalse, newLocation(filename, &@qName)};
-        VALUE ref = rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF);
-        VALUE args[] = {$nameWithId, ref, rb_ary_new(), newLocation(filename, &@$)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
-    }
-    |
-    nameWithId ':' qName RIGHT_ARROW fields
-    {
-        VALUE refArgs[] = {$qName, Qfalse, newLocation(filename, &@qName)};
-        VALUE ref = rb_class_new_instance(sizeof(refArgs)/sizeof(*refArgs),refArgs, cREF);
-        VALUE args[] = {$nameWithId, ref, $fields, newLocation(filename, &@$)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cGroup);
-    }
-    |
-    nameWithId RIGHT_ARROW fields
-    {
-        VALUE args[] = {$nameWithId, Qnil, $fields, newLocation(filename, &@$)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cGroup);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("Group")));
+        rb_hash_aset($$, ID2SYM(rb_intern("name")), $name);
+        rb_hash_aset($$, ID2SYM(rb_intern("super")), $super);
+        rb_hash_aset($$, ID2SYM(rb_intern("fields")), $body);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
+super:
+    e
+    |
+    ':' qName
+    {
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@qName));
+        rb_hash_aset($$, ID2SYM(rb_intern("ref")), $qName);
+    }
+    ;
+
+body:
+    e
+    {
+        $$ = rb_ary_new();
+    }
+    |
+    RIGHT_ARROW fields
+    {
+        $$ = $fields;
+    }
+    ;
+    
 fields:
     field
     {
@@ -243,13 +206,16 @@ fields:
     ;
 
 field:
-    annots[typeAnnot] type annots[nameAnnot] nameWithId opt
+    annots[typeAnnotes] type annots[nameAnnotes] nameWithId[name] opt
     {
-        VALUE args[] = {$nameWithId, $type, $opt, newLocation(filename, &@type)};        
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args),args, cField);
-
-        rb_funcall($$, rb_intern("annote"), 1, $typeAnnot);
-        rb_funcall($nameWithId, rb_intern("annote"), 1, $nameAnnot);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("Field")));
+        rb_hash_aset($type, ID2SYM(rb_intern("annotes")), $typeAnnotes);
+        rb_hash_aset($$, ID2SYM(rb_intern("type")), $type);
+        rb_hash_aset($$, ID2SYM(rb_intern("annotes")), $nameAnnotes);
+        rb_hash_aset($$, ID2SYM(rb_intern("name")), $name);
+        rb_hash_aset($$, ID2SYM(rb_intern("optional")), $opt);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));        
     }
     ;
 
@@ -273,71 +239,85 @@ type:
 
 single:
     ref
+    {
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("REF")));
+    }
     |
     time
     |
     number
     |
     string
+    {
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("STRING")));
+    }
     |
     binary
+    {
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("BINARY")));
+    }
     |
     fixed
     |
     BOOLEAN
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBOOLEAN);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("BOOL")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     OBJECT
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cOBJECT);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("OBJECT")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
 sequence:
     single '[' ']'
     {
-        VALUE args[] = {$single, newLocation(filename, &@single)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSEQUENCE);
+        rb_hash_aset($$, ID2SYM(rb_intern("sequence")), Qtrue);
     }
     ;
 
 string:
     STRING
     {
-        VALUE args[] = {Qnil, newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
+        $$ = rb_hash_new();        
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     STRING size
     {
-        VALUE args[] = {$size, newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSTRING);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
+        rb_hash_aset($$, ID2SYM(rb_intern("size")), $size);
     }
     ;
 
 binary:
     BINARY
     {
-        VALUE args[] = {Qnil, newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     BINARY size
     {
-        VALUE args[] = {$size, newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cBINARY);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("size")), $size);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
 fixed:
     FIXED size
     {
-        VALUE args[] = {$size, newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFIXED);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("FIXED")));
+        rb_hash_aset($$, ID2SYM(rb_intern("size")), $size);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));        
     }
     ;
 
@@ -356,108 +336,126 @@ size:
 ref:
     qName
     {
-        VALUE args[] = {$qName, Qfalse, newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
+        $$ = rb_hash_new();        
+        rb_hash_aset($$, ID2SYM(rb_intern("ref")), $qName);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     qName '*'
     {
-        VALUE args[] = {$qName, Qtrue, newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cREF);    
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("ref")), $qName);
+        rb_hash_aset($$, ID2SYM(rb_intern("dynamic")), Qtrue);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
 number:
     I8
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI8);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("I8")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     I16
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI16);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("I16")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     I32
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI32);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("I32")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     I64
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cI64);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("I64")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     U8
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU8);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("U8")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     U16
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU16);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("U16")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     U32
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU32);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("U32")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     U64
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cU64);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("U64")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     F64
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFLOATING_POINT);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("FLOATING_POINT")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     DECIMAL
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDECIMAL);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("DECIMAL")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
 time:
     DATE
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDATE);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("DATE")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     TIME_OF_DAY_MILLI
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cTIME_OF_DAY_MILLI);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("TIME_OF_DAY_MILLI")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     TIME_OF_DAY_NANO
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cTIME_OF_DAY_NANO);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("TIME_OF_DAY_NANO")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     NANO_TIME
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cNANO_TIME);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("NANO_TIME")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     MILLI_TIME
     {
-        VALUE args[] = {newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cMILLI_TIME);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("MILLI_TIME")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
@@ -465,35 +463,40 @@ time:
 enum:
     '|' sym
     {
-        $$ = rb_ary_new();
-        rb_ary_push($$, $sym);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("ENUM")));
+        rb_hash_aset($$, ID2SYM(rb_intern("syms")), rb_ary_new());
+        rb_ary_push(rb_hash_aref($$, ID2SYM(rb_intern("syms"))), $sym);
     }
     |
     symList '|' sym
     {
-        rb_ary_push($$, $sym);
+        rb_ary_push(rb_hash_aref($$, ID2SYM(rb_intern("syms"))), $sym);
     }
     ;
 
 symList:
     sym
     {
-        $$ = rb_ary_new();
-        rb_ary_push($$, $sym);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("ENUM")));
+        rb_hash_aset($$, ID2SYM(rb_intern("syms")), rb_ary_new());
+        rb_ary_push(rb_hash_aref($$, ID2SYM(rb_intern("syms"))), $sym);
     }
     |
     symList '|' sym
     {
-        rb_ary_push($$, $sym);
+        rb_ary_push(rb_hash_aref($$, ID2SYM(rb_intern("syms"))), $sym);
     }
     ;
 
 sym:
     annots name val
     {
-        VALUE args[] = {$name, $val, newLocation(filename, &@name)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cSym);
-        rb_funcall($$, rb_intern("annote"), 1, $annots);        
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("annotes")), $annots);
+        rb_hash_aset($$, ID2SYM(rb_intern("name")), $name);
+        rb_hash_aset($$, ID2SYM(rb_intern("value")), $val);        
     }
     ;
     
@@ -533,10 +536,10 @@ annotList:
     }
 
 annot:
-    '@' qNameOrKeyword '=' literal
+    '@' qNameOrKeyword[key] '=' literal[value]
     {
-        VALUE args[] = {$qNameOrKeyword, $literal, newLocation(filename, &@qNameOrKeyword)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cAnnotation);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, $key, $value);    
     }
     ;
 
@@ -552,8 +555,10 @@ literal:
 nameWithId:
     name id
     {
-        VALUE args[] = {$name, $id};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cNameWithID);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("name")), $name);
+        rb_hash_aset($$, ID2SYM(rb_intern("id")), $id);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
@@ -574,39 +579,51 @@ id:
 incrAnnot:
     compRef incrAnnotList
     {
-        VALUE args[] = {$compRef, $incrAnnotList, newLocation(filename, &@$)};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cIncrementalAnnotation);
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("IncrementalAnnotation")));
+        rb_hash_aset($$, ID2SYM(rb_intern("annotes")), $incrAnnotList);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
 compRef:
     SCHEMA
     {
-        $$ = rb_class_new_instance(0, NULL, cSchemaRef);        
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("ref")), ID2SYM(rb_intern("SCHEMA")));
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     qName
     {
-        VALUE args[] = {$qName};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionRef);        
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("ref")), $qName);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     qName '.' TYPE
     {
-        VALUE args[] = {$qName};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cDefinitionTypeRef);        
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("ref")), $qName);
+        rb_hash_aset($$, ID2SYM(rb_intern("type")), Qtrue);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     qName '.' name
     {
-        VALUE args[] = {$qName, $name};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldRef);        
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("ref")), $qName);
+        rb_hash_aset($$, ID2SYM(rb_intern("name")), $name);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
     qName '.' name '.' TYPE
     {
-        VALUE args[] = {$qName, $name};
-        $$ = rb_class_new_instance(sizeof(args)/sizeof(*args), args, cFieldTypeRef);        
+        $$ = rb_hash_new();
+        rb_hash_aset($$, ID2SYM(rb_intern("ref")), $qName);
+        rb_hash_aset($$, ID2SYM(rb_intern("type")), Qtrue);
+        rb_hash_aset($$, ID2SYM(rb_intern("name")), $name);
+        rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     ;
 
@@ -772,12 +789,7 @@ name:
     ESCAPED_NC_NAME
     ;
 
-nsDecl:
-    NAMESPACE name
-    {
-        $$ = $name;
-    }
-    ;
+
 
 literalSegment:
     LITERAL
@@ -812,54 +824,9 @@ e:
 void Init_ext_schema_parser(void)
 {
     cSlowBlink = rb_define_module("SlowBlink");
-
-    cNamespace = rb_const_get(cSlowBlink, rb_intern("Namespace"));
-    cGroup = rb_const_get(cSlowBlink, rb_intern("Group"));
-    cField = rb_const_get(cSlowBlink, rb_intern("Field"));
-    cDefinition = rb_const_get(cSlowBlink, rb_intern("Definition"));
-
-    cNameWithID = rb_const_get(cSlowBlink, rb_intern("NameWithID"));
-    
-    cAnnotation = rb_const_get(cSlowBlink, rb_intern("Annotation"));
-    cIncrementalAnnotation = rb_const_get(cSlowBlink, rb_intern("IncrementalAnnotation"));
-
-    cENUMERATION = rb_const_get(cSlowBlink, rb_intern("ENUMERATION"));
-    cSym = rb_const_get(cSlowBlink, rb_intern("Sym"));
-
-    cU8 = rb_const_get(cSlowBlink, rb_intern("U8"));
-    cU16 = rb_const_get(cSlowBlink, rb_intern("U16"));
-    cU32 = rb_const_get(cSlowBlink, rb_intern("U32"));
-    cU64 = rb_const_get(cSlowBlink, rb_intern("U64"));
-    cI8 = rb_const_get(cSlowBlink, rb_intern("I8"));
-    cI16 = rb_const_get(cSlowBlink, rb_intern("I16"));
-    cI32 = rb_const_get(cSlowBlink, rb_intern("I32"));
-    cI64 = rb_const_get(cSlowBlink, rb_intern("I64"));
-    cFLOATING_POINT = rb_const_get(cSlowBlink, rb_intern("FLOATING_POINT"));
-    cDECIMAL = rb_const_get(cSlowBlink, rb_intern("DECIMAL"));
-    cFIXED = rb_const_get(cSlowBlink, rb_intern("FIXED"));
-    cBINARY = rb_const_get(cSlowBlink, rb_intern("BINARY"));
-    cSTRING = rb_const_get(cSlowBlink, rb_intern("STRING"));
-    cBOOLEAN = rb_const_get(cSlowBlink, rb_intern("BOOLEAN"));
-    cDATE = rb_const_get(cSlowBlink, rb_intern("DATE"));
-    cMILLI_TIME = rb_const_get(cSlowBlink, rb_intern("MILLI_TIME"));
-    cNANO_TIME = rb_const_get(cSlowBlink, rb_intern("NANO_TIME"));
-    cTIME_OF_DAY_MILLI = rb_const_get(cSlowBlink, rb_intern("TIME_OF_DAY_MILLI"));
-    cTIME_OF_DAY_NANO = rb_const_get(cSlowBlink, rb_intern("TIME_OF_DAY_NANO"));
-    cSEQUENCE = rb_const_get(cSlowBlink, rb_intern("SEQUENCE"));
-    cREF = rb_const_get(cSlowBlink, rb_intern("REF"));
-    cOBJECT = rb_const_get(cSlowBlink, rb_intern("OBJECT"));
-
-    cSchemaRef = rb_const_get(cSlowBlink, rb_intern("SchemaRef"));
-    cDefinitionRef = rb_const_get(cSlowBlink, rb_intern("DefinitionRef"));
-    cDefinitionTypeRef = rb_const_get(cSlowBlink, rb_intern("DefinitionTypeRef"));
-    cFieldRef = rb_const_get(cSlowBlink, rb_intern("FieldRef"));
-    cFieldTypeRef = rb_const_get(cSlowBlink, rb_intern("FieldTypeRef"));
-
     cLog = rb_const_get(cSlowBlink, rb_intern("Log"));
-
     cParseError = rb_const_get(cSlowBlink, rb_intern("ParseError"));
-
-    rb_define_singleton_method(cNamespace, "parse", parseFileBuffer, -1);
+    rb_define_singleton_method(cSlowBlink, "parse_file_buffer", parseFileBuffer, -1);
 }
 
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... )
@@ -892,6 +859,8 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
     }
 
     filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
+
+    
 
     if(yylex_init(&scanner) == 0){
 

@@ -28,11 +28,10 @@ module SlowBlink::Message
 
         # @private
         def self.from_compact(input, stack)
-            value = input.getI64
-            if value
+            if value = input.getI64
                 self.new(value)
             else
-                value
+                nil
             end
         end
 
@@ -52,7 +51,7 @@ module SlowBlink::Message
         # @raise [ArgumentError]
         def set(value)            
             if value.kind_of? Time or value.kind_of? DateTime or value.kind_of? Date
-                @value = time.to_datetime
+                @value = value.to_datetime
             elsif value.kind_of? String
                 @value = DateTime.parse(value)
             elsif value.kind_of? Integer

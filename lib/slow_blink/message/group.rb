@@ -21,13 +21,10 @@
 
 module SlowBlink::Message
 
-    # @abstract
-    #
-    # A Group may form a complete message or be nested as a {DynamicGroup}
-    class Group
+    class StaticGroup
 
         # @private
-        # @return [Hash<Field>] group fields
+        # @return [Array<Field>] group fields
         def self.fields
             @fields
         end
@@ -45,55 +42,29 @@ module SlowBlink::Message
         end
 
         # @private
-        # @param input [StringIO] Blink compact form
+        # @param input [StringIO, String] Blink compact form
         # @param stack [Array] used to measure depth of recursion 
         # @return [Group, nil]
         # @raise [Error] recursion depth limit
         def self.from_compact(input, stack)            
 
             fields = {}
-            extensions = []
 
             if stack.size < @maxRecursion
                 stack << self
             else
                 raise RecursionLimit
             end
-            
-            @fields.each do |fn, fd|
-                fields[fn] = fd.from_compact(input, stack)
-            end
 
-            if !input.eof?
-                expected = input.getU32
-                if expected       
-                    while extensions.size != expected do
-                        extensions << @extensionObject.from_compact(input, stack)                    
-                    end
-                else
-                    raise ExtensionPadding
-                end
-            end
-            
-            if !input.eof?
-                raise ExtensionPadding
-            end
-
-            group = self.new(fields)
-
-            extensions.each do |e|
-                group.extension << group
+            @fields.each do |f|
+                fields[f.name] = f.from_compact(input, stack)
             end
 
             stack.pop
-
-            group
+            
+            self.new(fields)
                
         end
-
-        # @api user
-        # @return [Array<Group>] extension objects
-        attr_reader :extension
 
         # @api user
         # Finds Field by name and calls {Field#set}(value) 
@@ -102,8 +73,8 @@ module SlowBlink::Message
         # @param value [Object]
         # @raise [IndexError, TypeError]
         def []=(name, value)
-            if @value[name]
-                @value[name].set(value)
+            if field = @value[name]
+                field.set(value)
             else
                 raise IndexError.new "field #{name} is not defined in this group"            
             end
@@ -117,8 +88,8 @@ module SlowBlink::Message
         # @return [Object]
         # @raise [IndexError, TypeError]
         def [](name)            
-            if @value[name]
-                @value[name].get                
+            if field = @value[name]
+                field.get                
             else
                 raise IndexError.new "field #{name} is not defined in this group"
             end            
@@ -139,6 +110,7 @@ module SlowBlink::Message
         # @return [self]
         # @raise [IndexError, TypeError]
         def set(value)
+        
             if value.kind_of? Hash
                 value.each do |fn, fv|
                     if @value[fn]
@@ -154,7 +126,7 @@ module SlowBlink::Message
                     end
                 end
             # replace @value with value from another instance of self.class
-            elsif value.is_a? self.class
+            elsif value.kind_of? self.class
                 @value = value.fields.to_h
             else
                 raise TypeError.new "expecting a Hash or a StaticGroup instance"
@@ -168,11 +140,9 @@ module SlowBlink::Message
         # @note calls {#set}(fields)
         # @param fields [Hash]
         def initialize(fields={})
-            @extension = []            
-            @fields = self.class.fields
             @value = {}
-            self.class.fields.each do |fn, fd|
-                @value[fn] = fd.new(nil)
+            self.class.fields.each do |f|
+                @value[f.name] = f.new(nil)
             end            
             set(fields)        
         end
@@ -188,22 +158,9 @@ module SlowBlink::Message
 
         # @private
         def to_compact(out)
-            group = String.new.putU64(self.class.id)
             @value.each do |fn, fv|
-                fv.to_compact(group)
-            end
-            if @extension.size > 0
-                group.putU32(@extension.size)
-                @extension.each do |e|
-                    #if e.is_a? @extensionObject
-                        e.to_compact(group)
-                    #else
-                     #   raise EncodingError.new "cannot convert unknown extension object to compact form"
-                    #end
-                end
-            end
-            out.putU32(group.size)
-            out << group            
+                fv.to_compact(out)
+            end        
         end
 
         protected
@@ -215,97 +172,47 @@ module SlowBlink::Message
             end
 
     end
+    
+    class Group < StaticGroup
 
-    # @abstract
-    #
-    # A StaticGroup is a kind of {Group} that can only exist as the contents of a {Field}
-    class StaticGroup < Group
+        attr_reader :extension
 
-        # @private
-        #
-        # @note optionality affects how instances of this type are encoded
-        #
-        # @return [true,false] is optional
-        def self.opt?
-            @opt
+        def self.ancestorID
+            @ancestorID
         end
 
-        # @private
-        # @param input [String] Blink compact form
-        # @param stack [Array] used to measure depth of recursion 
-        # @return [Group, nil]
-        # @raise [Error] recursion depth limit
-        def self.from_compact(input, stack)
-
-            if stack.size < @maxRecursion
-                stack << self
-            else
-                raise RecursionLimit
-            end
-        
-            if @opt
-                present = input.getPresent
-            else
-                present = true
-            end
-            if present
-                fields = {}
-                @fields.each do |fn, fd|
-                    fields[fn] = fd.from_compact(input, stack)
-                end
-                result = self.new(fields)            
-            else
-                nil
-            end
-
-            stack.pop
-            result
-            
+        def initialize(fields={}, *extension)
+            super(fields)
+            @extension = extension
         end
 
-        # @note StaticGroup does not have extensions
-        # @raise [NoMethodError]
-        def extension
-            raise NoMethodError.new "StaticGroup does not implement #{__method__}"
-        end
-        
         # @private
         def to_compact(out)
-            if self.class.opt?
-                out.putPresent
-            end
-            @value.each do |fn, fv|
-                fv.to_compact(out)
-            end
-            out            
-        end
 
-        # @note StaticGroup cannot be encoded as a top level message
-        # @raise [NoMethodError]
-        def encode_compact
-            raise NoMethodError.new "StaticGroup does not implement #{__method__}"
-        end
+            groupOut = String.new.putU64(self.class.id)
+            super(groupOut)
+            if @extension.size > 0
+                groupOut.putU32(@extension.size)
+                @extension.each do |e|
+                    e.to_compact(groupOut)                    
+                end
+            end
 
+            out.putU32(groupOut.size)
+            out << groupOut
+    
+        end
+        
     end
 
-    # @abstract
-    #
-    # A DynamicGroup has a {Group} which has a {Group.id} that appears in {DynamicGroup.permitted} list
     class DynamicGroup
 
-        # @return [Hash] Hash of all groups referenced by name
-        def self.groups
-            @groups
-        end
-
-        # @return [Hash] Hash of all tagged groups referenced by ID
         def self.taggedGroups
             @taggedGroups
         end
 
-        # @return [Array<Integer>] Array of group IDs that can be encapsulated by this DynamicGroup
-        def self.permitted
-            @permitted
+        def self.permittedID
+            @permittedID
         end
 
         # @private
@@ -315,44 +222,66 @@ module SlowBlink::Message
         # @raise [Error] recursion depth limit
         def self.from_compact(input, stack)
 
+            group = nil
+
             if stack.size < @maxRecursion
                 stack << self
             else
                 raise RecursionLimit
             end
         
+            if input.kind_of? String
+                input = StringIO.new(input)
+            end
+
             buf = input.getBinary
             
             if buf.size > 0
+
                 buf = StringIO.new(buf)
                 id = buf.getU64
-                group = @taggedGroups[id]
-                if group
-                    if @permitted.include? group.id
-                        result = self.new(group.from_compact(buf, stack))
+
+                if klass = @taggedGroups[id]
+
+                    if @permittedID.include? id
+
+                        group = klass.from_compact(buf, stack)
+
+                        if !buf.eof?                
+                            size = buf.getU32
+                            while group.extension.size < size do
+                                group.extension << @anyTaggedGroup.from_compact(buf, stack)
+                            end
+                        end
+
+                        if !buf.eof?
+                            raise ExtensionPadding
+                        end
+                        
                     else
                         raise WeakError15.new "W15: Group is known but unexpected"
                     end
                 else
-                    raise WeakError2.new "W2: Group id #{group.id} is unknown"
+                    raise WeakError2.new "W2: Group id #{id} is unknown"
                 end
-            else
+                
+            elsif stack.size == 1
+                raise WeakError5.new "W??: top level cannot be null"
+            else                
                 raise WeakError5.new "W5: Value cannot be null"                
             end
 
             stack.pop
-            result
+            group
 
         end
 
-        def set(value)        
-            # is group one of the groups we understand?
-            if self.class.taggedGroups.values.detect{|g| value.is_a? g} 
-                # is this group permitted?
-                if self.class.permitted.include? value.class.id
+        def set(value)
+            if value.kind_of? Group
+                if self.class.permittedID.include? value.class.id        
                     @value = value
                 else                        
-                    raise TypeError.new "group is known but compatible with schema"
+                    raise TypeError.new "incompatible group"
                 end
             # native values
             elsif value.kind_of? Hash
@@ -367,20 +296,18 @@ module SlowBlink::Message
             @value.get
         end
 
-        # Calls {Group#extension}
-        # @return [Array]
-        def extension
-            @value.extension
-        end
-
         # @note calls {#set}(value)
         def initialize(value)
-            set(value)        
+            set(value)
         end
 
         # @private
         def to_compact(out)
-            @value.to_compact(out)                                    
+            @value.to_compact(out)    
+        end
+
+        def extension
+            @value.extension
         end
 
     end

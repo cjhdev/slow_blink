@@ -26,15 +26,14 @@ module SlowBlink::Message
 
         # @private
         def self.from_compact(input, stack)
-            value = input.getBinary
-            if value
+            if value = input.getBinary
                 if !@size or value.size <= @size
                     self.new(value)
                 else
                     raise WeakError8.new "W8: Binary value exceeds maximum size"
                 end
             else
-                value
+                nil
             end               
         end
 
