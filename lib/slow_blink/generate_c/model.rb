@@ -27,7 +27,7 @@ module SlowBlink
                 "#{@prefix}#{name.gsub("::","_")}"
             end
 
-            def getValueType(type)
+            def value_type(type)
 
                 out = ""
 
@@ -49,19 +49,21 @@ module SlowBlink
                 when I32
                     out << "int32_t"                
                 when I64
-                    out << "int64_t"                
+                    out << "int64_t"
+                when ENUM
+                    out << "const char *"
                 when FLOATING_POINT
                     out << "double"                
                 when DECIMAL
                     out << "struct blink_decimal"
                 when BOOLEAN
                     out << "bool"                    
-                when StaticGroup, DynamicGroup
-                    out << model_group(type.ref)                    
-                when OBJECT
-                    out << "struct base_group"                    
+                when StaticGroup
+                    out << "struct #{cname(type.name)} *"
+                when OBJECT, DynamicGroup
+                    out << "struct base_group *"
                 else
-                    out << "aaww shit"
+                    raise 
                 end
 
                 out

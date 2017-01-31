@@ -57,6 +57,12 @@ module SlowBlink
             end
         end
 
+        def definitions
+            @defs.values
+        end
+
+        attr_reader :syntax
+        
         # @api user
         #
         # Create a Schema from one or more SchemaBuffers that are evaluated
@@ -65,15 +71,19 @@ module SlowBlink
         # @param buffer [Array<SchemaBuffer>]
         def initialize(*buffer)
 
+            @syntax = ""
+
             if buffer.size > 0
                 namespace = []
-                    buffer.each do |b|
+                buffer.each do |b|
+                    @syntax << b.buffer
                     namespace << SlowBlink.parse_file_buffer(b.buffer, filename: b.filename)                    
                 end
             else
                 raise ArgumentError.new "at least one buffer required"
             end
 
+            @syntax.freeze
             @defs = {}
 
             # create groups and definitions

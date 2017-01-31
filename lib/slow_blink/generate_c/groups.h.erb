@@ -33,21 +33,21 @@
 
 #define BLINK_ERROR(...)
 
-#define GET(group, field) group->get_field(group)
-#define SET(group, field, value) group->set_field(group, value)
-#define IS_PRESENT(group, field) group->test_field(group)
-
 /* types **************************************************************/
 
 struct blink_stream;
 struct blink_pool;
+struct blink_base;
 
 typedef struct blink_stream * blink_stream_t;
 typedef struct blink_pool * blink_pool_t;
+typedef struct group_blink_base * group_t;
 
+/** to create a group you need an allocator
+ * @note a simple linear allocator can suffice */
 struct blink_allocator {
-    void * (*calloc)(size_t nelem, size_t elsize);
-    void (*free)(void *ptr);
+    void * (*calloc)(size_t nelem, size_t elsize);  /**< mandatory calloc-like function */
+    void (*free)(void *ptr);                        /**< optional free-like function */
 };
 
 struct blink_string {
@@ -66,64 +66,32 @@ enum group_type {
 <%end -%>
 };
 
-struct group_base {
-    enum group_type type;
-    struct blink_allocator a;
-};
-
-<%@schema.groups.each do |g| -%>
-struct <%= cname(g.name) %> {
-
-    struct group_base super;
-    uint32_t size;
-    
-<%  g.fields.each do |f| -%>
-    struct {
-
-        bool initialised;
-
-<%    case f.type.class
-   when STRING, BINARY, FIXED -%>
-<%      if f.type.is_a? FIXED or f.type.size -%>
-            
-        struct {
-            uint8_t data[<%= f.type.size %>U];
-            uint32_t len;
-        } value;
-        
-<%      else -%>
-
-        struct {
-            uint8_t *data;
-            uint32_t len;
-        } value;
-        
-<%      end -%>
-<%    when DECIMAL -%>
-
-        struct blink_decimal value;
-
-<%    else -%>
-
-        <%= getValueType(f.type) -%> value;
-
-<%    end -%>
-
-        bool (*set)(struct <%= cname(g.name) %> *self, <%= getValueType(f.type) %> value);
-        bool (*get)(struct <%= cname(g.name) %> *self, <%= getValueType(f.type) %> *value);
-        bool (*test)(struct <%= cname(g.name) %> *self);
-        
-    } <%= f.name %>;
-
-<%  end -%>
-
-    bool (*sizeOf)(struct <%= cname(g.name) %> *self);
-    bool (*encodeCompact)(struct <%= cname(g.name) %> *self, blink_stream_t out);
-};
-
-<%end -%>
 
 /* functions **********************************************************/
+
+<%@schema.groups.each do |g| -%>
+/** Create a new <%= g.name %>
+ *
+ * @param[in] alloc allocator
+ * @return group
+ * @retval NULL calloc()
+ *
+ * */
+object_t <%= cname(g.name) %>_new(struct blink_allocator alloc);
+
+<%  if g.id -%>
+/** Encode <%= g.name %>
+ *
+ * @param[in] self <%= g.name %> instance
+ * @param[in] out output stream
+ *
+ * @return true if self could be encoded
+ *
+ * */
+bool <%= cname(g.name) %>_encode(object_t self, blink_stream_t out);
+<%  end -%>
+
+<%end -%>
 
 #endif
 
