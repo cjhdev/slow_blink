@@ -1,6 +1,5 @@
 require "test/unit"
 require 'slow_blink'
-require 'stringio'
 
 class TestCompactEncoder < Test::Unit::TestCase
 

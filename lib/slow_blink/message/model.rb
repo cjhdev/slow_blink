@@ -227,6 +227,7 @@ module SlowBlink
 
 end
 
+require "stringio"
 require "slow_blink/message/ext_compact_encoder"
 require "slow_blink/message/field"
 require "slow_blink/message/integer"
