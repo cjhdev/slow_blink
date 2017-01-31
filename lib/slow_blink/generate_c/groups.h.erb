@@ -1,0 +1,130 @@
+/* Copyright (c) 2016 Cameron Harper
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * 
+ * */
+
+#ifndef GROUPS_H
+#define GROUPS_H
+
+/* includes ***********************************************************/
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+
+/* defines ************************************************************/
+
+#define BLINK_ERROR(...)
+
+#define GET(group, field) group->get_field(group)
+#define SET(group, field, value) group->set_field(group, value)
+#define IS_PRESENT(group, field) group->test_field(group)
+
+/* types **************************************************************/
+
+struct blink_stream;
+struct blink_pool;
+
+typedef struct blink_stream * blink_stream_t;
+typedef struct blink_pool * blink_pool_t;
+
+struct blink_allocator {
+    void * (*calloc)(size_t nelem, size_t elsize);
+    void (*free)(void *ptr);
+};
+
+struct blink_string {
+    const char *data;
+    uint32_t size;
+};
+
+struct blink_decimal {
+    int8_t exponent;
+    int64_t mantissa;
+};
+
+enum group_type {
+<%@schema.groups.each do |g| -%>
+    TYPE_<%= cname(g.name) %>,
+<%end -%>
+};
+
+struct group_base {
+    enum group_type type;
+    struct blink_allocator a;
+};
+
+<%@schema.groups.each do |g| -%>
+struct <%= cname(g.name) %> {
+
+    struct group_base super;
+    uint32_t size;
+    
+<%  g.fields.each do |f| -%>
+    struct {
+
+        bool initialised;
+
+<%    case f.type.class
+   when STRING, BINARY, FIXED -%>
+<%      if f.type.is_a? FIXED or f.type.size -%>
+            
+        struct {
+            uint8_t data[<%= f.type.size %>U];
+            uint32_t len;
+        } value;
+        
+<%      else -%>
+
+        struct {
+            uint8_t *data;
+            uint32_t len;
+        } value;
+        
+<%      end -%>
+<%    when DECIMAL -%>
+
+        struct blink_decimal value;
+
+<%    else -%>
+
+        <%= getValueType(f.type) -%> value;
+
+<%    end -%>
+
+        bool (*set)(struct <%= cname(g.name) %> *self, <%= getValueType(f.type) %> value);
+        bool (*get)(struct <%= cname(g.name) %> *self, <%= getValueType(f.type) %> *value);
+        bool (*test)(struct <%= cname(g.name) %> *self);
+        
+    } <%= f.name %>;
+
+<%  end -%>
+
+    bool (*sizeOf)(struct <%= cname(g.name) %> *self);
+    bool (*encodeCompact)(struct <%= cname(g.name) %> *self, blink_stream_t out);
+};
+
+<%end -%>
+
+/* functions **********************************************************/
+
+#endif
+
+
