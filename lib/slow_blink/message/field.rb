@@ -140,7 +140,7 @@ module SlowBlink::Message
                     end
                     @value.to_compact(out)
                 end
-            elsif @opt
+            elsif @optional
                 out.putNull
             else
                 raise IncompleteGroup.new "'#{self.name}' must not be null"

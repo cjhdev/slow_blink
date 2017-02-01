@@ -45,86 +45,159 @@ struct group_base {
 struct <%= cname(g.name) %> {
 
     struct group_base super;
-    uint32_t size;
     
 <%  g.fields.each do |f| -%>
     struct {
 
         bool initialised;
-
 <%    case f.type.class
-   when STRING, BINARY, FIXED -%>
+      when STRING, BINARY, FIXED -%>
 <%      if f.type.is_a? FIXED or f.type.size -%>
-            
         struct {
             uint8_t data[<%= f.type.size %>U];
             uint32_t size;
         } value;
-        
 <%      else -%>
-
         struct {
             uint8_t *data;
             uint32_t size;
-        } value;
-        
+        } value;        
 <%      end -%>
+<%    when ENUM -%>
+        int32_t value;
 <%    else -%>
-
         <%= value_type(f.type) -%> value;
-
-<%    end -%>
-
-        bool (*set)(struct <%= cname(g.name) %> *self, <%= value_type(f.type) %> value);
-        <%= value_type(f.type) %> (*get)(struct <%= cname(g.name) %> *self);
-        bool (*test)(struct <%= cname(g.name) %> *self);
-        
+<%    end -%>        
     } <%= f.name %>;
 
 <%  end -%>
-
-    bool (*_sizeof)(struct <%= cname(g.name) %> *self, uint32_t *size);
-    bool (*encodeCompact)(struct <%= cname(g.name) %> *self, blink_stream_t out);
 };
 
 <%end -%>
 
 /* variables **********************************************************/
 
-<%@schema.definitions.select{|d|d.is_a? ENUM}.each do |e| -%>
-
-const struct blink_enum <%= cname(e.name) %>[] = {
-<%  e.symbols.each do |s| -%>
+<%@schema.definitions.select{|d|d.is_a? Definition and d.type.is_a? ENUM}.each do |e| -%>
+static const struct blink_enum <%= cname(e.name) %>[] = {
+<%  e.type.symbols.each do |s| -%>
     {<%= s.value %>, "<%= s.name%>", sizeof("<%= s.name%>")-1U},
 <%  end-%>
 };
 <%end-%>
 
+struct group_table {
+    enum blink_type type;
+    uint64_t id;
+};
 
+static const struct group_table groups[] = {
+<%@schema.groups.each.select{|g|g.id}.each do |g| %>
+    {TYPE_<%= cname(g.name) %>, <%= g.id %>U},
+<%end%>
+};
 
 /* static function prototypes *****************************************/
 
 <%@schema.groups.each do |g| -%>
-
-static bool <%= cname(g.name) %>_encodeCompact(struct <%= cname(g.name) %> *self, blink_stream_t out);
+<%  if g.id -%>
+static bool <%= cname(g.name) %>_encodeCompactGroup(struct <%= cname(g.name) %> *self, blink_stream_t out);
+<%  end -%>
 static bool <%= cname(g.name) %>_encodeCompactBody(struct <%= cname(g.name) %> *self, blink_stream_t out);
 static bool <%= cname(g.name) %>_sizeof(struct <%= cname(g.name) %> *self, uint32_t *size);
-<%  g.fields.each do |f| -%>
-static <%= value_type(f.type) %> <%= cname(g.name) %>_get_<%= f.name %>(struct <%= cname(g.name) %> *self);
-static bool <%= cname(g.name) %>_set_<%= f.name %>(struct <%= cname(g.name) %> *self, <%= value_type(f.type) %> value);
-static bool <%= cname(g.name) %>_test_<%= f.name %>(struct <%= cname(g.name) %> *self);
-<%    if f.type == ENUM -%>
-static 
-<%    end -%>
-<%  end -%>
-
 <%end -%>
+
 
 /* functions **********************************************************/
 
+group_t decodeCompact(blink_stream_t in, struct blink_allocator alloc)
+{
+    group_t retval = NULL;
+    uint32_t size;
+    bool isNull;
+
+    if(BLINK_Compact_getU32(in, &isNull, &size)){
+
+        if(!isNull{
+
+            if(size == 0U){
+
+                BLINK_ERROR("group size cannot be zero")
+            }
+            else{
+
+                if(BLINK_Compact_getU64(in, &isNull, &id){
+
+                    if(isNull){
+
+                        BLINK_ERROR("group ID cannot be NULL")
+                    }
+                    else{
+
+                        switch(id){
+<%@schema.groups.select{|g|g.id}.each do |g|-%>
+                        case <%= g.id %>U:
+
+                            retval = <%= cname(g.name) %>_new(alloc);
+                            if(retval != NULL){
+                        
+                                if(!<%= cname(g.name) %>_decodeCompactBody(in, (struct <%= cname(g.name) %> *)group)){
+        
+                                    <%= cname(g.name) %>_destroy(group);
+                                    retval = NULL;
+                                }
+                            }
+
+                            break;
+<%end -%>
+                        default:
+                        
+                            BLINK_ERROR("group id is unknown")
+
+                            //vend unknown groups here??
+                            
+                            /* read past the unknown group */
+                            while(size > 0){
+                                uint8_t buf;
+                                if(!BLINK_Stream_read(in, &buf, sizeof(buf))){
+                                    break;
+                                }
+                                size--;
+                            }            
+                            break;                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return retval;
+}
+
+bool encodeCompact(object_t group, blink_stream_t out)
+{
+    bool retval = false;
+
+    switch(group->type){
+<%@schema.groups.select{|g|g.id}.each do |g| -%>
+    case TYPE_<%= cname(g.name) %>:
+        retval = <%= cname(g.name) %>_encodeCompactGroup((struct <%= cname(g.name) %> *)group, blink_stream_t out);
+        break;
+<%end -%>
+<%@schema.groups.select{|g|g.id.nil?}.each do |g| -%>
+    case <%= cname(g.name) %>:
+<%end -%>
+    default:
+        /* cannot encode */
+        break;
+    }
+
+    return retval;
+}
+
 <%@schema.groups.each do |g| -%>
 
-struct <%= cname(g.name) %> *<%= cname(g.name) %>_new(struct blink_allocator alloc)
+object_t <%= cname(g.name) %>_new(struct blink_allocator alloc)
 {
     struct <%= cname(g.name) %> *retval = NULL;
 
@@ -136,18 +209,6 @@ struct <%= cname(g.name) %> *<%= cname(g.name) %>_new(struct blink_allocator all
         
             retval->super.type = TYPE_<%= cname(g.name) %>;
             retval->super.a = alloc;
-
-<%  g.fields.each do |f| -%>
-            retval-><%= f.name %>.get = <%= cname(g.name) %>_get_<%= f.name %>;
-            retval-><%= f.name %>.set = <%= cname(g.name) %>_set_<%= f.name %>;
-            retval-><%= f.name %>.test = <%= cname(g.name) %>_test_<%= f.name %>;
-
-<%  end -%>
-<%  if g.id -%>   
-            retval->encodeCompact = <%= cname(g.name) %>_encodeCompact;
-<%  end -%>
-
-            retval->_sizeof = <%= cname(g.name) %>_sizeof;
         }
         else{
         
@@ -158,17 +219,172 @@ struct <%= cname(g.name) %> *<%= cname(g.name) %>_new(struct blink_allocator all
     
         BLINK_ERROR("cannot create a new group without an allocator")
     }
+    
+    return (object_t)retval;
+}
+<%end -%>
+
+<%@schema.groups.each do |g| -%>
+<%  g.fields.each do |f| -%>
+
+<%= value_type(f.type) %> <%= cname(g.name) %>_get_<%= f.name %>(object_t group)
+{
+<%    if @options[:typeAssert] -%>
+    BLINK_ASSERT(group->type == TYPE_<%= cname(g.name) %>)
+    
+<%    end -%>
+    if(group->type == TYPE_<%= cname(g.name) %>){
+
+        struct <%= cname(g.name) %> *self = (struct <%= cname(g.name) %> *)group;
+<%    case f.type.class
+      when STRING, BINARY, FIXED -%>
+        struct blink_string retval = {.data = self-><%= f.name %>.value.data, .size = self-><%= f.name %>.value.size};
+        return retval;  
+<%    when DECIMAL -%>
+        struct blink_decimal retval = {.exponent = self-><%= f.name %>.value.exponent, .mantissa = self-><%= f.name %>.value.mantissa});
+        return retval;
+<%    when ENUM %>
+        const char *retval = NULL;
+        uint32_t i;
+        for(i=0U; i < sizeof(<%= cname(f.type.name) %>)/sizeof(*<%= cname(f.type.name) %>); i++){
+            if(<%= cname(f.type.name) %>[i].value == self-><%= f.name %>.value){
+
+                retval = <%= cname(f.type.name) %>[i].name;
+                break;
+            }           
+        }
+        return retval;    
+<%    else -%>
+        return self-><%= f.name %>.value;
+<%    end -%>
+    }
+    else{
+
+<%    case f.type.class
+      when STRING, BINARY, FIXED -%>
+        struct blink_string retval = {.data = NULL, .size = 0U};
+        return retval;  
+<%    when DECIMAL -%>
+        struct blink_decimal retval = {.exponent = 0, .mantissa = 0});
+        return retval;
+<%    when ENUM %>
+        return NULL;
+<%    else -%>
+        return 0;
+<%    end -%>
+    }
+}
+
+bool <%= cname(g.name) %>_set_<%= f.name %>(object_t group, <%= value_type(f.type) %> value)
+{
+    bool retval = false;
+
+<% if @options[:typeAssert] -%>
+    BLINK_ASSERT(group->type == TYPE_<%= cname(g.name) %>)
+    
+<% end -%>
+    if(group->type == TYPE_<%= cname(g.name) %>){
+
+        struct <%= cname(g.name) %> *self = (struct <%= cname(g.name) %> *)group;
+    
+<%    case f.type.class
+      when STRING, BINARY, FIXED -%>
+<%      if f.type.is_a? FIXED or f.type.size -%>
+        if(sizeof(self-><%= f.name %>.value.data) >= value.size){
+
+            (void)memcpy(self-><%= f.name %>.value.data, value.data, value.size);
+            retval = true;
+        }
+        else{
+        
+            BLINK_ERROR("value is larger than field capacity")
+        }
+<%      else -%>
+        if((self-><%= f.name %>.value.data != NULL) && (self->super.a.free != NULL)){
+
+            self->super.a.free(self-><%= f.name %>.value.data);
+            self-><%= f.name %>.value.data = NULL;
+            self-><%= f.name %>.value.size = 0U;                        
+        }
+        
+        self-><%= f.name %>.value.data = self->super.a.calloc(value.size, 1U);
+
+        if(self-><%= f.name %>.value.data != NULL){
+        
+            self-><%= f.name %>.value.size = value.size;
+            (void)memcpy(self-><%= f.name %>.value.data, value.data, value.size);
+            retval = true;
+        }
+        else{
+
+            BLINK_ERROR("calloc()")
+        }      
+<%      end -%>
+<%    when DECIMAL -%>
+
+        self-><%= f.name %>.value.mantissa = value.mantissa;
+        self-><%= f.name %>.value.exponent = value.exponent;
+        retval = true;
+    
+<%    when ENUM -%>
+        uint32_t i;
+        for(i=0U; i < sizeof(<%= cname(f.type.name) %>)/sizeof(*<%= cname(f.type.name) %>); i++){
+            if(strncmp(<%= cname(f.type.name) %>[i].nameLen, <%= cname(f.type.name) %>[i].name, value) == 0){
+                
+                self-><%= f.name %>.value = <%= cname(f.type.name) %>[i].value;
+                retval = true;
+                break;
+            }           
+        }
+<%    when DynamicGroup -%>
+        switch(value->type){
+<%      f.type.groups.each do |permitted| %>
+    case TYPE_<%= cname(permitted.name) %>:
+<%      end %>
+            self-><%= f.name %>.value = value;
+            retval = true;
+        default:
+            BLINK_ERROR("group is incompatible with field")
+            break;
+        }
+<%    when DynamicGroup -%>
+        retval = true;
+<%    else -%>
+        self-><%= f.name %>.value = value;
+        retval = true;
+<%    end -%>
+    }
+
+    self-><%=f.name %>.initialised = retval;
+    
     return retval;
 }
 
+bool <%= cname(g.name) %>_test_<%= f.name %>(object_t group)
+{
+    bool retval = false;
+
+<% if @options[:typeAssert] -%>
+    BLINK_ASSERT(group->type == TYPE_<%= cname(g.name) %>)
+    
 <% end -%>
+    if(group->type == TYPE_<%= cname(g.name) %>){
+
+        struct <%= cname(g.name) %> *self = (struct <%= cname(g.name) %> *)group;
+
+        retval = self-><%= f.name %>.initialised;
+    }
+    
+    return retval;
+}
+<%  end -%>
+<%end -%>
 
 /* static functions ***************************************************/
 
 <%@schema.groups.select{|g|g.id}.each do |g| -%>
 
-/* encode a tagged group (top level) */
-static bool <%= cname(g.name) %>_encodeCompact(struct <%= cname(g.name) %> *self, blink_stream_t out)
+static bool <%= cname(g.name) %>_encodeCompactGroup(struct <%= cname(g.name) %> *self, blink_stream_t out)
 {
     bool retval = false;
     uint32_t size;
@@ -194,7 +410,9 @@ static bool <%= cname(g.name) %>_encodeCompact(struct <%= cname(g.name) %> *self
             retval = true;            
         }
         while(false);        
-    }    
+    }
+    
+
     return retval;
 }
 <% end -%>
@@ -325,7 +543,7 @@ static bool <%= cname(g.name) %>_sizeof(struct <%= cname(g.name) %> *self, uint3
 
 <%    when FIXED -%>
 
-<%      if f.opt? -%>
+<%      if f.optional? -%>
         *size += 1U;
 <%      end -%>
 
@@ -352,7 +570,7 @@ static bool <%= cname(g.name) %>_sizeof(struct <%= cname(g.name) %> *self, uint3
         else{
 
             *size += groupSize;
-<%      if f.opt? -%>
+<%      if f.optional? -%>
             *size += 1U;
 <%      end -%>
         }
@@ -393,13 +611,12 @@ static bool <%= cname(g.name) %>_sizeof(struct <%= cname(g.name) %> *self, uint3
 
 
             
-            <%= %>            
         }
 
 <%    end -%>
     }
     else{
-<%    if f.opt? -%>
+<%    if f.optional? -%>
 
         *size += 1U;
 <%    else -%>
@@ -413,114 +630,130 @@ static bool <%= cname(g.name) %>_sizeof(struct <%= cname(g.name) %> *self, uint3
     return retval;
 }
 
-<%  g.fields.each do |f| -%>
-
-/* get field value */
-static <%= value_type(f.type) %> <%= cname(g.name) %>_get_<%= f.name %>(struct <%= cname(g.name) %> *self)
-{
-<%    case f.type.class
-      when STRING, BINARY, FIXED -%>
-    struct blink_string retval = {.data = self-><%= f.name %>.value.data, .size = self-><%= f.name %>.value.size};
-    return retval;  
-<%    when DECIMAL -%>
-    struct blink_decimal retval = {.exponent = self-><%= f.name %>.value.exponent, .mantissa = self-><%= f.name %>.value.mantissa});
-    return retval;
-<%    when ENUM %>
-    const char *retval = NULL;
-    uint32_t i;
-    for(i=0U; i < sizeof(<%= cname(f.type.name) %>)/sizeof(*cname(f.type.name)); i++){
-        if(<%= cname(f.type.name) %>[i].value == self-><%= f.name %>.value){
-
-            retval = <%= cname(f.type.name) %>[i].name;
-            break;
-        }           
-    }
-    return retval;    
-<%    else -%>
-    return self-><%= f.name %>.value;
-<%    end -%>
-}
-
-/* set field value */
-static bool <%= cname(g.name) %>_set_<%= f.name %>(struct <%= cname(g.name) %> *self, <%= value_type(f.type) %> value)
+static bool <%= cname(g.name) %>_decodeCompactGroup(blink_stream_t in, struct <%= cname(g.name) %> *self, uint32_t groupSize)
 {
     bool retval = false;
+    size_t size;
+    bool isNull;
+
+    do {
+    
+<%  g.fields.each do |f| %>
 <%    case f.type.class
-      when STRING, BINARY, FIXED -%>
-<%      if f.type.is_a? FIXED or f.type.size -%>
-    if(sizeof(self-><%= f.name %>.value.data) >= value.size){
-
-        (void)memcpy(self-><%= f.name %>.value.data, value.data, value.size);
-        retval = true;
-    }
-    else{
-    
-        BLINK_ERROR("value is larger than field capacity")
-    }
-<%      else -%>
-    if((self-><%= f.name %>.value.data != NULL) && (self->super.a.free != NULL)){
-
-        self->super.a.free(self-><%= f.name %>.value.data);
-        self-><%= f.name %>.value.data = NULL;
-        self-><%= f.name %>.value.size = 0U;                        
-    }
-    
-    self-><%= f.name %>.value.data = self->super.a.calloc(value.size, 1U);
-
-    if(self-><%= f.name %>.value.data != NULL){
-    
-        self-><%= f.name %>.value.size = value.size;
-        (void)memcpy(self-><%= f.name %>.value.data, value.data, value.size);
-        retval = true;
-    }
-    else{
-
-        BLINK_ERROR("calloc()")
-    }      
-<%      end -%>
-<%    when DECIMAL -%>
-
-    self-><%= f.name %>.value.mantissa = value.mantissa;
-    self-><%= f.name %>.value.exponent = value.exponent;
-    retval = true;
-    
-<%    when ENUM -%>
-    uint32_t i;
-    for(i=0U; i < sizeof(<%= cname(f.type.name) %>)/sizeof(*cname(f.type.name)); i++){
-        if(strncmp(<%= cname(f.type.name) %>[i].nameLen, <%= cname(f.type.name) %>[i].name, value) == 0){
-            
-            self-><%= f.name %>.value = <%= cname(f.type.name) %>[i].value;
-            retval = true;
+      when STRING, BINARY -%>
+        if(!BLINK_Compact_decodeU32(in, &size, &isNull)){
             break;
-        }           
-    }
-<%    DynamicGroup -%>
-    switch(value->type){
-<%      f.type.groups.each do |permitted| %>
-    case TYPE_<%= cname(permitted.name) %>:
-<%      end %>
-        self-><%= f.name %>.value = value;
-        retval = true;
-    default:
-        BLINK_ERROR("group is incompatible with field")
-        break;
-    }
-<%    when DynamicGroup -%>
-    retval = true;
-<%    else -%>
-    self-><%= f.name %>.value = value;
-    retval = true;
-<%    end -%>
-    self-><%=f.name %>.initialised = retval;
-    return retval;
-}
+        }
+        if(!isNull){
 
-/* test that field value is initialised */
-static bool <%= cname(g.name) %>_test_<%= f.name %>(struct <%= cname(g.name) %> *self)
-{
-    return self-><%= f.name %>.initialised;
-}
+<%      if f.type.size %>
+            if(size <= <%= g.type.size %>U){
+
+                if(!BLINK_Stream_read(in, self-><%= f.name %>.value.data, size)){
+                    break;
+                }
+            }
+<%      else %>
+            self-><%= f.name %>.value.data = self.a.calloc(size, 1U);
+            if(self-><%= f.name %>.value.data != NULL){
+
+                if(!BLINK_Stream_read(in, self-><%= f.name %>.value.data, size)){
+                    break;
+                }
+            }
+            else{
+
+                BLINK_ERROR("calloc()")
+            }
+<%      end %>
+        }
+<%    when FIXED -%>
+<%      if f.optional? -%>
+        if(!BLINK_Compact_decodePresent(in, &present)){
+            break;
+        }
+<%      else %>
+        present = true;
+<%      end %>
+        if(present){
+        
+            if(!BLINK_Stream_read(in, self-><%= f.name %>.value.data, self-><%= f.name %>.value.size)){
+                break;
+            }
+        }
+<%    when DECIMAL -%>
+        if(!BLINK_compact_decodeDecimal(in, &self-><%= f.name %>.value.mantissa, &self-><%= f.name %>.value.exponent, &isNull)){
+            break;
+        }
+<%    when BOOLEAN -%>
+        if(!BLINK_Compact_decodeBool(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }                
+<%    when I8 -%>
+        if(!BLINK_Compact_decodeI8(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }            
+<%    when I16 -%>
+        if(!BLINK_Compact_decodeI16(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }                        
+<%    when I32, DATE, ENUM -%>
+        if(!BLINK_Compact_decodeI32(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }
+<%    when I64, NANO_TIME, MILLI_TIME -%>
+        if(!BLINK_Compact_decodeI64(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }
+<%    when U8 -%>
+        if(!BLINK_Compact_decodeU8(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }
+<%    when U16 -%>
+        if(!BLINK_Compact_decodeU16(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }
+<%    when U32, TIME_OF_DAY_MILLI -%>
+        if(!BLINK_Compact_decodeU32(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }
+<%    when U64, TIME_OF_DAY_NANO -%>                
+        if(!BLINK_Compact_decodeU64(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }
+<%    when FLOATING_POINT -%>
+        if(!BLINK_Compact_decodeF64(in, &self-><%= f.name %>.value, &isNull)){
+            break;
+        }                
+<%    when StaticGroup -%>
+        BLINK_ASSERT(self-><%= f.name %>.value != NULL)
+        if(!<%= cname(f.type.name) %>_decodeCompactBody(self-><%= f.name %>.value, out)){
+            break;
+        }
+<%    when DynamicGroup -%>
+        BLINK_ASSERT(self-><%= f.name %>.value != NULL)
+        if(!<%= cname(f.type.name) %>_decodeCompact(self-><%= f.name %>.value, out)){
+            break;
+        }        
+<%    else -%>
+<%      raise -%>
+<%    end -%>
+
+        if(isNull){
+
+            if(self-><%= f.name %>.
+            if(<%= f.optional? %>)
+            
+            self-><%= f.name %>.value.initialised = false;
+        }
 <%  end -%>
 
+        retval = true;
+    }
+    while(false);
+
+    return retval;    
+}
 <%end -%>
+
 

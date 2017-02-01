@@ -43,7 +43,7 @@ module SlowBlink
             end
             @name.freeze
             @id = attr[:name][:id]
-            @type = SlowBlink.const_get(attr[:type][:class]).new(attr[:type].merge({:table => attr[:table], :ns => attr[:ns]}))
+            @type = SlowBlink.const_get(attr[:type][:class]).new(attr[:type].merge({:table => attr[:table], :ns => attr[:ns], :name => @name}))
         end
 
     end

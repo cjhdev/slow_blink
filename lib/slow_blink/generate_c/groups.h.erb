@@ -69,6 +69,29 @@ enum group_type {
 
 /* functions **********************************************************/
 
+/** Encode a group
+ *
+ * @note a group without and ID will never encode
+ *
+ * @param[in] group
+ * @param[in] out output stream
+ *
+ * @return true if self could be encoded
+ *
+ * */
+bool encodeCompact(object_t self, blink_stream_t out);
+
+/** Decode a group from input stream
+ *
+ * @param[in] in input stream
+ * @param[in] alloc allocator
+ *
+ * @return group
+ * @retval NULL group could not be decoded
+ *
+ * */
+group_t decodeCompact(blink_stream_t in, struct blink_allocator alloc); 
+
 <%@schema.groups.each do |g| -%>
 /** Create a new <%= g.name %>
  *
@@ -79,16 +102,35 @@ enum group_type {
  * */
 object_t <%= cname(g.name) %>_new(struct blink_allocator alloc);
 
-<%  if g.id -%>
-/** Encode <%= g.name %>
+<%  g.fields.each do |f| -%>
+/** Get a field value
  *
- * @param[in] self <%= g.name %> instance
- * @param[in] out output stream
+ * @note use <%= cname(g.name) %>_test_<%= f.name %> to determine
+ *       if field has been initialised
  *
- * @return true if self could be encoded
+ * @param[in] group
+ * @return field value
  *
  * */
-bool <%= cname(g.name) %>_encode(object_t self, blink_stream_t out);
+<%= value_type(f.type) %> <%= cname(g.name) %>_get_<%= f.name %>(object_t group);
+
+/** Set a field value
+ *
+ * @param[in] group
+ * @param[in] value
+ * @return true if field was set
+ *
+ * */
+bool <%= cname(g.name) %>_set_<%= f.name %>(object_t group, <%= value_type(f.type) %> value);
+
+/** Test if a field value has been initialised
+ *
+ * @param[in] group
+ * @return true if field is initialised
+ *
+ * */
+bool <%= cname(g.name) %>_test_<%= f.name %>(object_t group);
+
 <%  end -%>
 
 <%end -%>

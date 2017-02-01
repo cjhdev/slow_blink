@@ -1,1 +1,4 @@
 TestEnum = One | two
+
+Test ->
+    TestEnum field

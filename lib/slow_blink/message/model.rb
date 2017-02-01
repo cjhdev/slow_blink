@@ -179,7 +179,7 @@ module SlowBlink
 
                     type = _model_type(field.type)
                     Class.new(Field) do
-                        @optional = field.opt?
+                        @optional = field.optional?
                         @name = field.name
                         @id = field.id
                         @type = type

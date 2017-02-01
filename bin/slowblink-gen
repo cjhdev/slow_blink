@@ -1,0 +1,7 @@
+#!/usr/bin/env ruby
+
+require 'slow_blink'
+
+schema = SlowBlink::Schema.read(ARGV[0])
+
+SlowBlink::GenerateC::Model.new(schema).render

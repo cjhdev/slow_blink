@@ -31,10 +31,13 @@ module SlowBlink
             @symbols.values
         end
 
+        attr_reader :name
+
         def initialize(attr)
 
             @location = attr[:loc]
             @symbols = {}
+            @name = attr[:name].dup.freeze
 
             attr[:syms].each do |s|
 

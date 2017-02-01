@@ -10,7 +10,8 @@ module SlowBlink
 
             def initialize(schema)
                 @schema = schema
-                @prefix = "__"                
+                @prefix = "__"
+                @options = {}
             end
 
             def render
