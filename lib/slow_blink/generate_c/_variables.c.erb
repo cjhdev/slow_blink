@@ -1,0 +1,18 @@
+<%@schema.definitions.select{|d|d.is_a? Definition and d.type.is_a? ENUM}.each do |e| -%>
+static const struct blink_enum <%= gname(e) %>[] = {
+<%  e.type.symbols.each do |s| -%>
+    {<%= s.value %>, "<%= s.name%>", sizeof("<%= s.name%>")-1U},
+<%  end-%>
+};
+<%end-%>
+
+struct group_table {
+    enum blink_type type;
+    uint64_t id;
+};
+
+static const struct group_table groups[] = {
+<%@schema.groups.each.select{|g|g.id}.each do |g| -%>
+    {TYPE_<%= gname(g) %>, <%= g.id %>U},
+<%end -%>
+};

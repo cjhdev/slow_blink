@@ -23,6 +23,10 @@
 #ifndef GROUPS_H
 #define GROUPS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* includes ***********************************************************/
 
 #include <stdint.h>
@@ -62,7 +66,7 @@ struct blink_decimal {
 
 enum group_type {
 <%@schema.groups.each do |g| -%>
-    TYPE_<%= cname(g.name) %>,
+    TYPE_<%= gname(g) %>,  /**< `<%= g.name %>` */
 <%end -%>
 };
 
@@ -79,7 +83,7 @@ enum group_type {
  * @return true if self could be encoded
  *
  * */
-bool encodeCompact(object_t self, blink_stream_t out);
+bool encodeCompact(group_t self, blink_stream_t out);
 
 /** Decode a group from input stream
  *
@@ -90,50 +94,103 @@ bool encodeCompact(object_t self, blink_stream_t out);
  * @retval NULL group could not be decoded
  *
  * */
-group_t decodeCompact(blink_stream_t in, struct blink_allocator alloc); 
+group_t decodeCompact(blink_stream_t in, struct blink_allocator alloc);
+
+/** Destroy an object
+ *
+ * @param[in] pointer to object
+ *
+ * */
+void destroy(group_t *obj);
 
 <%@schema.groups.each do |g| -%>
-/** Create a new <%= g.name %>
+/** Create a new `<%= g.name %>`
  *
  * @param[in] alloc allocator
  * @return group
  * @retval NULL calloc()
  *
  * */
-object_t <%= cname(g.name) %>_new(struct blink_allocator alloc);
+group_t <%= gname(g) %>_new(struct blink_allocator alloc);
 
 <%  g.fields.each do |f| -%>
-/** Get a field value
+
+<%    if f.type.sequence? -%>
+
+/** Append to `<%= g.name + "." + f.name %>` (sequence)
  *
- * @note use <%= cname(g.name) %>_test_<%= f.name %> to determine
+ * @param[in] group
+ * @param[in] value
+ * @return true if value was appended
+ *
+ * */
+bool <%= gname(g) %>_append_<%= f.name %>(group_t group, <%= value_type(f.type) %> value);
+
+/** Prepend to `<%= g.name + "." + f.name %>` (sequence)
+ *
+ * @param[in] group
+ * @param[in] value
+ * @return true if value was prepended
+ *
+ * */
+bool <%= gname(g) %>_prepend_<%= f.name %>(group_t group, <%= value_type(f.type) %> value);
+
+/** Iterate over entries in `<%= g.name + "." + f.name %>` (sequence)
+ *
+ * @note `each` may break the iteration by returning `false`
+ *
+ * @param[in] group
+ * @param[in] each this function will be called for each value in `<%= g.name + "." + f.name %>`
+ *
+ * */
+void <%= gname(g) %>_iterate_<%= f.name %>(group_t group, bool (*each)(void *user, <%= value_type(f.type) %> value));
+
+<%    else -%>
+
+/** Get `<%= g.name + "." + f.name %>`
+ *
+ * @note use <%= gname(g) %>_test_<%= f.name %> to determine
  *       if field has been initialised
  *
  * @param[in] group
  * @return field value
  *
  * */
-<%= value_type(f.type) %> <%= cname(g.name) %>_get_<%= f.name %>(object_t group);
+<%= value_type(f.type) %> <%= gname(g) %>_get_<%= f.name %>(group_t group);
 
-/** Set a field value
+/** Set `<%= g.name + "." + f.name %>`
  *
  * @param[in] group
  * @param[in] value
  * @return true if field was set
  *
  * */
-bool <%= cname(g.name) %>_set_<%= f.name %>(object_t group, <%= value_type(f.type) %> value);
+bool <%= gname(g) %>_set_<%= f.name %>(group_t group, <%= value_type(f.type) %> value);
 
-/** Test if a field value has been initialised
+<%    end -%>
+
+/** Test if `<%= g.name + "." + f.name %>` has been initialised
  *
  * @param[in] group
  * @return true if field is initialised
  *
  * */
-bool <%= cname(g.name) %>_test_<%= f.name %>(object_t group);
+bool <%= gname(g) %>_test_<%= f.name %>(group_t group);
+
+/** Clear `<%= g.name + "." + f.name %>`
+ *
+ * @param[in] group
+ *
+ * */
+void <%= gname(g) %>_clear_<%= f.name %>(group_t group);
 
 <%  end -%>
 
 <%end -%>
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

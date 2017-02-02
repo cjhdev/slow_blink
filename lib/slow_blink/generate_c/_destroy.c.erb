@@ -1,0 +1,16 @@
+void destroy(object_t *obj)
+{
+    if((obj != NULL) && (*obj != NULL)){
+
+        if(*obj->a.free){
+
+            //todo
+            //maybe a per group destroy function
+
+
+            
+        }
+        
+        *obj = NULL;
+    }
+}

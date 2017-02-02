@@ -62,6 +62,7 @@ module SlowBlink
         end
 
         attr_reader :syntax
+        attr_reader :annotes
         
         # @api user
         #
@@ -98,7 +99,7 @@ module SlowBlink
                     else
                         @defs[key] = SlowBlink.const_get(d[:class]).new(d.merge({:ns=>ns[:name], :table=>@defs}))
                     end
-                end
+                end                
             end
 
             # test that reference definitions resolve and detect circular references

@@ -1,0 +1,64 @@
+group_t decode(blink_stream_t in, struct blink_allocator alloc)
+{
+    group_t retval = NULL;
+    uint32_t size;
+    bool isNull;
+
+    if(BLINK_Compact_getU32(in, &isNull, &size)){
+
+        if(!isNull{
+
+            if(size == 0U){
+
+                BLINK_ERROR("group size cannot be zero")
+            }
+            else{
+
+                if(BLINK_Compact_getU64(in, &isNull, &id){
+
+                    if(isNull){
+
+                        BLINK_ERROR("group ID cannot be NULL")
+                    }
+                    else{
+
+                        switch(id){
+<%@schema.groups.select{|g|g.id}.each do |g|-%>
+                        case <%= g.id %>U:
+
+                            retval = <%= gname(g) %>_new(alloc);
+                            if(retval != NULL){
+                        
+                                if(!<%= gname(g) %>_decodeBody(in, (struct <%= gname(g) %> *)group)){
+        
+                                    <%= gname(g) %>_destroy(group);
+                                    retval = NULL;
+                                }
+                            }
+
+                            break;
+<%end -%>
+                        default:
+                        
+                            BLINK_ERROR("group id is unknown")
+
+                            //vend unknown groups here??
+                            
+                            /* read past the unknown group */
+                            while(size > 0){
+                                uint8_t buf;
+                                if(!BLINK_Stream_read(in, &buf, sizeof(buf))){
+                                    break;
+                                }
+                                size--;
+                            }            
+                            break;                            
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    return retval;
+}
