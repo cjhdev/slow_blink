@@ -31,6 +31,7 @@ module SlowBlink
         # @return [Integer]
         attr_reader :value
 
+        # @private
         def initialize(attr)
             @name = attr[:name].to_s
             @value = attr[:value]

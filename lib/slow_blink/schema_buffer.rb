@@ -22,10 +22,7 @@
 
 module SlowBlink
 
-    # Use schema buffer when you want to deal with schemas in-memory
-    # rather than loading from files.
-    #
-    # It combines the schema string with an optional filename string.
+    # Use SchemaBuffer when you want to deal named in-memory schemas
     #
     # e.g:
     #

@@ -22,19 +22,21 @@
 
 module SlowBlink
 
-    # A REF is a type that points to a Group, TypeDef, or Enum
-    # by name.
+    # A REF is a type that points to a Group or a Definition
+    # by a reference string.
     #
-    # It may be static or dynamic
     #
     class REF < Type
 
+        # @return [String]
         attr_reader :ref
 
+        # @return [true,false]
         def dynamic?
             @dynamic
         end
 
+        # @return [Group, Definition]
         def resolve
             result = nil
             if @table
@@ -49,6 +51,7 @@ module SlowBlink
             result
         end                    
 
+        # @private
         def initialize(attr)
             super(attr)
             @ref = attr[:ref].freeze

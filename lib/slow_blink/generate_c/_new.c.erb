@@ -27,20 +27,3 @@ object_t <%= gname(g) %>_new(struct blink_allocator alloc)
     return (object_t)retval;
 }
 <%end -%>
-
-void destroy(object_t *obj)
-{
-    if((obj != NULL) && (*obj != NULL)){
-
-        if(*obj->a.free){
-
-            //todo
-            //maybe a per group destroy function
-
-
-            
-        }
-        
-        *obj = NULL;
-    }
-}

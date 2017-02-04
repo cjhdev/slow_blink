@@ -22,18 +22,25 @@
 
 module SlowBlink
 
-    # either a type or enum definition
     class Definition
 
+        # @return [Type] defined type
         attr_reader :type
+
+        # @macro location
         attr_reader :location
+
+        # @return [String]
         attr_reader :name
+
+        # @return [Integer,nil]
         attr_reader :id
 
         def self.===(other)
             self == other                
         end
 
+        # @private
         def initialize(attr)
             @location = attr[:loc].freeze
             @ns = attr[:ns].freeze

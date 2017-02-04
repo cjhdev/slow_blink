@@ -29,6 +29,7 @@ module SlowBlink
         # @return [nil] no maximum size
         attr_reader :size
 
+        # @private
         def initialize(attr)
             super(attr)
             @size = attr[:size]            

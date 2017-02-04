@@ -28,8 +28,13 @@ module SlowBlink
             self == other                
         end
 
+        # @return [Integer,nil]
         attr_reader :id
+
+        # @return [String] qualified name
         attr_reader :name
+
+        # @macro location
         attr_reader :location
         
         # @return [Array<Field>]
@@ -62,6 +67,7 @@ module SlowBlink
             result.values
         end
 
+        # @return [Array<Group>] super groups in order of most super
         def ancestors
             result = []
             ptr = superGroup
@@ -71,7 +77,8 @@ module SlowBlink
             end
             result
         end
-           
+
+        # @return [Group,nil]
         def superGroup
 
             result = nil
@@ -125,7 +132,8 @@ module SlowBlink
 
             result
         end
-                
+
+        # @private
         def initialize(attr)
 
             @ns = attr[:ns].freeze

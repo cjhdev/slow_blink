@@ -27,12 +27,15 @@ module SlowBlink
             self == other                
         end
 
+        # @return [Array<Sym>]
         def symbols
             @symbols.values
         end
 
+        # @return [String]
         attr_reader :name
 
+        # @private
         def initialize(attr)
 
             @location = attr[:loc]
@@ -80,13 +83,17 @@ module SlowBlink
         end
 
         # @param nameOrVal [String,Integer]
+        # @raise [RangeError] nameOrVal does not resolve to a symbol
         # @return [Sym]
-        # @return [nil]
         def symbol(nameOrVal)
             if nameOrVal.kind_of? String
-                @symbols[nameOrVal]
+                if (result = @symbols[nameOrVal]).nil?
+                    raise RangeError
+                end
             else
-                @symbols.values.detect{|s|s.value == nameOrVal.to_i}
+                if (result = @symbols.values.detect{|s|s.value == nameOrVal.to_i}).nil?
+                    raise RangeError
+                end
             end
         end
 

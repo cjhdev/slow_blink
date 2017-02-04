@@ -20,7 +20,6 @@
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-# SlowBlink namespace
 module SlowBlink
 
     # @!macro location
@@ -50,41 +49,41 @@ module SlowBlink
 
         # @api user
         #
-        # @return [Array] groups
+        # @return [Array<Group>] groups
         def groups
             @defs.values.select do |d|
                 d.is_a? Group
             end
         end
 
+        # @api user
+        #
+        # @return [Array<Definition,Group>] definitions
         def definitions
             @defs.values
         end
 
-        attr_reader :syntax
-        attr_reader :annotes
-        
         # @api user
         #
-        # Create a Schema from one or more SchemaBuffers that are evaluated
-        # in the order they appear.
+        # Create a Schema from one or more Blink Protocol schemas
         #
-        # @param buffer [Array<SchemaBuffer>]
+        # @param buffer [Array<SchemaBuffer,String>]
         def initialize(*buffer)
 
-            @syntax = ""
+            namespace = []
 
             if buffer.size > 0
-                namespace = []
                 buffer.each do |b|
-                    @syntax << b.buffer
-                    namespace << SlowBlink.parse_file_buffer(b.buffer, filename: b.filename)                    
+                    if buffer.kind_of? String
+                        namespace << SlowBlink.parse_file_buffer(buffer)
+                    else
+                        namespace << SlowBlink.parse_file_buffer(b.buffer, filename: b.filename)
+                    end
                 end
             else
                 raise ArgumentError.new "at least one buffer required"
             end
 
-            @syntax.freeze
             @defs = {}
 
             # create groups and definitions
@@ -164,7 +163,6 @@ require 'slow_blink/object'
 require 'slow_blink/boolean'
 require 'slow_blink/enum'
 require 'slow_blink/sym'
-require 'slow_blink/name_with_id'
 require 'slow_blink/definition'
 require 'slow_blink/ext_schema_parser'
 

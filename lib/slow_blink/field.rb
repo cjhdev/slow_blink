@@ -24,14 +24,16 @@ module SlowBlink
 
     class Field
 
+        # @param [Integer]
         attr_reader :id
+
+        # @param [String]
         attr_reader :name
+
+        # @macro location
         attr_reader :location
 
-        # @return [DynamicGroup, StaticGroup, Enum, Bool, U8, ]
-        # 
-        #
-        #
+        # @return [Type]
         def type
             result = nil
             if @type.is_a? REF
@@ -81,11 +83,13 @@ module SlowBlink
 
             result
         end
-    
+
+        # @return [true,false]
         def optional?
             @optional
         end
 
+        # @private
         def initialize(attr)        
             @name = attr[:name][:name].freeze
             @id = attr[:name][:id]

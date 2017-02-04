@@ -6,8 +6,6 @@ SlowBlink
 
 SlowBlink is a Ruby implementation of [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
 
-SlowBlink was written to evaluate Blink Protocol.
-
 ## Highlights
 
 - Implements Blink Specification [beta4-2013-06-14](specification/blink/BlinkSpec-beta4.pdf "Blink Specification").
@@ -15,10 +13,9 @@ SlowBlink was written to evaluate Blink Protocol.
 - Dynamic message model generator
     - Does not generate constants or symbols
 - Support for compact mode serialisation
+- C codec generator
 
 ## Todo
-
-This list is not exhaustive:
 
 - More tests
 - Support `SlowBlink::Message::DATE`
@@ -31,193 +28,11 @@ This list is not exhaustive:
 gem install slow_blink
 ~~~
 
-Requires Ruby 2.0 and up.
+Requires Ruby 2.0 and support for building native extensions.
 
 ## Examples
 
-### Create a Schema From Schema Definition(s)
-
-~~~ruby
-require 'slow_blink'
-include SlowBlink
-
-# read schema definition from file
-schema = Schema.read("your_schema.blink")
-
-# read several schema definitions from file and combine them in order read
-schema = Schema.read("common_schema.blink", "specialised_schema.blink")
-
-# read schema definition from memory with optional 'filename' equivalent string
-schema = Schema.new(SchemaBuffer.new("Hello/0 -> string greeting", "buffer.blink"))
-
-# read several schema definitions from memory and combine them in order read
-schema = Schema.new(SchemaBuffer.new("Hello -> string greeting"), SchemaBuffer.new("Hello <- 0"))
-~~~
-
-### Single Group
-
-~~~ruby
-require 'slow_blink'
-include SlowBlink
-
-schema = Schema.new(SchemaBuffer.new("Hello/0 -> string greeting"))
-
-# generate a message model from the schema
-model = Message::Model.new(schema)
-
-# create a message instance using the message model
-message = model.group("Hello").new("greeting" => "hello")
-
-# "\x07\x00\x05\x68\x65\x6C\x6C\x6F"
-compact_form = message.encode_compact
-
-# convert from compact form...
-decoded = model.decode_compact(compact_form)
-
-# read the field values of a message instance
-puts decoded["greeting"]
-~~~
-
-### Static Subgroup
-
-~~~ruby
-require 'slow_blink'
-include SlowBlink
-
-syntax = <<-eos
-StandardHeader ->
-    u64 SeqNo,
-    millitime SendingTime
-MyMessage/2 ->
-    StandardHeader Header,
-    string Text
-eos
-
-model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
-
-message = model.group("MyMessage").new(
-    "Header" => {
-        "SeqNo" => 1,
-        "SendingTime" => "2012-10-30 00:00:00 GMT+1"
-    },
-    "Text" => "my name"
-)
-
-# "\x10\x02\x01\xC6\x80\xC5\xC0\xAE\x3A\x01\x07\x6D\x79\x20\x6E\x61\x6D\x65"
-message.encode_compact
-
-decoded = model.decode_compact(compact_form)
-
-puts decoded["Header"]["SeqNo"]
-puts decoded["Header"]["SendingTime"]
-puts decoded["Text"]
-
-~~~
-
-### Dynamic Subgroup
-
-~~~ruby
-require 'slow_blink'
-include SlowBlink
-
-syntax = <<-eos
-Shape ->
-    decimal Area
-    
-Rect/3 : Shape ->
-    u32 Width,
-    u32 Height
-
-Circle/4 : Shape ->
-    u32 Radius
-
-Canvas/5 ->
-    Shape * [] Shapes    
-eos
-
-model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
-
-message = model.group("Canvas").new(
-    "Shapes" => [
-        model.group("Rect").new("Area" => 6.0, "Width" => 2, "Height" => 3),
-        model.group("Circle").new("Area" => 28.3, "Radius" => 3)
-    ]
-)
-
-# "\x0E\x05\x02\x05\x03\x00\x06\x02\x03\x05\x04\x7F\x9B\x04\x03"
-message.encode_compact
-~~~
-
-### Message Extensions
-
-~~~ruby
-require 'slow_blink'
-include SlowBlink
-
-syntax = <<-eos
-Mail/7 ->
-    string Subject,
-    string To,
-    string From,
-    string Body
-    
-Trace/8 ->
-    string Hop
-eos
-
-model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
-
-message = model.group("Mail").new(        
-    "Subject" => "Hello",
-    "To" => "you",
-    "From" => "me",
-    "Body" => "How are you?"
-)
-
-# append two extensions to message
-message.extension << model.group("Trace").new("Hop" => "local.eg.org")
-message.extension << model.group("Trace").new("Hop" => "mail.eg.org")
-
-# "\x39\x07\x05\x48\x65\x6C\x6C\x6F\x03\x79\x6F\x75\x02\x6D\x65\x0C\x48\x6F\x77\x20\x61\x72\x65\x20\x79\x6F\x75\x3F\x02\x0E\x08\x0C\x6C\x6F\x63\x61\x6C\x2E\x65\x67\x2E\x6F\x72\x67\x0D\x08\x0B\x6D\x61\x69\x6C\x2E\x65\x67\x2E\x6F\x72\x67"
-message.encode_compact
-
-~~~
-
-### Enumeration
-
-~~~ruby
-require 'slow_blink'
-include SlowBlink
-
-syntax = <<-eos
-Singleton = | Lonely
-
-Size = Small | Medium | Large
-
-ExplicitSize = Small/38 | Medium/40 | Large/42
-
-Colour = Red/0xff0000 | Green/0x00ff00 | Blue/0x0000ff
-
-Message/0 ->
-    Singleton One,
-    Size Two,
-    ExplicitSize Three,
-    Colour Four    
-eos
-
-model = Message::Model.new(Schema.new(SchemaBuffer.new(syntax)))
-
-message = model.group("Message").new(
-    "One" => "Lonely",
-    "Two" => "Small",
-    "Three" => "Medium",
-    "Four" => "Blue"
-)
-
-# "\x06\x00\x00\x00\x28\xBF\x03"
-message.encode_compact
-
-~~~
+see `examples`
 
 ## Documentation
 
@@ -226,6 +41,9 @@ message.encode_compact
 - The version of Blink Specification implemented by SlowBlink is included in this repository under `specification/blink`
 
 ## Typical Performance
+
+
+
 
 ~~~
 schema with data:

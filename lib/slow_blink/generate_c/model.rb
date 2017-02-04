@@ -25,7 +25,10 @@ module SlowBlink
             private
 
                 def put(filename)
-                    ERB.new(File.read(File.expand_path(File.join(File.dirname(__FILE__), filename))), nil, "<>-").result(binding)
+                    f = File.read(File.expand_path(File.join(File.dirname(__FILE__), filename)))
+                    erb = ERB.new(f, nil, "<>-")
+                    erb.filename = filename
+                    erb.result(binding)
                 end
 
                 def gname(g)
