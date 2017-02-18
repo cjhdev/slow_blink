@@ -5,63 +5,30 @@
  * */
 %{
 
-/* includes ***********************************************************/
-
-#include <float.h>
 #include <ruby.h>
-#include <inttypes.h>
-#include <assert.h>
 #include "parser.h"
 
-/* static prototypes **************************************************/
-
-/**
- * - Inserted into lexer as part of the YY_USER_ACTION macro
- * - 
- * 
- * @param[in] loc pointer to Bison location record
- * @param[in] text
- * @param[in] textLen length of text in bytes
- *
- * */
-static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
-
-/* macros *************************************************************/
-
-#define YY_USER_ACTION updateLocation(yylloc, yytext, yyleng);
-
-/* generated **********************************************************/
+#define YY_USER_ACTION do{\
+    yylloc->first_line = yylloc->last_line;\
+    yylloc->first_column = yylloc->last_column;\
+    yylloc->last_column += yyleng;\
+}while(0);    
 
 %}
 
-%top{
-
-    #include "common.h"
-
-}
-
-%option nounput
-%option noinput
-%option bison-bridge bison-locations
+%option nounput noinput noyywrap
+%option bison-locations
+%option fast
 %option reentrant
-%option noyywrap
-%option debug
-
-
-%x LITERAL_C
-%x LITERAL_A
 
 %%
 
-"#"[^\r\n]*        { /* skip comments */ }
+"#"[^\n]*           { }
+[ \t]+              { }    
+[\n]+               { yylloc->last_column = 0; yylloc->last_line += yyleng; }
 
-"\""                { BEGIN(LITERAL_C); }
-<LITERAL_C>[^\"]*   { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
-<LITERAL_C>"\""     { BEGIN(INITIAL); }
-
-"'"                 { BEGIN(LITERAL_A); }
-<LITERAL_A>[^']*    { *yylval = rb_str_new(yytext, yyleng); return TOK_LITERAL; }
-<LITERAL_A>"'"      { BEGIN(INITIAL); }
+["][^\n\"]*["]      |
+['][^\n']*[']       { *yylval = rb_str_new(&yytext[1], yyleng-2); return TOK_LITERAL; }
 
 "="                 |
 ","                 |
@@ -104,37 +71,16 @@ static void updateLocation(YYLTYPE *loc, const char *text, int textLen);
 "->"                { return TOK_RIGHT_ARROW; }
 "<-"                { return TOK_LEFT_ARROW; }
 
-[0][x][0-9a-fA-F]+      { uint64_t tmp = 0; int ret = sscanf(yytext, "%" SCNx64, &tmp); assert(ret == 1); *yylval = ULONG2NUM(tmp); return TOK_HEX; }
-[0-9]+                  { uint64_t tmp = 0; int ret = sscanf(yytext, "%" SCNu64, &tmp); assert(ret == 1); *yylval = ULONG2NUM(tmp); return TOK_UINT; }
-[-][1-9][0-9]*          { int64_t tmp = 0; int ret = sscanf(yytext, "%" SCNi64, &tmp); assert(ret == 1); *yylval = LONG2NUM(tmp); return TOK_INT; }
+[0][x][0-9a-fA-F]+ { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 1, UINT2NUM(16U)); return TOK_HEX; }
+[0-9]+             { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); return TOK_UINT; }
+[-][1-9][0-9]*     { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); return TOK_INT; }
 
 [_a-zA-Z][_a-zA-Z0-9]*[:][_a-zA-Z][_a-zA-Z0-9]* { *yylval = rb_str_new(yytext, yyleng); return TOK_C_NAME; }
 [_a-zA-Z][_a-zA-Z0-9]*      { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
 [\\][_a-zA-Z][_a-zA-Z0-9]*  { *yylval = rb_str_new(&yytext[1], yyleng-1); return TOK_ESCAPED_NC_NAME; }
 
-.|\n                {}
+<<EOF>>             { return TOK_EOF; }
+
+.                   { return TOK_UNKNOWN; }
 
 %%
-
-/* static functions ***************************************************/
-
-static void updateLocation(YYLTYPE *loc, const char *text, int textLen)
-{
-    int i;
-
-    loc->first_line = loc->last_line;
-    loc->first_column = loc->last_column;
-
-    for(i=0; i < textLen; i++){
-
-        if(text[i] == '\n'){
-        
-            loc->last_line++;
-            loc->last_column = 0;
-        }
-        else{
-        
-            loc->last_column++;
-        }
-    }
-}

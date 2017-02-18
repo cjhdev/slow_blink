@@ -141,7 +141,6 @@ module SlowBlink
 end
 
 require 'slow_blink/parse_error'
-require 'slow_blink/log'
 require 'slow_blink/schema_buffer'
 require 'slow_blink/version'
 require 'slow_blink/field'

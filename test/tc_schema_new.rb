@@ -186,5 +186,27 @@ class TestTypes < Test::Unit::TestCase
             Schema.new(SchemaBuffer.new(input))
         end
     end
+
+    def test_incomplete_body
+        input = "test -> u8 field,"
+        assert_raise ParseError do
+            Schema.new(SchemaBuffer.new(input))
+        end
+    end
+
+    def test_incomplete_enum
+        input = "test = one |"
+        assert_raise ParseError do
+            Schema.new(SchemaBuffer.new(input))
+        end
+    end
+
+    def test_definition_annotes
+        input = <<-eos
+            @test='hello world'
+            enum = | something
+        eos
+        Schema.new(SchemaBuffer.new(input))        
+    end
     
 end

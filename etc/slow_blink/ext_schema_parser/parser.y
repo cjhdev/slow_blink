@@ -5,33 +5,21 @@
  * */
 %{
 
-/* includes ***********************************************************/
+typedef void * yyscan_t;
+#define YY_TYPEDEF_YY_SCANNER_T
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
 #include <ruby.h>
-#include <assert.h>
 
+#include "parser.h"
 #include "lexer.h"
 
-/* function prototypes ************************************************/
-
-void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... );
-
-/* static function prototypes *****************************************/
+void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg);
 
 static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self);
-static VALUE newLocation(VALUE filename, const YYLTYPE *location);
-
-/* static variables ***************************************************/
+static VALUE newLocation(VALUE filename, const YYLTYPE *locp);
 
 static VALUE cSlowBlink;
-
-static VALUE cLog;
 static VALUE cParseError;
-
-/* generated **********************************************************/
 
 %}
 
@@ -43,9 +31,9 @@ static VALUE cParseError;
 %define parse.error verbose
 %define api.token.prefix {TOK_}
 %glr-parser
-%debug
 
 %token
+    EOF     0
     I8                  "i8"
     I16                 "i16"
     I32                 "i32"
@@ -79,7 +67,7 @@ static VALUE cParseError;
     ESCAPED_NC_NAME     "\\ncName"
     C_NAME              "cName"
     LITERAL             "\"<annotation>\" or '<annotation>'"
-    
+    UNKNOWN
     
 %%    
 
@@ -789,8 +777,6 @@ name:
     ESCAPED_NC_NAME
     ;
 
-
-
 literalSegment:
     LITERAL
     ;
@@ -818,26 +804,20 @@ e:
 
 %%
 
-/* functions **********************************************************/
-
-
 void Init_ext_schema_parser(void)
 {
     cSlowBlink = rb_define_module("SlowBlink");
-    cLog = rb_const_get(cSlowBlink, rb_intern("Log"));
     cParseError = rb_const_get(cSlowBlink, rb_intern("ParseError"));
     rb_define_singleton_method(cSlowBlink, "parse_file_buffer", parseFileBuffer, -1);
 }
 
-void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg, ... )
+void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg)
 {
     VALUE message = newLocation(filename, locp);
-    rb_str_append(message, rb_str_new2(": error: "));
-    rb_str_append(message, rb_str_new2(msg));
-    rb_funcall(cLog, rb_intern("error"), 1, message);
+    rb_str_append(message, rb_str_new2(" error: "));
+    rb_str_append(message, rb_funcall(rb_str_new2(msg), rb_intern("sub"), 2, rb_str_new2("UNKNOWN"), rb_str_new2(yyget_text(scanner))));    
+    rb_funcall(rb_stderr, rb_intern("puts"), 1, message);
 }
-
-/* static functions ***************************************************/
 
 static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
 {
@@ -846,7 +826,7 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
     VALUE buffer;
     VALUE opts;
     VALUE filename;
-    int retval;
+    int retval = 0;
 
     rb_scan_args(argc, argv, "10:", &buffer, &opts);
 
@@ -860,52 +840,49 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
 
     filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
 
-    
-
     if(yylex_init(&scanner) == 0){
 
         if(yy_scan_bytes((const char *)RSTRING_PTR(buffer), RSTRING_LEN(buffer), scanner)){
 
             retval = yyparse(scanner, filename, &tree);
-
-            yylex_destroy(scanner);
-
-            switch(retval){
-            case 0:
-                break;
-            case 1:
-                rb_raise(cParseError, "parse error");
-                break;
-            case 2:
-                rb_bug("yyparse: bison parser reports memory exhaustion");
-                break;
-            default:
-                rb_bug("yyparse: unknown return code");
-                break;
-            }
         }
-        else{
 
-            yylex_destroy(scanner);
-        }
+        yylex_destroy(scanner);
+
+        switch(retval){
+        case 0:
+            break;
+        case 1:
+        case 2:
+            rb_raise(cParseError, "parse error");
+            break;
+        default:
+            rb_bug("yyparse: unknown return code");
+            break;
+        }        
     }
 
     return tree;
 }
 
-static VALUE newLocation(VALUE filename, const YYLTYPE *location)
+static VALUE newLocation(VALUE filename, const YYLTYPE *locp)
 {
-    char msg[500];    
-    int len = 0;
+    VALUE retval = rb_str_new2("");
 
     if(filename != Qnil){
 
-        len = snprintf(msg, sizeof(msg), "%s:%i:%i", (const char *)RSTRING_PTR(filename), location->first_line, location->first_column);
+        retval = filename;
+        rb_str_append(retval, rb_str_new2(":"));
     }
     else{
 
-        len = snprintf(msg, sizeof(msg), "%i:%i", location->first_line, location->first_column);
+        retval = rb_str_new2("");
     }
-    
-    return rb_str_new(msg, len);
+
+    rb_str_append(retval, rb_funcall(INT2NUM(locp->first_line), rb_intern("to_s"), 0));
+    rb_str_append(retval, rb_str_new2(":"));
+    rb_str_append(retval, rb_funcall(INT2NUM(locp->first_column), rb_intern("to_s"), 0));
+    rb_str_append(retval, rb_str_new2(":"));
+
+    return retval;
 }

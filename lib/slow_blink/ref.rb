@@ -40,11 +40,9 @@ module SlowBlink
         def resolve
             result = nil
             if @table
-                #Log.info "try to resolve #{@ref}"
                 if (result = @table[@ref]).nil?                    
                     if @ns and @ref.split("::").size == 1
                         result = @table[@ns + "::" + @ref]
-                        #Log.info "try to resolve #{@ns + "::" + @ref}"
                     end
                 end                
             end

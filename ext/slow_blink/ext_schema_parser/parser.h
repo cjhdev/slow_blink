@@ -34,7 +34,7 @@
 # define YY_YY_EXT_SLOW_BLINK_EXT_SCHEMA_PARSER_PARSER_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -45,6 +45,7 @@ extern int yydebug;
 # define YYTOKENTYPE
   enum yytokentype
   {
+    TOK_EOF = 0,
     TOK_I8 = 258,
     TOK_I16 = 259,
     TOK_I32 = 260,
@@ -77,7 +78,8 @@ extern int yydebug;
     TOK_NC_NAME = 287,
     TOK_ESCAPED_NC_NAME = 288,
     TOK_C_NAME = 289,
-    TOK_LITERAL = 290
+    TOK_LITERAL = 290,
+    TOK_UNKNOWN = 291
   };
 #endif
 
