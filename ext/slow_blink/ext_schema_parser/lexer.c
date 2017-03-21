@@ -3479,21 +3479,19 @@ YY_RULE_SETUP
 #line 80 "etc/slow_blink/ext_schema_parser/parser.l"
 { *yylval = rb_str_new(&yytext[1], yyleng-1); return TOK_ESCAPED_NC_NAME; }
 	YY_BREAK
-case YY_STATE_EOF(INITIAL):
-#line 82 "etc/slow_blink/ext_schema_parser/parser.l"
-{ return TOK_EOF; }
-	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 84 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 82 "etc/slow_blink/ext_schema_parser/parser.l"
 { return TOK_UNKNOWN; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 86 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 84 "etc/slow_blink/ext_schema_parser/parser.l"
 ECHO;
 	YY_BREAK
-#line 3497 "ext/slow_blink/ext_schema_parser/lexer.c"
+#line 3493 "ext/slow_blink/ext_schema_parser/lexer.c"
+case YY_STATE_EOF(INITIAL):
+	yyterminate();
 
 	case YY_END_OF_BUFFER:
 		{
@@ -4640,7 +4638,7 @@ void yyfree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 86 "etc/slow_blink/ext_schema_parser/parser.l"
+#line 84 "etc/slow_blink/ext_schema_parser/parser.l"
 
 
 

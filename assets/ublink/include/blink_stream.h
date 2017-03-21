@@ -52,6 +52,7 @@ struct blink_stream_user {
     bool (*peek)(void *state, void *c);
     bool (*seekCur)(void *state, int32_t offset);
     bool (*seekSet)(void *state, uint32_t offset);
+    bool (*eof)(void *state);
 };
 
 struct blink_stream {
@@ -59,19 +60,28 @@ struct blink_stream {
         BLINK_STREAM_NULL = 0,        /**< uninitialised */
         BLINK_STREAM_BUFFER,          /**< buffer stream */
         BLINK_STREAM_USER,            /**< user stream */
+        BLINK_STREAM_BOUNDED          /**< bounded stream */
     } type;
     union blink_stream_state {
         struct {
             const uint8_t *in;  /**< readable buffer */
             uint8_t *out;       /**< writeable buffer */
             uint32_t max;       /**< maximum size of buffer */
-            uint32_t pos;        /**< current position */
+            uint32_t pos;       /**< current position */
+            bool eof;
         } buffer;
         struct {
             struct blink_stream_user fn;
             void *state;
         } user;
+        struct {
+            struct blink_stream *stream;
+            uint32_t max;                   
+            uint32_t pos;
+            bool eof;
+        } bounded;
     } value;
+    
 };
 
 typedef struct blink_stream * blink_stream_t;
@@ -144,6 +154,17 @@ blink_stream_t BLINK_Stream_initBuffer(struct blink_stream *self, void *buf, uin
  * */
 blink_stream_t BLINK_Stream_initUser(struct blink_stream *self, void *state, struct blink_stream_user fn);
 
+/** Init a bounded stream
+ *
+ * @param[in] self
+ * @param[in] stream stream to bound
+ * @param[in] max stream is allowed to read/seek within range (cur .. cur + max) bytes
+ *
+ * @return stream
+ *
+ * */
+blink_stream_t BLINK_Stream_initBounded(struct blink_stream *self, blink_stream_t stream, uint32_t max);
+
 /** Get current position
  *
  * @param[in] self
@@ -175,6 +196,39 @@ bool BLINK_Stream_seekSet(blink_stream_t self, uint32_t offset);
  *
  * */
 bool BLINK_Stream_seekCur(blink_stream_t self, int32_t offset);
+
+/** Check if stream has reached EOF
+ *
+ * @param[in] self
+ *
+ * @return true if at EOF
+ *
+ * */
+bool BLINK_Stream_eof(blink_stream_t self);
+
+/** Return the maximum position of the stream
+ *
+ * @param[in] self
+ *
+ * @return maximum byte position
+ *
+ * @retval 0 stream doesn't have a maximum
+ *
+ * */
+uint32_t BLINK_Stream_max(blink_stream_t self);
+
+
+/** Set the maximum position of the stream
+ *
+ * @note for bounded streams
+ *
+ * @param[in] self
+ * @param[in] offset byte offset from zero
+ *
+ * @return true if max could be set
+ *
+ * */
+bool BLINK_Stream_setMax(blink_stream_t self, uint32_t offset);
 
 #ifdef __cplusplus
 }

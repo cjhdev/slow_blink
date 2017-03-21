@@ -90,10 +90,12 @@ module SlowBlink
                 if (result = @symbols[nameOrVal]).nil?
                     raise RangeError
                 end
+                result
             else
                 if (result = @symbols.values.detect{|s|s.value == nameOrVal.to_i}).nil?
                     raise RangeError
                 end
+                result
             end
         end
 

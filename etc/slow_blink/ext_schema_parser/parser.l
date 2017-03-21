@@ -79,8 +79,6 @@
 [_a-zA-Z][_a-zA-Z0-9]*      { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
 [\\][_a-zA-Z][_a-zA-Z0-9]*  { *yylval = rb_str_new(&yytext[1], yyleng-1); return TOK_ESCAPED_NC_NAME; }
 
-<<EOF>>             { return TOK_EOF; }
-
 .                   { return TOK_UNKNOWN; }
 
 %%

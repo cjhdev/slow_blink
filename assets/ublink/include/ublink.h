@@ -19,28 +19,21 @@
  *
  * 
  * */
-#ifndef BLINK_DEBUG_H
-#define BLINK_DEBUG_H
 
-#ifdef NDEBUG
+#ifndef UBLINK_H
+#define UBLINK_H
 
-    #define BLINK_ERROR(...) /* BLINK_ERROR(...) */
+/**
+ * @defgroup ublink ublink
+ *
+ * uBlink API
+ * 
+ * */
 
-    #define BLINK_DEBUG(...)  /* BLINK_DEBUG(...) */
-
-    #define BLINK_ASSERT(X) /* BLINK_ASSERT(X) */
-
-#else
-
-    #include <assert.h>
-    #include <stdio.h>
-
-    #define BLINK_ERROR(...)  do{fprintf(stderr, __VA_ARGS__);fprintf(stderr, "\n");}while(0);
-
-    #define BLINK_DEBUG(...)  do{fprintf(stdout, "%s: ", __FUNCTION__);fprintf(stdout, __VA_ARGS__);fprintf(stdout, "\n");}while(0);
-
-    #define BLINK_ASSERT(X)   assert((X));
-    
-#endif
+#include "blink_compact.h"
+#include "blink_schema.h"
+#include "blink_pool.h"
+#include "blink_stream.h"
+#include "blink_object.h"
 
 #endif

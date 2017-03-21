@@ -39,7 +39,7 @@ module SlowBlink
         # @private
         def initialize(attr)
             @location = attr[:loc].freeze
-            @sequence = attr[:sequence]
+            @sequence = attr[:sequence]||false
             @ns = attr[:ns].freeze
         end
 
