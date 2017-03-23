@@ -41,11 +41,11 @@ extern "C" {
 
 struct blink_stream;
 struct blink_pool;
-struct blink_base;
+struct group_base;
 
 typedef struct blink_stream * blink_stream_t;
 typedef struct blink_pool * blink_pool_t;
-typedef struct group_blink_base * group_t;
+typedef struct group_base * group_t;
 
 /** to create a group you need an allocator
  * @note a simple linear allocator can suffice */
@@ -63,13 +63,6 @@ struct blink_decimal {
     int8_t exponent;
     int64_t mantissa;
 };
-
-enum group_type {
-<%@schema.groups.each do |g| -%>
-    TYPE_<%= gname(g) %>,  /**< `<%= g.name %>` */
-<%end -%>
-};
-
 
 /* functions **********************************************************/
 
@@ -104,6 +97,7 @@ group_t decodeCompact(blink_stream_t in, struct blink_allocator alloc);
 void destroy(group_t *obj);
 
 <%@schema.groups.each do |g| -%>
+
 /** Create a new `<%= g.name %>`
  *
  * @param[in] alloc allocator
@@ -111,7 +105,7 @@ void destroy(group_t *obj);
  * @retval NULL calloc()
  *
  * */
-group_t <%= gname(g) %>_new(struct blink_allocator alloc);
+group_t <%= gname(g) %>_new(const struct blink_allocator *alloc);
 
 <%  g.fields.each do |f| -%>
 
@@ -124,26 +118,7 @@ group_t <%= gname(g) %>_new(struct blink_allocator alloc);
  * @return true if value was appended
  *
  * */
-bool <%= gname(g) %>_append_<%= f.name %>(group_t group, <%= value_type(f.type) %> value);
-
-/** Prepend to `<%= g.name + "." + f.name %>` (sequence)
- *
- * @param[in] group
- * @param[in] value
- * @return true if value was prepended
- *
- * */
-bool <%= gname(g) %>_prepend_<%= f.name %>(group_t group, <%= value_type(f.type) %> value);
-
-/** Iterate over entries in `<%= g.name + "." + f.name %>` (sequence)
- *
- * @note `each` may break the iteration by returning `false`
- *
- * @param[in] group
- * @param[in] each this function will be called for each value in `<%= g.name + "." + f.name %>`
- *
- * */
-void <%= gname(g) %>_iterate_<%= f.name %>(group_t group, bool (*each)(void *user, <%= value_type(f.type) %> value));
+<%= appendSignature(g, f) %>;
 
 <%    else -%>
 
@@ -156,7 +131,7 @@ void <%= gname(g) %>_iterate_<%= f.name %>(group_t group, bool (*each)(void *use
  * @return field value
  *
  * */
-<%= value_type(f.type) %> <%= gname(g) %>_get_<%= f.name %>(group_t group);
+<%= getSignature(g, f) %>;
 
 /** Set `<%= g.name + "." + f.name %>`
  *
@@ -165,7 +140,7 @@ void <%= gname(g) %>_iterate_<%= f.name %>(group_t group, bool (*each)(void *use
  * @return true if field was set
  *
  * */
-bool <%= gname(g) %>_set_<%= f.name %>(group_t group, <%= value_type(f.type) %> value);
+<%= setSignature(g, f) %>;
 
 <%    end -%>
 
@@ -175,14 +150,14 @@ bool <%= gname(g) %>_set_<%= f.name %>(group_t group, <%= value_type(f.type) %> 
  * @return true if field is initialised
  *
  * */
-bool <%= gname(g) %>_test_<%= f.name %>(group_t group);
+<%= testSignature(g, f) %>;
 
 /** Clear `<%= g.name + "." + f.name %>`
  *
  * @param[in] group
  *
  * */
-void <%= gname(g) %>_clear_<%= f.name %>(group_t group);
+<%= clearSignature(g, f) %>;
 
 <%  end -%>
 

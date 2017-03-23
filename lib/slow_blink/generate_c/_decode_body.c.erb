@@ -1,123 +1,316 @@
-        switch(i){
-        default:
-<%  g.fields.each_with_index do |f, index| -%>
-        case <%= index %>U:
+<%@schema.groups.each do |g| -%>
+static bool <%= gname(g) %>_decodeBody(blink_stream_t in, const struct blink_allocator *alloc, uint8_t depth, group_t *g)
+{
+    bool isNull;
+
+    *g = <%= gname(g) %>_new(alloc);
+    
+    if(*g == NULL){
+
+        BLINK_ERROR("calloc()")
+        return false;
+    }
+
+    struct <%= gname(g) %> *self = (struct <%= gname(g) %> *)*g;
+    
+<%  g.fields.each do |f| -%>
+
+<%    if f.type.sequence? %>
+    if(!BLINK_Compact_decodeU32(in, &self-><%= fname(f) %>.size, &isNull)){
+        destroy(g);
+        return false;
+    }
+    if(!isNull){
+
+        self-><%= fname(f) %>.initialised = true;
+    
+        uint32_t i;
+
+        for(i=0; i < &self-><%= fname(f) %>.size; i++){
+
+            struct <%= fname(f) %> *elem = alloc->calloc(1, sizeof(<%= struct fname(f) %>));
+
+            if(elem == NULL){
+
+                BLINK_ERROR("calloc()")
+                destroy(g);
+                return false;
+            }
+
+            if(self-><%= fname(f) %>.tail == NULL){
+
+                self-><%= fname(f) %>.head = elem;
+                self-><%= fname(f) %>.tail = elem;
+            }
+            else{
+
+                self-><%= fname(f) %>.tail->next = elem;
+                self-><%= fname(f) %>.tail = elem;
+            }                         
+<%    else %>
+    {
+        {            
+<%    end %>    
 <%    case f.type.class
       when STRING, BINARY -%>
-            if(!BLINK_Compact_decodeU32(in, &size, &isNull)){
+            if(!BLINK_Compact_decodeU32(in, &self-><%= fvalue(f) %>.size, &isNull)){
+                destroy(g);
                 return false;
             }
             if(!isNull){
 <%      if f.type.size %>
-                if(size <= <%= g.type.size %>U){
+                if(&self-><%= fvalue(f) %>.size <= <%= g.type.size %>U){
 
-                    if(!BLINK_Stream_read(in, self-><%= fname(f) %>.value.data, size)){
+                    if(!BLINK_Stream_read(in, self-><%= fvalue(f) %>.data, self-><%= fvalue(f) %>.size)){
+                        destroy(g);
                         return false;
                     }
                 }
 <%      else %>
-                self-><%= fname(f) %>.value.data = self.a.calloc(size, 1U);
-                if(self-><%= fname(f) %>.value.data != NULL){
+                self-><%= fvalue(f) %>.data = self->super.a.calloc(self-><%= fvalue(f) %>.size, 1U);
+                if(self-><%= fvalue(f) %>.data != NULL){
 
-                    if(!BLINK_Stream_read(in, self-><%= fname(f) %>.value.data, size)){
+                    if(!BLINK_Stream_read(in, self-><%= fvalue(f) %>.data, self-><%= fvalue(f) %>.size)){
+                        destroy(g);
                         return false;
                     }
                 }
                 else{
 
                     BLINK_ERROR("calloc()")
+                    destroy(g);
                     return false;
                 }
 <%      end %>
-            }
-            break;
+            }            
 <%    when FIXED -%>
-<%      if f.optional? -%>
+            bool present = true;
+<%      if f.optional? -%>            
             if(!BLINK_Compact_decodePresent(in, &present)){
+                destroy(g);
                 return false;
             }
-<%      else %>
-            present = true;
 <%      end %>
             if(present){
+
+                &self-><%= fvalue(f) %>.size = <%= %>
             
-                if(!BLINK_Stream_read(in, self-><%= fname(f) %>.value.data, self-><%= fname(f) %>.value.size)){
+                if(!BLINK_Stream_read(in, self-><%= fvalue(f) %>.data, self-><%= fvalue(f) %>.size)){
+                    destroy(g);
                     return false;
                 }
+
+                isNull = false;
             }
-            break;
+            else{
+
+                isNull = true;
+            }
 <%    when DECIMAL -%>
-            if(!BLINK_compact_decodeDecimal(in, &self-><%= fname(f) %>.value.mantissa, &self-><%= fname(f) %>.value.exponent, &isNull)){
+            if(!BLINK_compact_decodeDecimal(in, &self-><%= fvalue(f) %>.mantissa, &self-><%= fvalue(f) %>.exponent, &isNull)){
+                destroy(g);
                 return false;
             }
-            break;
 <%    when BOOLEAN -%>
-            if(!BLINK_Compact_decodeBool(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeBool(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;
+            }                    
 <%    when I8 -%>
-            if(!BLINK_Compact_decodeI8(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeI8(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;       
+            }                        
 <%    when I16 -%>
-            if(!BLINK_Compact_decodeI16(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeI16(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;                   
+            }            
 <%    when I32, DATE, ENUM -%>
-            if(!BLINK_Compact_decodeI32(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeI32(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;
+            }            
 <%    when I64, NANO_TIME, MILLI_TIME -%>
-            if(!BLINK_Compact_decodeI64(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeI64(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;
+            }            
 <%    when U8 -%>
-            if(!BLINK_Compact_decodeU8(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeU8(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;
+            }            
 <%    when U16 -%>
-            if(!BLINK_Compact_decodeU16(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeU16(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;
+            }            
 <%    when U32, TIME_OF_DAY_MILLI -%>
-            if(!BLINK_Compact_decodeU32(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeU32(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;
+            }            
 <%    when U64, TIME_OF_DAY_NANO -%>                
-            if(!BLINK_Compact_decodeU64(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeU64(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;
+            }            
 <%    when FLOATING_POINT -%>
-            if(!BLINK_Compact_decodeF64(in, &self-><%= fname(f) %>.value, &isNull)){
+            if(!BLINK_Compact_decodeF64(in, &self-><%= fvalue(f) %>, &isNull)){
+                destroy(g);
                 return false;
-            }
-            break;           
+            }            
 <%    when StaticGroup -%>
-            BLINK_ASSERT(self-><%= fname(f) %>.value != NULL)
-            if(!<%= gname(f.type) %>_decodeCompactBody(self-><%= fname(f) %>.value, out)){
+            bool present = true;
+<%      if f.optional? -%>
+            if(!BLINK_Compact_decodePresent(in, &present)){
+                destroy(g);
                 return false;
             }
-            break;
-<%    when DynamicGroup -%>
-            BLINK_ASSERT(self-><%= fname(f) %>.value != NULL)
-            if(!<%= gname(f.type) %>_decodeCompact(self-><%= fname(f) %>.value, out)){
+<%      end %>
+            if(present){
+
+                if(depth > 0U){
+
+                    if(!<%= gname(f.type) %>_decodeBody(in, alloc, depth-1U, &self-><%= fvalue(f) %>)){
+                        destroy(g);
+                        return false;
+                    }
+                }
+                else{
+
+                    BLINK_ERROR("too much nesting")
+                    destroy(g);
+                    return false;
+                }
+
+                isNull = false;
+            }
+            else{
+
+                isNull = true;
+            }
+<%    when DynamicGroup, OBJECT -%>
+            uint32_t size;
+            uint64_t id;
+
+            if(!BLINK_Compact_decodeU32(in, &size, &isNull)){
+                destroy(g);
                 return false;
             }
-            break;   
+            
+            if(!isNull){
+
+                if(size == 0U){
+
+                    BLINK_ERROR("size cannot be zero")
+                    destroy(g);
+                    return false;
+                }
+
+                if((BLINK_Stream_max(in) - BLINK_Stream_tell(in)) < size){
+
+                    BLINK_ERROR("S1: nested group will overrun parent group")
+                    destroy(g)
+                    return false;
+                }
+
+                if(depth == 0U){
+
+                    BLINK_ERROR("too much nesting")
+                    destroy(g);
+                    return false;
+                }
+
+                (void)BLINK_Stream_setMax(in, BLINK_Stream_tell(in) + size);
+
+                if(!BLINK_Compact_decodeU64(in, &id, &isNull)){
+
+                    destroy(g);
+                    return false;
+                }
+
+                if(isNull){
+
+                    BLINK_ERROR("unknown group")
+                    destroy(g);
+                    return false;
+                }
+
+                bool retval;
+                
+<%      if f.type.class == DynamicGroup %>                
+                switch(id){
+<%        f.type.groups.select{|g|g.id}.each do |allowed| %>
+                case <%= allowed.id %>U:
+                    retval = <%= gname(allowed) %>_decodeBody(in, alloc, depth-1U, &self-><%= fvalue(f) %>);                        
+                    break;
+<%        end %>
+<%        @schema.groups.select{|g|g.id and !f.types.groups.select{|g|g.id}.include? g.id}.each do |not_allowed| %>
+                case <%= not_allowed.id %>U:
+<%        end %>
+                    BLINK_ERROR("wrong group ID")
+                    destroy(g);
+                    break;
+                default:
+                    BLINK_ERROR("unknown group id")
+                    destroy(g);
+                    return false;
+                }                
+<%    else %>
+                switch(id){
+<%        @schema.groups.select{|g|g.id}.each do |allowed| %>
+                case <%= allowed.id %>U:
+                    retval = <%= gname(allowed) %>_decodeBody(in, alloc, depth-1U, &self-><%= fvalue(f) %>);                        
+                    break;
+<%        end %>
+                default:
+                    BLINK_ERROR("unknown group")
+                    destroy(g);
+                    return false;
+                }
+<%    end %>                
+                if(!retval){
+
+                    destroy(g);
+                    return false;
+                }
+
+                isNull = false;
+            }
 <%    else -%>
 <%      raise -%>
 <%    end -%>
-        }            
+
+<%    if f.type != StaticGroup and f.type != FIXED %>
+<%      if f.type.sequence? %>
+            if(isNull){
+    
+                BLINK_ERROR("values within a sequence cannot be NULL")
+                destroy(g);
+                return false;
+            }
+<%      elsif !f.optional? %>        
+            if(isNull){
+
+                BLINK_ERROR("field cannot be NULL")
+                destroy(g);
+                return false;
+            }
+            else{
+
+                self-><%= fname(f) %>.initialised = true;
+            }
+<%      end %>                     
+<%    end %>                     
+        }
+    }
 <%  end -%>
+
+    return true;
+}
+<%end -%>
     
 
 

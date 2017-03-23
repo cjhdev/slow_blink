@@ -1,0 +1,124 @@
+<%@schema.groups.each do |g| -%>
+<%  g.fields.each do |f| -%>
+
+<%    if !f.type.sequence? -%>
+
+<%= setSignature(g, f) %>
+{
+    bool retval = false;
+
+    BLINK_ASSERT(group->type == TYPE_<%= gname(g) %>)
+
+    struct <%= gname(g) %> *self = (struct <%= gname(g) %> *)group;
+    
+<%    case f.type.class
+      when FIXED -%>
+
+    if(sizeof(self-><%= fname(f) %>.value.data) == len){
+
+        (void)memcpy(self-><%= fname(f) %>.value.data, data, len);
+        retval = true;
+    }
+      
+<%    when BINARY, STRING -%>
+
+<%      if f.type.size -%>
+    if(len <= <%= f.type.size %>U){    
+<%      end -%>
+    {
+
+        uint8_t *tmp;
+
+        if(self-><%= fname(f) %>.value.max < len){
+
+            if(self->super.a.free != NULL){
+
+                self->super.a.free(self-><%= fname(f) %>.value.data);                
+            }
+            
+            self-><%= fname(f) %>.value.data = NULL;
+            self-><%= fname(f) %>.value.max = 0U;
+            self-><%= fname(f) %>.value.size = 0U;
+            self-><%= fname(f) %>.initialised = false;
+
+            tmp = self->super.a.calloc(len, 1);
+
+            if(tmp == NULL){
+
+                BLINK_ERROR("calloc()")
+                return false;
+            }
+
+            self-><%= fname(f) %>.value.data = tmp;
+            self-><%= fname(f) %>.value.max = len;
+            self-><%= fname(f) %>.value.size = len;
+        }
+        else{
+
+            tmp = (uint8_t *)self-><%= fname(f) %>.value.data;
+            self-><%= fname(f) %>.value.size = len;
+        }
+
+        (void)memcpy(tmp, data, len);
+        retval = true;
+    }
+
+<%    when DECIMAL -%>
+
+    self-><%= fname(f) %>.value.mantissa = mantissa;
+    self-><%= fname(f) %>.value.exponent = exponent;
+    retval = true;
+    
+<%    when ENUM -%>
+
+    uint32_t i;
+    for(i=0U; i < sizeof(<%= gname(f.type) %>)/sizeof(*<%= gname(f.type) %>); i++){
+        if(strncmp(<%= gname(f.type) %>[i].nameLen, <%= gname(f.type) %>[i].name, value) == 0){
+            
+            self-><%= fname(f) %>.value = <%= gname(f.type) %>[i].value;
+            retval = true;
+            break;
+        }           
+    }
+
+<%    when OBJECT -%>
+
+    self-><%= fname(f) %>.value = value;
+    retval = true;
+
+<%    when DynamicGroup -%>
+
+    switch(value->type){
+<%      f.type.groups.each do |permitted| %>
+    case TYPE_<%= gname(permitted.name) %>:
+<%      end %>
+        self-><%= fname(f) %>.value = value;
+        retval = true;
+        break;
+    default:
+        break;
+    }
+        
+<%    when StaticGroup -%>
+
+    if(value->type == TYPE_<%= gname(f.type.name) %>){
+
+        self-><%= fname(f) %>.value = value;
+        retval = true;
+    }
+        
+<%    else -%>
+
+    self-><%= fname(f) %>.value = value;
+    retval = true;
+    
+<%    end -%>    
+
+    self-><%=f.name %>.initialised = retval;
+    
+    return retval;
+}
+
+<%    end -%>
+<%  end -%>
+<%end -%>

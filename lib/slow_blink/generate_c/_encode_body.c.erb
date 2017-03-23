@@ -74,15 +74,20 @@ static bool <%= gname(g) %>_encodeBody(struct <%= gname(g) %> *self, blink_strea
                 break;
             }                
 <%    when StaticGroup -%>
-            BLINK_ASSERT(self-><%= fname(f) %>.value != NULL)
-            if(!<%= gname(f.type) %>_encodeCompactBody(self-><%= fname(f) %>.value, out)){
+            if(!<%= gname(f.type) %>_encodeBody(self-><%= fname(f) %>.value, out)){
+                break;
+            }            
+<%    when DynamicGroup -%>
+            if(!BLINK_Compact_encodeU32(self-><%= fname(f) %>.value->size, out)){
                 break;
             }
-<%    when DynamicGroup -%>
-            BLINK_ASSERT(self-><%= fname(f) %>.value != NULL)
-            if(!<%= gname(f.type) %>_encodeCompact(self-><%= fname(f) %>.value, out)){
+            if(!BLINK_Compact_encodeU64(<%= f.id %>, out)){
                 break;
-            }        
+            }
+            if(!<%= gname(f.type) %>_encodeBody(self-><%= f name(f) %>.value, out)){
+                break;
+            }
+            //todo extensions            
 <%    else -%>
 <%      raise -%>
 <%    end -%>
@@ -95,8 +100,7 @@ static bool <%= gname(g) %>_encodeBody(struct <%= gname(g) %> *self, blink_strea
         }                 
 <%  end -%>
 
-        retval = true;
-        
+        retval = true;        
     }
     while(false);
         

@@ -1,3 +1,9 @@
+enum group_type {
+<%@schema.groups.each do |g| -%>
+    TYPE_<%= gname(g) %>,
+<%end -%>
+};
+
 struct blink_enum {
     int32_t value;
     const char *name;
@@ -7,6 +13,7 @@ struct blink_enum {
 struct group_base {
     enum group_type type;
     struct blink_allocator a;
+    uint32_t size;
 };
 
 <%@schema.groups.each do |g| -%>
@@ -18,45 +25,42 @@ struct <%= gname(g) %> {
     struct {
 
         bool initialised;
-
 <%    if f.type.sequence? -%>
-        struct <%= f.name %> {
+        struct <%= fname(f) %> {
 
-            struct <%= f.name %> *next;
-<%    end -%>
-        
+            struct <%= fname(f) %> *next;
+<%    end -%>        
 <%    case f.type.class
       when STRING, BINARY, FIXED -%>
 <%      if f.type.is_a? FIXED or f.type.size -%>
-            struct {
-                uint8_t data[<%= f.type.size %>U];
-                uint32_t size;
-            } value;
+        struct {
+            uint8_t data[<%= f.type.size %>U];
+            uint32_t size;
+        } value;
 <%      else -%>
-            struct {
-                uint8_t *data;
-                uint32_t size;
-            } value;        
+        struct {
+            uint8_t *data;
+            uint32_t max;
+            uint32_t size;
+        } value;        
 <%      end -%>
 <%    when ENUM -%>
-            int32_t value;
+        int32_t value;
 <%    else -%>
-            <%= value_type(f.type) -%> value;
+        <%= value_type(f.type) -%> value;
 <%    end -%>
 
 <%    if f.type.sequence? -%>
         };
 
-        struct <%= f.name %> *head;
-        struct <%= f.name %> *tail;
-        uint32_t sequenceSize;
+        struct <%= fname(f) %> *head;
+        struct <%= fname(f) %> *tail;
+        uint32_t size;
         
 <%    end -%>
-
     } <%= fname(f) %>;
 
 <%  end -%>
-
 };
 
 <%end -%>

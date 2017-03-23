@@ -1,0 +1,13 @@
+<%@schema.groups.each do |g| -%>
+<%  g.fields.each do |f| -%>
+
+<%    if f.type.sequence? -%>
+
+<%= appendSignature(g, f) %>
+{
+}
+
+
+<%    end -%>
+<%  end -%>
+<%end -%>

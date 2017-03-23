@@ -40,9 +40,10 @@
 
 <%@schema.groups.each do |g| -%>
 static bool <%= gname(g) %>_encodeBody(struct <%= gname(g) %> *self, blink_stream_t out);
-static bool <%= gname(g) %>_sizeof(struct <%= gname(g) %> *self, uint32_t *size);
-static bool <%= gname(g) %>_decodeBody(struct <%= gname(g) %> *self, blink_stream_t out);
+static bool <%= gname(g) %>_decodeBody(blink_stream_t in, const struct blink_allocator *alloc, uint8_t depth, group_t *g);
 <%end %>
+
+static bool cacheSize(group_t group);
 
 /* functions **********************************************************/
 
@@ -54,11 +55,19 @@ static bool <%= gname(g) %>_decodeBody(struct <%= gname(g) %> *self, blink_strea
 
 <%= put("_encode.c.erb") %>
 
-<%= put("_accessors.c.erb") %>
+<%= put("_get.c.erb") %>
+
+<%= put("_set.c.erb") %>
+
+<%= put("_clear.c.erb") %>
+
+<%= put("_append.c.erb") %>
 
 /* static functions ***************************************************/
 
 <%= put("_encode_body.c.erb") %>
 
-<%= put("_sizeof.c.erb") %>
+<%= put("_cachesize.c.erb") %>
+
+<%= put("_decode_body.c.erb") %>
 

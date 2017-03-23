@@ -1,8 +1,8 @@
-void destroy(object_t *obj)
+void destroy(group_t *obj)
 {
     if((obj != NULL) && (*obj != NULL)){
 
-        if(*obj->a.free){
+        if((*obj)->a.free){
 
             //todo
             //maybe a per group destroy function

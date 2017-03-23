@@ -1,0 +1,21 @@
+<%@schema.groups.each do |g| -%>
+<%  g.fields.each do |f| -%>
+
+<%= testSignature(g, f) %>
+{
+    bool retval = false;
+    
+    BLINK_ASSERT(group->type == TYPE_<%= gname(g) %>)
+
+    if(group->type == TYPE_<%= gname(g) %>){
+
+        struct <%= gname(g) %> *self = (struct <%= gname(g) %> *)group;
+
+        retval = self-><%= fname(f) %>.initialised;
+    }
+    
+    return retval;
+}
+
+<%  end -%>
+<%end -%>

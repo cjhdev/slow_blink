@@ -1,18 +1,17 @@
-<%# group constructors -%>
 <%@schema.groups.each do |g| -%>
 
-object_t <%= gname(g) %>_new(struct blink_allocator alloc)
+group_t <%= gname(g) %>_new(const struct blink_allocator *alloc)
 {
     struct <%= gname(g) %> *retval = NULL;
 
-    if(alloc.calloc != NULL){
+    if(alloc->calloc != NULL){
     
-        retval = alloc.calloc(sizeof(struct <%= gname(g) %>), 1U);
+        retval = alloc->calloc(sizeof(struct <%= gname(g) %>), 1U);
         
         if(retval != NULL){
         
             retval->super.type = TYPE_<%= gname(g) %>;
-            retval->super.a = alloc;
+            retval->super.a = *alloc;
         }
         else{
         
@@ -24,6 +23,6 @@ object_t <%= gname(g) %>_new(struct blink_allocator alloc)
         BLINK_ERROR("cannot create a new group without an allocator")
     }
     
-    return (object_t)retval;
+    return (group_t)retval;
 }
 <%end -%>

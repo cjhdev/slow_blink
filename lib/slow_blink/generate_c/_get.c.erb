@@ -1,0 +1,52 @@
+<%@schema.groups.each do |g| -%>
+<%  g.fields.each do |f| -%>
+
+<%    if !f.type.sequence? -%>
+
+<%= getSignature(g, f) %>
+{
+<%    if @options[:typeAssert] -%>
+    BLINK_ASSERT(group->type == TYPE_<%= gname(g) %>)    
+<%    end %>
+
+    struct <%= gname(g) %> *self = (struct <%= gname(g) %> *)group;
+    
+<%    case f.type.class
+      when BINARY, FIXED -%>
+
+    *data = self-><%= fname(f) %>.value.data;
+    *len = self-><%= fname(f) %>.value.len;
+
+<%    when STRING -%>
+
+    *data = (const char *)self-><%= fname(f) %>.value.data;
+    *len = self-><%= fname(f) %>.value.len;
+        
+<%    when DECIMAL -%>
+
+    *mantissa = self-><%= fname(f) %>.value.mantissa;
+    *exponent = self-><%= fname(f) %>.value.exponent;
+
+<%    when ENUM %>
+
+    const char *retval = NULL;
+    uint32_t i;
+    for(i=0U; i < sizeof(<%= gname(f.type) %>)/sizeof(*<%= gname(f.type) %>); i++){
+        if(<%= gname(f.type) %>[i].value == self-><%= fname(f) %>.value){
+
+            retval = <%= gname(f.type) %>[i].name;
+            break;
+        }           
+    }
+    return retval;    
+
+<%    else -%>
+
+    return self-><%= fname(f) %>.value;
+    
+<%    end -%>
+}
+
+<%    end -%>
+<%  end -%>
+<%end -%>

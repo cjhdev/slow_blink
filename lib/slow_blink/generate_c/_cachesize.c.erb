@@ -1,0 +1,67 @@
+static bool cacheSize(group_t group)
+{
+    bool retval = false;
+    uint32_t size = 0U;
+    uint32_t bodySize;
+    uint32_t idSize;
+
+    switch(group->type){
+<%@schema.groups.each do |g| -%>
+    case TYPE_<%= gname(g) %>:
+    {
+        struct <%= gname(g) %> *self = (struct <%= gname(g) %> *)group;
+    
+<%  g.fields.each do |f| -%>
+
+        if(self-><%= fname(f) %>.initialised){
+
+<%    case f.type.class
+  when STRING, BINARY -%>
+            size += BLINK_Compact_sizeofUnsigned(self-><%= fname(f) %>.value.size);
+            size += self-><%= fname(f) %>.value.size;  
+<%    when FIXED -%>
+<%      if f.optional? -%>
+            size += 1U;
+<%      end %>
+            size += self-><%= fname(f) %>.value.size;
+<%    when DECIMAL -%>
+            size += BLINK_Compact_sizeofSigned(self-><%= fname(f) %>.value.exponent);
+            size += BLINK_Compact_sizeofSigned(self-><%= fname(f) %>.value.mantissa);
+<%    when BOOLEAN -%>
+            size += 1U;    
+<%    when I8, I16, I32, DATE, ENUM, I64, NANO_TIME, MILLI_TIME -%>
+            size += BLINK_Compact_sizeofSigned(self-><%= fname(f) %>.value);                
+<%    when U8, U16, U32, TIME_OF_DAY_MILLI, U64, TIME_OF_DAY_NANO -%>
+            size += BLINK_Compact_sizeofUnsigned(self-><%= fname(f) %>.value);                
+<%    when FLOATING_POINT -%>
+            size += BLINK_Compact_sizeofUnsigned(*((uint64_t *)&(self-><%= fname(f) %>.value)));                
+<%    when StaticGroup -%>
+            size += calculateSize(self-><%= fname(f) %>.value);
+<%    when DynamicGroup -%>
+            bodySize = calculateSize(self-><%= fname(f) %>.value);
+            idSize = BLINK_Compact_sizeofUnsigned(<%= f.id %>U);
+            size += bodySize + idSize;
+            size += BLINK_Compact_sizeofUnsigned(bodySize + idSize);            
+            //todo extensions            
+<%    else -%>
+<%      raise -%>
+<%    end -%>
+        }
+        else{
+
+            size += 1U;
+        }                 
+<%  end -%>
+        self->super.size = size;
+        retval = true;
+    }
+        break;
+<%end -%>
+    default:
+        /* unknown group*/
+        BLINK_ERROR("unknown group")
+        break;
+    }
+
+    return retval;
+}
