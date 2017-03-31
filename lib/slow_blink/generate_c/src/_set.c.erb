@@ -114,7 +114,7 @@
     
 <%    end -%>    
 
-    self-><%=f.name %>.initialised = retval;
+    self-><%= fname(f) %>.initialised = retval;
     
     return retval;
 }

@@ -5,6 +5,7 @@ static group_t _decode(blink_stream_t in, const struct blink_allocator *alloc, u
     uint32_t size;
     bool isNull;
     uint64_t id;
+    bool result;
 
     if(!BLINK_Compact_decodeU32(in, &size, &isNull)){
         return NULL;
@@ -29,17 +30,18 @@ static group_t _decode(blink_stream_t in, const struct blink_allocator *alloc, u
             switch(id){
 <%@schema.groups.select{|g|g.id}.each do |g| %>
             case <%= g.id %>U:
-                retval = <%= gname(g) %>_decodeBody(&bounded, alloc, (struct <%= gname(g) %> *)retval, depth);
+                result = <%= gname(g) %>_decodeBody(&bounded, alloc, depth, &retval);
                 break;
 <%end %>
             default:
+                result = false;
                 BLINK_ERROR("unknown group");
                 break;
             }
 
             (void)BLINK_Stream_setMax(&bounded, size);
             
-            if(retval != NULL){
+            if(result){
 
                 uint32_t i;
 
@@ -49,7 +51,7 @@ static group_t _decode(blink_stream_t in, const struct blink_allocator *alloc, u
                     uint8_t c;
                     if(!BLINK_Stream_read(in, &c, sizeof(c))){
 
-                        destroy(retval);
+                        destroy(&retval);
                     }
                 }
             }

@@ -15,12 +15,12 @@
       when BINARY, FIXED -%>
 
     *data = self-><%= fname(f) %>.value.data;
-    *len = self-><%= fname(f) %>.value.len;
+    *len = self-><%= fname(f) %>.value.size;
 
 <%    when STRING -%>
 
     *data = (const char *)self-><%= fname(f) %>.value.data;
-    *len = self-><%= fname(f) %>.value.len;
+    *len = self-><%= fname(f) %>.value.size;
         
 <%    when DECIMAL -%>
 

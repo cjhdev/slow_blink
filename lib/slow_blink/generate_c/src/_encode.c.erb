@@ -8,7 +8,7 @@ bool encodeCompact(group_t group, blink_stream_t out)
 <%@schema.groups.select{|g|g.id}.each do |g| -%>
         case TYPE_<%= gname(g) %>:
 
-            if(!BLINK_Compact_encodeU32(size + BLINK_Compact_sizeofUnsigned(<%= g.id %>U), out)){
+            if(!BLINK_Compact_encodeU32(group->size + BLINK_Compact_sizeofUnsigned(<%= g.id %>U), out)){
                 break;
             }
             if(!BLINK_Compact_encodeU64(<%= g.id %>U, out)){
@@ -19,7 +19,7 @@ bool encodeCompact(group_t group, blink_stream_t out)
             break;
 <%end -%>
 <%@schema.groups.select{|g|g.id.nil?}.each do |g| -%>
-        case <%= gname(g) %>:
+        case TYPE_<%= gname(g) %>:
 <%end -%>
             BLINK_ERROR("cannot encode a group without an ID")
             break;

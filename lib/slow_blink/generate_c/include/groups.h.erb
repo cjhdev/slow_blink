@@ -54,16 +54,6 @@ struct blink_allocator {
     void (*free)(void *ptr);                        /**< optional free-like function */
 };
 
-struct blink_string {
-    const char *data;
-    uint32_t size;
-};
-
-struct blink_decimal {
-    int8_t exponent;
-    int64_t mantissa;
-};
-
 /* functions **********************************************************/
 
 /** Encode a group

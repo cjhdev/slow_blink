@@ -25,16 +25,17 @@
 #include "groups.h"
 #include "blink_compact.h"
 #include "blink_stream.h"
+#include "blink_debug.h"
 
 #include <string.h>
 
 /* types **************************************************************/
 
-<%= put("_types.c.erb") %>
+<%= run_erb("src/_types.c.erb") %>
 
 /* variables **********************************************************/
 
-<%= put("_variables.c.erb") %>
+<%= run_erb("src/_variables.c.erb") %>
 
 /* static function prototypes *****************************************/
 
@@ -47,27 +48,27 @@ static bool cacheSize(group_t group);
 
 /* functions **********************************************************/
 
-<%= put("_new.c.erb") %>
+<%= run_erb("src/_new.c.erb") %>
 
-<%= put("_destroy.c.erb") %>
+<%= run_erb("src/_destroy.c.erb") %>
 
-<%= put("_decode.c.erb") %>
+<%= run_erb("src/_decode.c.erb") %>
 
-<%= put("_encode.c.erb") %>
+<%= run_erb("src/_encode.c.erb") %>
 
-<%= put("_get.c.erb") %>
+<%= run_erb("src/_get.c.erb") %>
 
-<%= put("_set.c.erb") %>
+<%= run_erb("src/_set.c.erb") %>
 
-<%= put("_clear.c.erb") %>
+<%= run_erb("src/_clear.c.erb") %>
 
-<%= put("_append.c.erb") %>
+<%= run_erb("src/_append.c.erb") %>
 
 /* static functions ***************************************************/
 
-<%= put("_encode_body.c.erb") %>
+<%= run_erb("src/_encode_body.c.erb") %>
 
-<%= put("_cachesize.c.erb") %>
+<%= run_erb("src/_cachesize.c.erb") %>
 
-<%= put("_decode_body.c.erb") %>
+<%= run_erb("src/_decode_body.c.erb") %>
 

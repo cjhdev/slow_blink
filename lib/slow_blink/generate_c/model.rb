@@ -14,17 +14,54 @@ module SlowBlink
                 @options = {}
             end
 
-            def render
-                header = put("groups.h.erb")
-                source = put("groups.c.erb")
+            def generate(prefix)
 
-                File.write("groups.h", header)
-                File.write("groups.c", source)
-            end            
+                `mkdir -p #{prefix}`
+                `rm -fr #{File.join(prefix, "*")}`
+
+                header = run_erb("include/groups.h.erb")
+                source = run_erb("src/groups.c.erb")
+
+                test = run_erb("test/tc_new.c.erb")
+                
+                testMake = run_erb("test/makefile.erb")
+                
+                `mkdir #{File.join(prefix, "src")}`
+                `mkdir #{File.join(prefix, "include")}`
+                `mkdir #{File.join(prefix, "test")}`
+                `mkdir #{File.join(prefix, "test", "build")}`
+                `mkdir #{File.join(prefix, "test", "bin")}`
+                `mkdir #{File.join(prefix, "vendor")}`
+                `mkdir #{File.join(prefix, "vendor", "cmocka")}`
+
+                assetsDir = File.expand_path(File.join(File.dirname(__FILE__), "../../../assets"))
+
+                `cp #{assetsDir}/ublink/src/blink_stream.c #{prefix}/src`
+                `cp #{assetsDir}/ublink/src/blink_compact.c #{prefix}/src`
+                
+                `cp #{assetsDir}/ublink/include/blink_stream.h #{prefix}/include`
+                `cp #{assetsDir}/ublink/include/blink_compact.h #{prefix}/include`
+
+                `cp #{assetsDir}/ublink/include/blink_debug.h #{prefix}/include`
+
+                `cp -r #{assetsDir}/cmocka/src #{prefix}/vendor/cmocka/`
+                `cp -r #{assetsDir}/cmocka/include #{prefix}/vendor/cmocka/`
+                `cp #{assetsDir}/cmocka/COPYING #{prefix}/vendor/cmocka/`
+                
+
+                File.open("#{prefix}/include/groups.h", "w"){|f|f.write(header)}
+                File.open("#{prefix}/src/groups.c", "w"){|f|f.write(source)}
+
+                File.open("#{prefix}/test/tc_test.c", "w"){|f|f.write(test)}
+                File.open("#{prefix}/test/makefile", "w"){|f|f.write(testMake)}
+
+                puts `cd #{prefix}/test && make && make coverage`
+
+            end
 
             private
 
-                def put(filename)
+                def run_erb(filename)
                     f = File.read(File.expand_path(File.join(File.dirname(__FILE__), filename)))
                     erb = ERB.new(f, nil, "<>-")
                     erb.filename = filename
@@ -67,7 +104,7 @@ module SlowBlink
                     when ENUM
                         out << "const char *value"
                     else
-                        out << value_type(f.type)
+                        out << "#{value_type(f.type)} value"
                     end
                     out << ")"
                 end
@@ -85,9 +122,9 @@ module SlowBlink
                     out << " #{}_#{gname(g)}_get_#{f.name}(group_t group"
                     case f.type.class
                     when STRING
-                        out << ", const char **data, uint32_t len"
+                        out << ", const char **data, uint32_t *len"
                     when BINARY, FIXED
-                        out << ", const uint8_t **data, uint32_t len"
+                        out << ", const uint8_t **data, uint32_t *len"
                     when DECIMAL
                         out << ", int64_t *mantissa, int8_t *exponent"
                     end

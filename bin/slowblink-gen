@@ -4,4 +4,5 @@ require 'slow_blink'
 
 schema = SlowBlink::Schema.read(ARGV[0].dup)
 
-SlowBlink::GenerateC::Model.new(schema).render
+#SlowBlink::GenerateC::Model.new(schema).render
+SlowBlink::GenerateC::Model.new(schema).generate(ARGV[1])
