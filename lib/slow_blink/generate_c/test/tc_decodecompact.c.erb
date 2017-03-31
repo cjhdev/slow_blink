@@ -1,0 +1,100 @@
+#include <stdarg.h>
+#include <stddef.h>
+#include <setjmp.h>
+#include <malloc.h>
+
+#include "cmocka.h"
+#include "groups.h"
+#include "blink_stream.h"
+
+const static struct blink_allocator alloc = {
+    .calloc = calloc
+};
+
+<%@schema.groups.select{|g|g.id}.each do |g| -%>
+static void test_decodeCompact_<%= gname(g) %>(void **user)
+{
+<%
+    model = SlowBlink::Message::Model.new(@schema).group(g.name).new 
+    g.fields.each do |f|
+      model[f.name] = SlowBlink::MessageTest.testField(f)
+    end
+-%>
+
+    const uint8_t input[] = "<%= model.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join %>";
+    struct blink_stream s;
+    (void)BLINK_Stream_initBufferReadOnly(&s, input, sizeof(input)-1U);
+
+    group_t g = decodeCompact(&s, &alloc);
+
+    assert_true(g != NULL);
+
+<%  g.fields.each do |f| %>
+    {
+<%    if model[f.name].nil? -%>
+
+        assert_false(<%= gname(g)%>_test_<%= f.name %>(g));
+    
+<%    else -%>
+
+        assert_true(<%= gname(g)%>_test_<%= f.name %>(g));
+    
+<%      case f.type.class
+        when FIXED, STRING, BINARY -%>
+
+        const <%= ((f.type.is_a? STRING) ? "char" : "uint8_t" ) %> *value;    
+        uint32_t size;
+
+        const <%= ((f.type.is_a? STRING) ? "char" : "uint8_t" ) %> *expected = "<%= model[f.name].bytes.map{ |c| sprintf("\\x%02X",c) }.join %>";
+        uint32_t expectedSize = sizeof(expected)-1U;
+
+        <%= gname(g)%>_get_<%= f.name %>(g, &value, &size);
+
+        assert_int_equal(expectedSize, size);
+        assert_memory_equal(expected, value, size); 
+
+<%      when BOOLEAN -%>
+
+        assert_<%= (model[f.name] ? "true" : "false") %>(size, <%= model[f.name].size %>);
+
+<%      when U8, U16, U32, U64 -%>
+
+        <%= value_type(f.type) %> value = <%= gname(g)%>_get_<%= f.name %>(g);
+        <%= value_type(f.type) %> expected = <%= model[f.name] %>U;
+        assert_memory_equal(&expected, &value, sizeof(value));
+        
+<%      when I8, I16, I32, I64, FLOATING_POINT  -%>
+
+        <%= value_type(f.type) %> value = <%= gname(g)%>_get_<%= f.name %>(g);
+        <%= value_type(f.type) %> expected = <%= model[f.name] %>;
+        assert_memory_equal(&expected, &value, sizeof(value));
+
+<%      when ENUM  -%>
+
+        const char *value = <%= gname(g)%>_get_<%= f.name %>(g);
+        const char *expected = "<%= model[f.name] %>";
+
+        assert_string_equal(expected, value);
+
+    
+
+<%      end -%>
+
+<%    end -%>
+    }
+<%  end -%>    
+}
+<% end -%>
+
+int main(void)
+{
+    const struct CMUnitTest tests[] = {
+<%@schema.groups.select{|g|g.id}.each do |g| -%>
+        cmocka_unit_test(test_decodeCompact_<%= gname(g) %>),
+<%end%>        
+    };
+    
+    return cmocka_run_group_tests(tests, NULL, NULL);
+}
+
+

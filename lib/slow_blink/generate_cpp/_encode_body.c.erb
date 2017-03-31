@@ -1,0 +1,109 @@
+<%@schema.groups.each do |g| -%>
+static bool <%= gname(g) %>_encodeBody(struct <%= gname(g) %> *self, blink_stream_t out)
+{
+    bool retval = false;
+
+    do{
+            
+<%  g.fields.each do |f| -%>
+
+        if(self-><%= fname(f) %>.initialised){
+
+<%    case f.type.class
+  when STRING, BINARY -%>
+            if(!BLINK_Compact_encodeU32(self-><%= fname(f) %>.value.size, out)){
+                break;
+            }
+            if(!BLINK_Stream_write(out, self-><%= fname(f) %>.value.data, self-><%= fname(f) %>.value.size)){
+                break;
+            }
+<%    when FIXED -%>
+<%      if f.optional? -%>
+            if(!BLINK_Compact_encodePresent(out)){
+                break;
+            }
+<%      end %>
+            if(!BLINK_Stream_write(out, self-><%= fname(f) %>.value.data, self-><%= fname(f) %>.value.size)){
+                break;
+            }
+<%    when DECIMAL -%>
+            if(!BLINK_Compact_encodeI8(self-><%= fname(f) %>.value.exponent, out)){
+                break;
+            }
+            if(!BLINK_Compact_encodeI64(self-><%= fname(f) %>.value.mantissa, out)){
+                break;
+            }
+<%    when BOOLEAN -%>
+            if(!BLINK_Compact_encodeBool(self-><%= fname(f) %>.value, out)){
+                break;
+            }                
+<%    when I8 -%>
+            if(!BLINK_Compact_encodeI8(self-><%= fname(f) %>.value, out)){
+                break;
+            }
+<%    when I16 -%>
+            if(!BLINK_Compact_encodeI16(self-><%= fname(f) %>.value, out)){
+                break;
+            }                        
+<%    when I32, DATE, ENUM -%>
+            if(!BLINK_Compact_encodeI32(self-><%= fname(f) %>.value, out)){
+                break;
+            }
+<%    when I64, NANO_TIME, MILLI_TIME -%>
+            if(!BLINK_Compact_encodeI64(self-><%= fname(f) %>.value, out)){
+                break;
+            }
+<%    when U8 -%>
+            if(!BLINK_Compact_encodeU8(self-><%= fname(f) %>.value, out)){
+                break;
+            }
+<%    when U16 -%>
+            if(!BLINK_Compact_encodeU16(self-><%= fname(f) %>.value, out)){
+                break;
+            }
+<%    when U32, TIME_OF_DAY_MILLI -%>
+            if(!BLINK_Compact_encodeU32(self-><%= fname(f) %>.value, out)){
+                break;
+            }
+<%    when U64, TIME_OF_DAY_NANO -%>                
+            if(!BLINK_Compact_encodeU64(self-><%= fname(f) %>.value, out)){
+                break;
+            }
+<%    when FLOATING_POINT -%>
+            if(!BLINK_Compact_encodeF64(self-><%= fname(f) %>.value, out)){
+                break;
+            }                
+<%    when StaticGroup -%>
+            if(!<%= gname(f.type) %>_encodeBody(self-><%= fname(f) %>.value, out)){
+                break;
+            }            
+<%    when DynamicGroup -%>
+            if(!BLINK_Compact_encodeU32(self-><%= fname(f) %>.value->size, out)){
+                break;
+            }
+            if(!BLINK_Compact_encodeU64(<%= f.id %>, out)){
+                break;
+            }
+            if(!<%= gname(f.type) %>_encodeBody(self-><%= f name(f) %>.value, out)){
+                break;
+            }
+            //todo extensions            
+<%    else -%>
+<%      raise -%>
+<%    end -%>
+        }
+        else{
+
+            if(!BLINK_Compact_encodeNull(out)){
+                break;                    
+            }            
+        }                 
+<%  end -%>
+
+        retval = true;        
+    }
+    while(false);
+        
+    return retval;
+}
+<%end -%>

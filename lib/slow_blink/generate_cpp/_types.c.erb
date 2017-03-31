@@ -1,0 +1,101 @@
+enum group_type {
+<%@schema.groups.each do |g| -%>
+    TYPE_<%= gname(g) %>,
+<%end -%>
+};
+
+struct blink_enum {
+    int32_t value;
+    const char *name;
+    size_t nameLen;
+};
+
+struct group_base {
+    enum group_type type;
+    struct blink_allocator a;
+    uint32_t size;
+};
+
+<%@schema.groups.each do |g|-%>
+<%  if g.name.split(":").size > 1 -%>
+namespace <%= g.name.split(":").first %> {
+<%  end -%>
+class <%= g.name.split(":").last %> {
+
+<%  g.fields.each do |f| -%>
+    struct {
+
+        bool initialised;
+<%    if f.type.sequence? -%>
+        struct <%= fname(f) %> {
+
+            struct <%= fname(f) %> *next;
+<%    end -%>        
+<%    case f.type.class
+      when STRING, BINARY, FIXED -%>
+<%      if f.type.is_a? FIXED or f.type.size -%>
+        struct {
+            uint8_t data[<%= f.type.size %>U];
+            uint32_t size;
+        } value;
+<%      else -%>
+        struct {
+            string data;        
+            uint32_t max;
+        } value;
+<%      end -%>
+<%    when ENUM -%>
+        int32_t value;
+<%    else -%>
+        <%= value_type(f.type) -%> value;
+<%    end -%>
+
+<%    if f.type.sequence? -%>
+        };
+
+        struct <%= fname(f) %> *head;
+        struct <%= fname(f) %> *tail;
+        uint32_t size;
+        
+<%    end -%>
+    } <%= fname(f) %>;
+
+<%  end -%>
+
+    public:
+
+<%  g.fields.each do |f| -%>
+
+<%    if f.type.sequence? -%>
+<%    else -%>
+        get_<%= f.name%>(void)
+        {
+            return _<%= f.name%>.value;
+        }
+
+        bool set_<%= f.name%>(<%= value_type(f.type) %>)
+        {
+            bool retval = false;
+
+            if(
+        
+            return _<%= f.name%>.value;
+
+            return retval;
+        }
+<%    end -%>
+
+        void clear_<%= f.name%>(void)
+        {
+            _<%= f.name%>.initialised = false;
+        }
+
+        bool test_<%= f.name%>(void)
+        {
+            return _<%= f.name%>.initialised;
+        }   
+<%  end -%>
+
+};
+
+<%end -%>

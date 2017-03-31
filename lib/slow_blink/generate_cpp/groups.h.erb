@@ -1,0 +1,179 @@
+/* Copyright (c) 2016 Cameron Harper
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of
+ * this software and associated documentation files (the "Software"), to deal in
+ * the Software without restriction, including without limitation the rights to
+ * use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+ * the Software, and to permit persons to whom the Software is furnished to do so,
+ * subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+ * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+ * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+ * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+ * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ *
+ * 
+ * */
+
+#ifndef GROUPS_H
+#define GROUPS_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* includes ***********************************************************/
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <stddef.h>
+
+/* defines ************************************************************/
+
+#define BLINK_ERROR(...)
+
+
+
+
+
+
+
+
+/* types **************************************************************/
+
+struct blink_stream;
+struct blink_pool;
+struct group_base;
+
+typedef struct blink_stream * blink_stream_t;
+typedef struct blink_pool * blink_pool_t;
+typedef struct group_base * group_t;
+
+/** to create a group you need an allocator
+ * @note a simple linear allocator can suffice */
+struct blink_allocator {
+    void * (*calloc)(size_t nelem, size_t elsize);  /**< mandatory calloc-like function */
+    void (*free)(void *ptr);                        /**< optional free-like function */
+};
+
+struct blink_string {
+    const char *data;
+    uint32_t size;
+};
+
+struct blink_decimal {
+    int8_t exponent;
+    int64_t mantissa;
+};
+
+/* functions **********************************************************/
+
+/** Encode a group
+ *
+ * @note a group without and ID will never encode
+ *
+ * @param[in] group
+ * @param[in] out output stream
+ *
+ * @return true if self could be encoded
+ *
+ * */
+bool encodeCompact(group_t self, blink_stream_t out);
+
+/** Decode a group from input stream
+ *
+ * @param[in] in input stream
+ * @param[in] alloc allocator
+ *
+ * @return group
+ * @retval NULL group could not be decoded
+ *
+ * */
+group_t decodeCompact(blink_stream_t in, struct blink_allocator alloc);
+
+/** Destroy an object
+ *
+ * @param[in] pointer to object
+ *
+ * */
+void destroy(group_t *obj);
+
+<%@schema.groups.each do |g| -%>
+
+/** Create a new `<%= g.name %>`
+ *
+ * @param[in] alloc allocator
+ * @return group
+ * @retval NULL calloc()
+ *
+ * */
+group_t <%= gname(g) %>_new(const struct blink_allocator *alloc);
+
+<%  g.fields.each do |f| -%>
+
+<%    if f.type.sequence? -%>
+
+/** Append to `<%= g.name + "." + f.name %>` (sequence)
+ *
+ * @param[in] group
+ * @param[in] value
+ * @return true if value was appended
+ *
+ * */
+<%= appendSignature(g, f) %>;
+
+<%    else -%>
+
+/** Get `<%= g.name + "." + f.name %>`
+ *
+ * @note use <%= gname(g) %>_test_<%= f.name %> to determine
+ *       if field has been initialised
+ *
+ * @param[in] group
+ * @return field value
+ *
+ * */
+<%= getSignature(g, f) %>;
+
+/** Set `<%= g.name + "." + f.name %>`
+ *
+ * @param[in] group
+ * @param[in] value
+ * @return true if field was set
+ *
+ * */
+<%= setSignature(g, f) %>;
+
+<%    end -%>
+
+/** Test if `<%= g.name + "." + f.name %>` has been initialised
+ *
+ * @param[in] group
+ * @return true if field is initialised
+ *
+ * */
+<%= testSignature(g, f) %>;
+
+/** Clear `<%= g.name + "." + f.name %>`
+ *
+ * @param[in] group
+ *
+ * */
+<%= clearSignature(g, f) %>;
+
+<%  end -%>
+
+<%end -%>
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+
+
