@@ -22,7 +22,8 @@ module SlowBlink
                 header = run_erb("include/groups.h.erb")
                 source = run_erb("src/groups.c.erb")
 
-                test = run_erb("test/tc_new.c.erb")
+                tc_new = run_erb("test/tc_new.c.erb")
+                tc_decodecompact = run_erb("test/tc_decodecompact.c.erb")
                 
                 testMake = run_erb("test/makefile.erb")
                 
@@ -52,10 +53,12 @@ module SlowBlink
                 File.open("#{prefix}/include/groups.h", "w"){|f|f.write(header)}
                 File.open("#{prefix}/src/groups.c", "w"){|f|f.write(source)}
 
-                File.open("#{prefix}/test/tc_test.c", "w"){|f|f.write(test)}
+                File.open("#{prefix}/test/tc_new.c", "w"){|f|f.write(tc_new)}
+                File.open("#{prefix}/test/tc_decodecompact.c", "w"){|f|f.write(tc_decodecompact)}
+                
                 File.open("#{prefix}/test/makefile", "w"){|f|f.write(testMake)}
 
-                puts `cd #{prefix}/test && make && make coverage`
+                puts `cd #{prefix}/test && make`
 
             end
 
@@ -119,7 +122,7 @@ module SlowBlink
                     else
                         out << value_type(f.type)
                     end
-                    out << " #{}_#{gname(g)}_get_#{f.name}(group_t group"
+                    out << " #{gname(g)}_get_#{f.name}(group_t group"
                     case f.type.class
                     when STRING
                         out << ", const char **data, uint32_t *len"

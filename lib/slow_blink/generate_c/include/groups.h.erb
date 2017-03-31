@@ -77,7 +77,7 @@ bool encodeCompact(group_t self, blink_stream_t out);
  * @retval NULL group could not be decoded
  *
  * */
-group_t decodeCompact(blink_stream_t in, struct blink_allocator alloc);
+group_t decodeCompact(blink_stream_t in, const struct blink_allocator *alloc);
 
 /** Destroy an object
  *

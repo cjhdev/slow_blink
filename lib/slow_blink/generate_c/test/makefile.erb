@@ -16,7 +16,7 @@ CMOCKA_DEFINES += -DHAVE_SIGNAL_H
 CMOCKA_DEFINES += -DHAVE_INTTYPES_H
 CMOCKA_DEFINES += -DHAVE_MALLOC_H
 
-CFLAGS := -Wall -Werror -g -fprofile-arcs -ftest-coverage $(INCLUDES) $(CMOCKA_DEFINES)
+CFLAGS := -Wall -g -fprofile-arcs -ftest-coverage $(INCLUDES) $(CMOCKA_DEFINES)
 LDFLAGS := -fprofile-arcs -g
 
 SRC := $(notdir $(wildcard $(DIR_ROOT)/src/*.c))

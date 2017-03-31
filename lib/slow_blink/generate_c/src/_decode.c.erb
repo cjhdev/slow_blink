@@ -83,7 +83,7 @@ static group_t _decode(blink_stream_t in, const struct blink_allocator *alloc, u
     return retval;
 }
 
-group_t decode(blink_stream_t in, const struct blink_allocator *alloc)
+group_t decodeCompact(blink_stream_t in, const struct blink_allocator *alloc)
 {
     return _decode(in, alloc, 42);
 }
