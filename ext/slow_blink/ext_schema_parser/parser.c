@@ -1275,7 +1275,7 @@ yyuserAction (yyRuleNum yyn, size_t yyrhslen, yyGLRStackItem* yyvsp,
 #line 251 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:816  */
     {
         ((*yyvalp)) = rb_hash_new();
-        rb_hash_aset(((*yyvalp)), ID2SYM(rb_intern("class")), ID2SYM(rb_intern("BOOL")));
+        rb_hash_aset(((*yyvalp)), ID2SYM(rb_intern("class")), ID2SYM(rb_intern("BOOLEAN")));
         rb_hash_aset(((*yyvalp)), ID2SYM(rb_intern("loc")), newLocation(filename, &(*yylocp)));
     }
 #line 1282 "ext/slow_blink/ext_schema_parser/parser.c" /* glr.c:816  */

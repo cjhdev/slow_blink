@@ -43,26 +43,26 @@ module SlowBlink::Message
 
         # @private
         # @param input [StringIO, String] Blink compact form
-        # @param stack [Array] used to measure depth of recursion 
+        # @param depth [Array] used to measure depth of recursion 
         # @return [Group, nil]
         # @raise [Error] recursion depth limit
-        def self.from_compact(input, stack)            
+        def self.from_compact(input, depth)            
 
-            fields = {}
+            value = {}
 
-            if stack.size < @maxRecursion
-                stack << self
+            if depth > 0
+                depth = depth - 1
             else
                 raise RecursionLimit
             end
 
             @fields.each do |f|
-                fields[f.name] = f.from_compact(input, stack)
+                value[f.name] = f.from_compact(input, depth)
             end
 
-            stack.pop
-            
-            self.new(fields)
+            depth = depth + 1
+
+            self.new(value)
                
         end
 
@@ -110,7 +110,6 @@ module SlowBlink::Message
         # @return [self]
         # @raise [IndexError, TypeError]
         def set(value)
-        
             if value.kind_of? Hash
                 value.each do |fn, fv|
                     if @value[fn]
@@ -129,6 +128,9 @@ module SlowBlink::Message
             elsif value.kind_of? self.class
                 @value = value.fields.to_h
             else
+                puts value.class.name
+                puts self.class
+                puts value.class
                 raise TypeError.new "expecting a Hash or a StaticGroup instance"
             end
             self
@@ -140,11 +142,14 @@ module SlowBlink::Message
         # @note calls {#set}(fields)
         # @param fields [Hash]
         def initialize(fields={})
+
             @value = {}
             self.class.fields.each do |f|
-                @value[f.name] = f.new(nil)
-            end            
-            set(fields)        
+                @value[f.name] = f.new
+            end
+            
+            set(fields)
+            
         end
 
         # @return [String] Blink Protocol compact form
@@ -161,6 +166,10 @@ module SlowBlink::Message
             @value.each do |fn, fv|
                 fv.to_compact(out)
             end        
+        end
+
+        def fv
+            @value.values
         end
 
         protected
@@ -217,15 +226,15 @@ module SlowBlink::Message
 
         # @private
         # @param input [StringIO] Blink compact form
-        # @param stack [Array] used to measure depth of recursion 
+        # @param depth [Array] used to measure depth of recursion 
         # @return [Group, nil]
         # @raise [Error] recursion depth limit
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
 
             group = nil
 
-            if stack.size < @maxRecursion
-                stack << self
+            if depth > 0
+                depth = depth - 1
             else
                 raise RecursionLimit
             end
@@ -235,8 +244,16 @@ module SlowBlink::Message
             end
 
             buf = input.getBinary
-            
-            if buf.size > 0
+
+            if buf.nil?
+
+                group = nil
+
+            elsif buf.size == 0
+
+                raise WeakError5.new "W5: Value cannot be null"                
+        
+            else
 
                 buf = StringIO.new(buf)
                 id = buf.getU64
@@ -245,12 +262,12 @@ module SlowBlink::Message
 
                     if @permittedID.include? id
 
-                        group = klass.from_compact(buf, stack)
+                        group = klass.from_compact(buf, depth)
 
                         if !buf.eof?                
                             size = buf.getU32
                             while group.extension.size < size do
-                                group.extension << @anyTaggedGroup.from_compact(buf, stack)
+                                group.extension << @anyTaggedGroup.from_compact(buf, depth)
                             end
                         end
 
@@ -263,15 +280,11 @@ module SlowBlink::Message
                     end
                 else
                     raise WeakError2.new "W2: Group id #{id} is unknown"
-                end
+                end                   
                 
-            elsif stack.size == 1
-                raise WeakError5.new "W??: top level cannot be null"
-            else                
-                raise WeakError5.new "W5: Value cannot be null"                
             end
 
-            stack.pop
+            depth = depth + 1
             group
 
         end

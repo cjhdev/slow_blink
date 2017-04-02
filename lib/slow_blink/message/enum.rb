@@ -29,7 +29,7 @@ module SlowBlink::Message
         end
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getI32
                 if symbol = type.symbol(value)
                     self.new(symbol.name)

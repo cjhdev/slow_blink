@@ -21,5 +21,4 @@
 
 require 'slow_blink/schema'
 require 'slow_blink/message/model'
-require 'slow_blink/message_test/message_test'
 require 'slow_blink/generate_c/model'

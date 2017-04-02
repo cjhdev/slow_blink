@@ -25,7 +25,7 @@ module SlowBlink::Message
     class BOOLEAN
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getBool
                 self.new(value)
             else

@@ -25,7 +25,7 @@ module SlowBlink::Message
     class FLOATING_POINT
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getF64
                 self.new(value)
             else

@@ -1,0 +1,98 @@
+namespace Blink
+
+GroupDecl/16000 : Annotated ->
+    NsName Name, 
+    u64 Id
+
+GroupDef/16001 : Annotated ->
+    NsName Name,
+    u64 Id?, 
+    FieldDef [] Fields,
+    NsName Super?
+
+FieldDef : Annotated ->
+    string Name, 
+    u32 Id?, 
+    TypeDef * Type,
+    bool Optional
+
+Define/16002 : Annotated ->
+    NsName Name, 
+    u32 Id?, 
+    TypeDef * Type
+
+TypeDef : Annotated
+
+Ref/ 16003 : TypeDef ->
+    NsName Type
+
+DynRef/16004 : TypeDef -> 
+    NsName Type
+
+Sequence/16005 : TypeDef ->
+    TypeDef * Type
+
+String/16006 : TypeDef ->
+    u32 MaxSize?
+
+Binary/16007 : TypeDef ->
+    u32 MaxSize?
+
+Fixed/16008 : TypeDef ->
+    u32 Size
+
+Enum/16009 : TypeDef ->
+    Symbol [] Symbols
+
+Symbol : Annotated ->
+    string Name, 
+    i32 Value
+
+U8/16010 : TypeDef
+
+I8/16011 : TypeDef
+
+U16/16012 : TypeDef
+
+I16/16013 : TypeDef
+
+U32/16014 : TypeDef
+
+I32/16015 : TypeDef
+
+U64/16016 : TypeDef
+
+I64/16017 : TypeDef
+
+F64/16018 : TypeDef
+
+Bool/16019 : TypeDef
+
+Decimal/16020 : TypeDef
+
+NanoTime/16021 : TypeDef
+
+MilliTime/16022 : TypeDef
+
+Date/16023 : TypeDef
+
+TimeOfDayMilli/16024 : TypeDef
+
+TimeOfDayNano/16025 : TypeDef
+
+Object/16026 : TypeDef
+
+SchemaAnnotation/16027 ->
+    Annotation [] Annotations,
+    string Ns?
+ 
+Annotated ->
+    Annotation [] Annotations?
+
+Annotation ->
+    NsName Name, 
+    string Value
+ 
+NsName ->
+    string Ns?, 
+    string Name

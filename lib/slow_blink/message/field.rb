@@ -51,43 +51,46 @@ module SlowBlink::Message
 
         # @private
         # @param input [String] Blink compact form
-        # @param stack [Array]
+        # @param depth [Array]
         # @return [Field] instance of anonymous subclass of Field
-        def self.from_compact(input, stack)
-            if sequence?
-                if size = input.getU32
-                    value = []
-                    while value.size < size do
-                        value << @type.from_compact(input, stack).get
-                    end
-                    self.new(value)
-                else
-                    nil
-                end
-            elsif optional? and (type.kind_of? StaticGroup or type.kind_of? FIXED)
-                if input.get_present(input)
-                    self.new(@type.from_compact(input, stack).get)
-                else
-                    nil
-                end
-            else
-                self.new(@type.from_compact(input, stack).get)
-            end
+        def self.from_compact(input, depth)
+            self.new(input, depth)         
         end
 
-        # @note calls {#set}(value)
-        def initialize(value)
+        attr_reader :type
+        def sequence?
+            @sequence
+        end
+        def optional?
+            @optional
+        end
+
+        def initialize(input=nil, depth=nil)
 
             @optional = self.class.optional?
             @sequence = self.class.sequence?
             @type = self.class.type
+            @value = nil
 
-            if value
-                set(value)
-            else
-                @value = nil
+            if input and depth
+
+                if @sequence
+                    if size = input.getU32
+                        @value = []
+                        while @value.size < size do
+                            @value << @type.from_compact(input, depth)
+                        end
+                    end
+                elsif @optional and (@type.kind_of? StaticGroup or @type.kind_of? FIXED)
+                    if input.get_present
+                        @value = @type.from_compact(input, depth)
+                    end
+                else
+                    @value = @type.from_compact(input, depth)
+                end
+                
             end
-                        
+            
         end
         
         def set(value)
@@ -143,7 +146,7 @@ module SlowBlink::Message
             elsif @optional
                 out.putNull
             else
-                raise IncompleteGroup.new "'#{self.name}' must not be null"
+                raise IncompleteGroup.new "'#{self.class.name}' must not be null"
             end
         end
 

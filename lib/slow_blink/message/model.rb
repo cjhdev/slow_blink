@@ -96,6 +96,9 @@ module SlowBlink
             # @return [Integer]
             attr_reader :maxRecursion
 
+            # @return [SlowBlink::Schema]
+            attr_reader :schema
+
             # @api user
             #
             # Generate a Model from a {Schema}
@@ -111,14 +114,12 @@ module SlowBlink
                 @taggedGroups = {}
                 @groups = {}
                 @maxRecursion = opts[:maxRecursion]||DEFAULT_MAX_RECURSION
-                maxRecursion = @maxRecursion
 
                 # any of the groups
                 
                 taggedGroups = @taggedGroups
                 
                 @anyTaggedGroup = Class.new(DynamicGroup) do
-                    @maxRecursion = maxRecursion
                     @anyTaggedGroup = self
                     @taggedGroups = taggedGroups
                     @permittedID = schema.groups.map{|g|g.id}.select{|g|g}
@@ -130,7 +131,6 @@ module SlowBlink
                 schema.groups.each do |g|
                     fields = g.fields.map{|f| _model_field(f)}
                     @groups[g.name] = Class.new(Group) do
-                        @maxRecursion = maxRecursion
                         @anyTaggedGroup = anyTaggedGroup                        
                         @name = g.name
                         @id = g.id
@@ -151,7 +151,13 @@ module SlowBlink
             # @raise [WeakError,StrongError]
             # @raise [RecursionLimit]
             def decode_compact(input)
-                @anyTaggedGroup.from_compact(input, []).get
+                depth = @maxRecursion
+                group = @anyTaggedGroup.from_compact(input, depth)
+                if group.nil?
+                    raise "top level group cannot be null"
+                else
+                    group.get
+                end
             end
 
             # @api user
@@ -193,7 +199,6 @@ module SlowBlink
                 # @param opt  [true,false] parent definition may allow this type to be optional
                 def _model_type(type)
                     anyTaggedGroup = @anyTaggedGroup
-                    maxRecursion = @maxRecursion
 
                     case type.class
                     when SlowBlink::OBJECT
@@ -202,17 +207,17 @@ module SlowBlink
                         taggedGroups = @taggedGroups
                         Class.new(DynamicGroup) do
                             @anyTaggedGroup = anyTaggedGroup
-                            @maxRecursion = maxRecursion
                             @taggedGroups = taggedGroups
                             @permittedID = type.groups.map{|g|g.id}
+                            @type = type
                         end
                     when SlowBlink::StaticGroup
                         fields = type.fields.map{|f| _model_field(f)}
                         Class.new(StaticGroup) do
-                            @maxRecursion = maxRecursion                 
                             @name = type.name
                             @id = type.id
-                            @fields = fields                          
+                            @fields = fields
+                            @type = type             
                         end                                                                           
                     else                    
                         Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
@@ -242,4 +247,4 @@ require "slow_blink/message/time"
 require "slow_blink/message/time_of_day"
 require "slow_blink/message/date"
 require "slow_blink/message/decimal"
-
+require "slow_blink/message/test_data"

@@ -62,7 +62,7 @@ module SlowBlink::Message
     class U8 < INTEGER
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getU8
                 self.new(value)
             else
@@ -81,7 +81,7 @@ module SlowBlink::Message
     class U16 < INTEGER
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getU16
                 self.new(value)
             else
@@ -100,7 +100,7 @@ module SlowBlink::Message
     class U32 < INTEGER
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getU32
                 self.new(value)
             else
@@ -119,7 +119,7 @@ module SlowBlink::Message
     class U64 < INTEGER
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getU64
                 self.new(value)
             else
@@ -138,7 +138,7 @@ module SlowBlink::Message
     class I8 < INTEGER
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getI8
                 self.new(value)
             else
@@ -157,7 +157,7 @@ module SlowBlink::Message
     class I16 < INTEGER
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getI16
                 self.new(value)
             else
@@ -176,7 +176,7 @@ module SlowBlink::Message
     class I32 < INTEGER
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getI32
                 self.new(value)
             else
@@ -195,7 +195,7 @@ module SlowBlink::Message
     class I64 < INTEGER
 
         # @private
-        def self.from_compact(input, stack)
+        def self.from_compact(input, depth)
             if value = input.getI64
                 self.new(value)
             else

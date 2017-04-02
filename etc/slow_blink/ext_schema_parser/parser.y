@@ -250,7 +250,7 @@ single:
     BOOLEAN
     {
         $$ = rb_hash_new();
-        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("BOOL")));
+        rb_hash_aset($$, ID2SYM(rb_intern("class")), ID2SYM(rb_intern("BOOLEAN")));
         rb_hash_aset($$, ID2SYM(rb_intern("loc")), newLocation(filename, &@$));
     }
     |
