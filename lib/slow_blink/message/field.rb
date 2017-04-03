@@ -58,6 +58,7 @@ module SlowBlink::Message
         end
 
         attr_reader :type
+        
         def sequence?
             @sequence
         end
@@ -77,8 +78,11 @@ module SlowBlink::Message
                 if @sequence
                     if size = input.getU32
                         @value = []
-                        while @value.size < size do
-                            @value << @type.from_compact(input, depth)
+                        size.times do
+                            value = @type.from_compact(input, depth)
+                            if value
+                                @value << value
+                            end
                         end
                     end
                 elsif @optional and (@type.kind_of? StaticGroup or @type.kind_of? FIXED)
@@ -94,24 +98,32 @@ module SlowBlink::Message
         end
         
         def set(value)
-            if value.nil?
+            if value.kind_of? Field
+                self.set(value.get)
+            elsif value.nil?
                 if optional?
                     @value = nil
+                    self
                 else
                     raise ArgumentError.new "field is not optional, value cannot be nil"
                 end                
-            elsif self.class.sequence?                
+            elsif @sequence                
                 if value.kind_of? Array
                     @value = []
                     value.each do |v|
+                        if v.nil?
+                            next
+                        end
                         @value << @type.new(v)
                     end
+                    self
                 else
                     raise ArgumentError.new "field value must be an array of type"
                 end
             else
                 @value = @type.new(value)
-            end
+                self
+            end    
         end
 
         # @return field value or nil
@@ -132,7 +144,7 @@ module SlowBlink::Message
         # @return [StringIO]
         def to_compact(out)
             if @value
-                if self.class.sequence?
+                if @sequence
                     out.putU32(@value.size)
                     @value.each do |v|
                         v.to_compact(out)

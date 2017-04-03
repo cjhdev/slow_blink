@@ -21,7 +21,9 @@
 
 module SlowBlink::Message
 
-    class StaticGroup
+    class Group
+
+        attr_reader :extension
 
         # @private
         # @return [Array<Field>] group fields
@@ -41,11 +43,11 @@ module SlowBlink::Message
             @name
         end
 
+        def self.ancestorID
+            @ancestorID
+        end
+
         # @private
-        # @param input [StringIO, String] Blink compact form
-        # @param depth [Array] used to measure depth of recursion 
-        # @return [Group, nil]
-        # @raise [Error] recursion depth limit
         def self.from_compact(input, depth)            
 
             value = {}
@@ -65,6 +67,13 @@ module SlowBlink::Message
             self.new(value)
                
         end
+        
+        def initialize(fields={}, *extension)
+            @value = {}
+            self.class.fields.each{|f|@value[f.name] = f.new}
+            set(fields)
+            @extension = extension
+        end
 
         # @api user
         # Finds Field by name and calls {Field#set}(value) 
@@ -74,7 +83,7 @@ module SlowBlink::Message
         # @raise [IndexError, TypeError]
         def []=(name, value)
             if field = @value[name]
-                field.set(value)
+                @value[name] = field.set(value)
             else
                 raise IndexError.new "field #{name} is not defined in this group"            
             end
@@ -95,123 +104,81 @@ module SlowBlink::Message
             end            
         end
 
-        # Get this group
-        # @return [self]
-        def get
-            self
-        end
-
-        # Set the contents of this group
-        #
-        # @overload set(value)
-        #   @param value [Hash{String=>Field,Numeric,String,Time,nil}] Hash of {Field} objects or literal values
-        # @overload set(value)
-        #   @param value [Group] a Hash of {Field} objects will be extracted from a Group object by calling {Group#fields}
-        # @return [self]
-        # @raise [IndexError, TypeError]
         def set(value)
             if value.kind_of? Hash
                 value.each do |fn, fv|
                     if @value[fn]
-                        # replace entire field
-                        if fv.is_a? @value[fn].class
-                            @value[fn] = fv
-                        # set value of field
-                        else
-                            @value[fn].set(fv)
-                        end
+                        @value[fn] = @value[fn].set(fv)
                     else
                         raise IndexError.new "field '#{fn}' is unknown"
                     end
-                end
-            # replace @value with value from another instance of self.class
-            elsif value.kind_of? self.class
-                @value = value.fields.to_h
+                end    
             else
-                puts value.class.name
-                puts self.class
-                puts value.class
-                raise TypeError.new "expecting a Hash or a StaticGroup instance"
+                raise TypeError.new "expecting a Hash instance"
             end
             self
         end
 
-        # @api user
-        # Create a Group
-        #
-        # @note calls {#set}(fields)
-        # @param fields [Hash]
-        def initialize(fields={})
-
-            @value = {}
-            self.class.fields.each do |f|
-                @value[f.name] = f.new
-            end
-            
-            set(fields)
-            
+        def get
+            self
         end
 
-        # @return [String] Blink Protocol compact form
-        def encode_compact            
+        # @private
+        def to_compact(out)
+            @value.values.each{|f|f.to_compact(out)}            
+        end
+
+        def encode_compact(out="")       
             if self.class.id
-                to_compact("")
+                groupOut = String.new.putU64(self.class.id)
+                to_compact(groupOut)
+                if @extension.size > 0
+                    groupOut.putU32(@extension.size)
+                    @extension.each{|e|e.encode_compact(groupOut)}                    
+                end
+                
+                out.putU32(groupOut.size)                
+                out << groupOut                
             else
                 raise UntaggedGroup.new "cannot encode a group without an ID"
             end
         end
-
-        # @private
-        def to_compact(out)
-            @value.each do |fn, fv|
-                fv.to_compact(out)
-            end        
-        end
-
-        def fv
-            @value.values
-        end
-
-        protected
-
-            # Get the value hash directly
-            # @return [Hash{String => Field}]
-            def fields
-                @value
-            end
-
+        
     end
-    
-    class Group < StaticGroup
 
-        attr_reader :extension
+    class StaticGroup
 
-        def self.ancestorID
-            @ancestorID
-        end
-
-        def initialize(fields={}, *extension)
-            super(fields)
-            @extension = extension
-        end
-
-        # @private
-        def to_compact(out)
-
-            groupOut = String.new.putU64(self.class.id)
-            super(groupOut)
-            if @extension.size > 0
-                groupOut.putU32(@extension.size)
-                @extension.each do |e|
-                    e.to_compact(groupOut)                    
-                end
-            end
-
-            out.putU32(groupOut.size)
-            out << groupOut
-    
+        def self.group
+            @groups[@type.name]
         end
         
+        def self.from_compact(input, depth)
+            self.new(group.from_compact(input, depth))            
+        end
+
+        def initialize(value)
+            set(value)
+        end
+        
+        def set(value)
+            if value.is_a? self.class.group
+                @value = value
+            elsif value.is_a? Hash
+                @value = self.class.group.new(value)
+            else
+                raise
+            end
+        end
+
+        def get
+            @value
+        end
+        
+        # @private
+        def to_compact(out)
+            @value.to_compact(out)
+        end
+
     end
 
     class DynamicGroup
@@ -224,11 +191,6 @@ module SlowBlink::Message
             @permittedID
         end
 
-        # @private
-        # @param input [StringIO] Blink compact form
-        # @param depth [Array] used to measure depth of recursion 
-        # @return [Group, nil]
-        # @raise [Error] recursion depth limit
         def self.from_compact(input, depth)
 
             group = nil
@@ -238,7 +200,7 @@ module SlowBlink::Message
             else
                 raise RecursionLimit
             end
-        
+
             if input.kind_of? String
                 input = StringIO.new(input)
             end
@@ -267,7 +229,7 @@ module SlowBlink::Message
                         if !buf.eof?                
                             size = buf.getU32
                             while group.extension.size < size do
-                                group.extension << @anyTaggedGroup.from_compact(buf, depth)
+                                group.extension << @anyTaggedGroup.from_compact(buf, depth).get
                             end
                         end
 
@@ -285,7 +247,7 @@ module SlowBlink::Message
             end
 
             depth = depth + 1
-            group
+            self.new(group)
 
         end
 
@@ -296,11 +258,8 @@ module SlowBlink::Message
                 else                        
                     raise TypeError.new "incompatible group"
                 end
-            # native values
-            elsif value.kind_of? Hash
-                @value.set(value)
             else
-                raise
+                raise ArgumentError.new "argument must be kind_of Group"
             end
         end
 
@@ -316,7 +275,7 @@ module SlowBlink::Message
 
         # @private
         def to_compact(out)
-            @value.to_compact(out)    
+            @value.encode_compact(out)        
         end
 
         def extension

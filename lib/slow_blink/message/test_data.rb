@@ -34,8 +34,11 @@ module SlowBlink::Message
             group = @model.group(name).new
             @model.schema.groups.detect{|g|g.name == name}.fields.each do |f|
                 data = fieldData(f)
-                puts data
-                group[f.name] = data
+                if f.type.sequence? and data
+                    group[f.name] = [data]
+                else
+                    group[f.name] = data
+                end                
             end
             group
         end

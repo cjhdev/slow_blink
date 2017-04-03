@@ -124,14 +124,11 @@ module SlowBlink
                     @taggedGroups = taggedGroups
                     @permittedID = schema.groups.map{|g|g.id}.select{|g|g}
                 end
-                    
-                anyTaggedGroup = @anyTaggedGroup
                 
                 # create an anon class for each group defined in schema                
                 schema.groups.each do |g|
                     fields = g.fields.map{|f| _model_field(f)}
-                    @groups[g.name] = Class.new(Group) do
-                        @anyTaggedGroup = anyTaggedGroup                        
+                    @groups[g.name] = Class.new(Group) do                        
                         @name = g.name
                         @id = g.id
                         @fields = fields
@@ -198,12 +195,12 @@ module SlowBlink
                 # @param type [SlowBlink::Type] type definition
                 # @param opt  [true,false] parent definition may allow this type to be optional
                 def _model_type(type)
-                    anyTaggedGroup = @anyTaggedGroup
-
+                    
                     case type.class
                     when SlowBlink::OBJECT
                         @anyTaggedGroup                    
                     when SlowBlink::DynamicGroup
+                        anyTaggedGroup = @anyTaggedGroup
                         taggedGroups = @taggedGroups
                         Class.new(DynamicGroup) do
                             @anyTaggedGroup = anyTaggedGroup
@@ -212,11 +209,9 @@ module SlowBlink
                             @type = type
                         end
                     when SlowBlink::StaticGroup
-                        fields = type.fields.map{|f| _model_field(f)}
+                        groups = @groups
                         Class.new(StaticGroup) do
-                            @name = type.name
-                            @id = type.id
-                            @fields = fields
+                            @groups = groups
                             @type = type             
                         end                                                                           
                     else                    

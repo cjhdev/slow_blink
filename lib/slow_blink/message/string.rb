@@ -59,6 +59,7 @@ module SlowBlink::Message
                     raise RangeError.new "String instance cannot be larger than #{self.class.size} bytes"
                 end
             else
+                puts value.inspect
                 raise TypeError.new "expecting a String instance"
             end            
         end
