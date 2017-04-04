@@ -18,12 +18,10 @@ generator (to generate codecs in languages other than Ruby).
 
 - Implements Blink Specification [beta4-2013-06-14](specification/blink/BlinkSpec-beta4.pdf "Blink Specification").
 - Integrated schema parser
-- Dynamic message class generator
-    - Create message classes on-the-fly without code generation
-    - Derives anonymous subclasses from `SlowBlink::Message::Group`    
-    - Does not generate constants or symbols
-    - Use `SlowBlink::Message::Group#to_tag` produce [blink tag specification](specification/blink/BlinkTagSpec-beta4.pdf "Blink Tag Specification").    
-- Support for compact mode serialisation
+- Dynamic message class generator (no code generation step)
+    - Produces anonymous classes derived from `SlowBlink::Message::Group`
+    - Does not generate constants
+    - Supports [blink tag specification](specification/blink/BlinkTagSpec-beta4.pdf "Blink Tag Specification") and compact mode serialisation    
 - Extensible ERB based codec generator
 
 ## Todo
