@@ -68,7 +68,11 @@ module SlowBlink::Message
 
         # @private
         def to_compact(out)
-            out.putI32(self.class.type.symbol(@value).value)
+            out.putI32(self.class.type.symbol(@value).value)            
+        end
+
+        def to_tag
+            @value
         end
     
     end

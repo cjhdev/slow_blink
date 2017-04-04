@@ -26,6 +26,10 @@ module SlowBlink::Message
     # @abstract
     class MILLI_TIME
 
+        def self.type
+            @type
+        end
+
         # @private
         def self.from_compact(input, depth)
             if value = input.getI64
@@ -70,6 +74,10 @@ module SlowBlink::Message
         def to_compact(out)
             out.putI64(@value.strftime('%Q').to_i)            
         end
+
+        def to_tag
+            @value.to_s
+        end
     
     end
 
@@ -100,7 +108,7 @@ module SlowBlink::Message
         # @private
         def to_compact(out)
             out.putI64(@value.strftime('%N').to_i)
-        end
+        end        
         
     end
 

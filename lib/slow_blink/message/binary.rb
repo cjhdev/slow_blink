@@ -24,6 +24,10 @@ module SlowBlink::Message
     # @abstract
     class BINARY
 
+        def self.type
+            @type
+        end
+
         # @private
         def self.from_compact(input, depth)
             if value = input.getBinary
@@ -71,6 +75,10 @@ module SlowBlink::Message
         # @private
         def to_compact(out)
             out.putBinary(@value)
+        end
+
+        def to_tag
+            @value.bytes.map{ |c| sprintf("\\x%02X",c) }.join
         end
 
     end

@@ -33,7 +33,13 @@ module SlowBlink::Message
         def set(name)
             group = @model.group(name).new
             @model.schema.groups.detect{|g|g.name == name}.fields.each do |f|
+
                 data = fieldData(f)
+
+                if !f.optional? and data.nil?
+                    raise "what the its #{f.type}"
+                end
+                
                 if f.type.sequence? and data
                     group[f.name] = [data]
                 else
@@ -48,6 +54,7 @@ module SlowBlink::Message
         # 
         def fieldData(field, **opts)
 
+
             if !field.is_a? SlowBlink::Field
                 ArgumentError.new "field argument must be an instance of SlowBlink::Field"
             end
@@ -55,66 +62,52 @@ module SlowBlink::Message
             case field.type.class
             when SlowBlink::FIXED
                 s = (0...field.type.size).map { (65 + rand(26)).chr }.join
-                if field.optional?
-                    [s, nil].sample
-                else
-                    s
-                end                
+                
+                s
+                
             when SlowBlink::BINARY, SlowBlink::STRING
                 if field.type.size
                     s = (0...rand(field.type.size)).map { (65 + rand(26)).chr }.join
                 else
                     s = (0...rand(50)).map { (65 + rand(26)).chr }.join
                 end
-                if field.optional?
-                    [s, nil].sample
-                else
-                    s
-                end                
+                
+                s
+                
             when SlowBlink::BOOLEAN
-                if field.optional?
-                    [true, false, nil].sample
-                else
-                    [true, false].sample
-                end
+                
+                [true, false].sample
+                
             when SlowBlink::U8, SlowBlink::U16, SlowBlink::U32, SlowBlink::U64, SlowBlink::I8, SlowBlink::I16, SlowBlink::I32, SlowBlink::I64
-                if field.optional?
-                    [rand(field.type.class::RANGE), nil].sample
-                else
+                
                     rand(field.type.class::RANGE)
-                end
+                
             when SlowBlink::FLOATING_POINT, SlowBlink::DECIMAL
-                if field.optional?
-                    [rand(Float::MIN, Float::MAX), nil].sample
-                else
+                
                     rand(Float::MIN, Float::MAX)
-                end            
+                
             when SlowBlink::ENUM
-                if field.optional?
-                    field.type.symbols.map{|s|s.name}.push(nil).sample
-                else
+                
                     field.type.symbols.sample.name
-                end
+                
             when SlowBlink::MILLI_TIME, SlowBlink::NANO_TIME, SlowBlink::DATE
-                if field.optional?
-                    [0, nil].sample
-                else
-                    0
-                end
-            when SlowBlink::TIME_OF_DAY_MILLI, SlowBlink::TIME_OF_DAY_NANO
-                if field.optional?
-                    [0, nil].sample
-                else
-                    0
-                end
-            when SlowBlink::StaticGroup, SlowBlink::DynamicGroup
 
-                if field.optional?
-                    [set(field.type.name), nil].sample
-                else
-                    set(field.type.name)
-                end
-    
+                    0
+                
+            when SlowBlink::TIME_OF_DAY_MILLI, SlowBlink::TIME_OF_DAY_NANO
+                
+                    0
+                                    
+            when SlowBlink::StaticGroup
+
+                
+                set(field.type.name)
+                
+
+            when SlowBlink::DynamicGroup
+
+                set(field.type.groups.select{|g|g.id}.sample.name)
+                
             else
                 raise "no support for #{field.type}"
             end

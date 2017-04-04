@@ -24,6 +24,10 @@ module SlowBlink::Message
     # @abstract
     class STRING
 
+        def self.type
+            @type
+        end
+
         # @private
         def self.from_compact(input, depth)
             if value = input.getString
@@ -59,7 +63,6 @@ module SlowBlink::Message
                     raise RangeError.new "String instance cannot be larger than #{self.class.size} bytes"
                 end
             else
-                puts value.inspect
                 raise TypeError.new "expecting a String instance"
             end            
         end
@@ -72,6 +75,10 @@ module SlowBlink::Message
         # @private
         def to_compact(out)
             out.putString(@value)
+        end
+
+        def to_tag
+            @value
         end
 
     end

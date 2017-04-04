@@ -12,3 +12,4 @@ schema = Schema.new(SchemaBuffer.new("Hello/0 -> string greeting", "buffer.blink
 
 # read several schema definitions from memory and combine them in that order
 schema = Schema.new(SchemaBuffer.new("Hello -> string greeting"), SchemaBuffer.new("Hello <- 0"))
+

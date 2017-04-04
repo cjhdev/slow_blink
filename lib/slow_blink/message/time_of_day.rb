@@ -24,6 +24,10 @@ module SlowBlink::Message
     # @abstract
     class TIME_OF_DAY_MILLI
 
+        def self.type
+            @type
+        end
+
         # @private
         def self.from_compact(input, depth)
             if value = input.getU32
@@ -60,11 +64,19 @@ module SlowBlink::Message
         def to_compact(out)
             out.putU32(@value)
         end        
+
+        def to_tag
+            @value.to_s
+        end
     
     end
 
     # @abstract
     class TIME_OF_DAY_NANO
+
+        def self.type
+            @type
+        end
 
         # @private
         def self.from_compact(input, depth)
@@ -102,6 +114,10 @@ module SlowBlink::Message
         def to_compact(out)
             out.putU64(@value)            
         end        
+
+        def to_tag
+            @value.to_s
+        end
     
     end
 

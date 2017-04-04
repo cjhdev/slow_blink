@@ -24,6 +24,10 @@ module SlowBlink::Message
     # @abstract
     class FLOATING_POINT
 
+        def self.type
+            @type
+        end
+
         # @private
         def self.from_compact(input, depth)
             if value = input.getF64
@@ -56,6 +60,10 @@ module SlowBlink::Message
         # @private
         def to_compact(out)
             out.putF64(@value)
+        end
+
+        def to_tag
+            @value.to_s
         end
 
     end

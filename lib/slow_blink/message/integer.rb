@@ -24,6 +24,10 @@ module SlowBlink::Message
     # @abstract
     class INTEGER
 
+        def self.type
+            @type
+        end
+
         # @param value [Integer]
         # @return [true,false] integer value is within permitted range
         def self.in_range?(value)
@@ -54,6 +58,10 @@ module SlowBlink::Message
         # @note calls {#set}(value)
         def initialize(value)        
             set(value)
+        end
+
+        def to_tag
+            @value.to_s
         end
 
     end

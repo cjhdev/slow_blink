@@ -93,7 +93,7 @@ module SlowBlink
         def initialize(attr)        
             @name = attr[:name][:name].freeze
             @id = attr[:name][:id]
-            @optional = attr[:opt]
+            @optional = (attr[:optional] ? true : false)
             @location = attr[:location].freeze
             @type = SlowBlink.const_get(attr[:type][:class]).new(attr[:type].merge({:table => attr[:table], :ns => attr[:ns]}))
             @table = attr[:table]

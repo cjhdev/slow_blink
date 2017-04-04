@@ -2,50 +2,59 @@ require_relative "capture_stderr"
 require "test/unit"
 require "slow_blink"
 
-inputs = {}
-root = "test/input"
+#inputs = {}
+#root = File.expand_path(__FILE__)  "test/input"
 
-testClass = Class.new(Test::Unit::TestCase) do
+root = File.expand_path(File.join(File.dirname(__FILE__), "input"))
 
-    class << self
-        attr_accessor :inputs
-    end
+Dir.foreach(root) do |filename|
 
-    Dir.foreach(root) do |filename|
+    next if filename == ".." or filename == "."
 
-        next if filename == ".." or filename == "."
+    testClass = Class.new(Test::Unit::TestCase) do
+
+        class << self
+            attr_accessor :inputs
+        end
+
+        test_name = "test_parse"
 
         test_name = "test_#{filename.sub(".blink", "")}"
-        inputs[test_name.to_sym] = "#{root}/#{filename}"
+        
+        define_method( "test_parse" ) do
+            SlowBlink::Schema.read(File.join(root, filename))
+        end
 
-        define_method( test_name ) do
+        define_method( "test_model" ) do
 
-            # run and intercept stderr output
-            err = capture_stderr do
+            #puts "parsing #{filename}"
+            schema = SlowBlink::Schema.read(File.join(root, filename))
+            #puts "modeling #{filename}"
+            model = SlowBlink::Message::Model.new(schema)
+            #puts "gen test data"
+            testData = SlowBlink::Message::TestData.new(model)
 
-                SlowBlink::Schema.read(inputs[__method__])
+            # self test all serialisable groups
+            schema.groups.select{|g|g.id}.each do |g|
+
+                # initialise a group with valid test data
+                message = testData.set(g.name)
+
+                # serialise
+                msg = message.encode_compact
+
+                # decode
+                model.decode_compact(msg)
 
             end
-
-            # there should have been no messages to stderr
-            assert_equal("", err.string, "unexpected error messages")
-
-            # if there were messages, forward them to stderr
-            if err.string != ""
-
-                STDERR.puts err.string
-
-            end
-
+            
         end
 
     end
 
+    Object.const_set("TestInputs_#{File.basename(filename, ".blink").gsub("-", "_")}", testClass)
+
 end
 
-# set inputs as a class variable
-testClass.inputs = inputs
 
-# name the dynamic test class
-Object.const_set("TestInputs", testClass)
 

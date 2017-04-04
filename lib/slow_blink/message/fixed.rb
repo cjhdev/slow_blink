@@ -24,6 +24,10 @@ module SlowBlink::Message
     # @abstract
     class FIXED
 
+        def self.type
+            @type
+        end
+
         # @private
         def self.from_compact(input, depth)
             if value = input.getFixed(size)

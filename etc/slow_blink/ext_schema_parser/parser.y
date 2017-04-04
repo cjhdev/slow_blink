@@ -840,6 +840,8 @@ static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
 
     filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
 
+    rb_gc_mark(filename);
+
     if(yylex_init(&scanner) == 0){
 
         if(yy_scan_bytes((const char *)RSTRING_PTR(buffer), RSTRING_LEN(buffer), scanner)){

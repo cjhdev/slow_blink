@@ -74,7 +74,6 @@ module SlowBlink::Message
             @value = nil
 
             if input and depth
-
                 if @sequence
                     if size = input.getU32
                         @value = []
@@ -97,15 +96,15 @@ module SlowBlink::Message
             
         end
         
-        def set(value)
+        def set(value)            
             if value.kind_of? Field
                 self.set(value.get)
             elsif value.nil?
-                if optional?
+                if @optional
                     @value = nil
                     self
                 else
-                    raise ArgumentError.new "field is not optional, value cannot be nil"
+                    raise ArgumentError.new "field '#{self.class.name}'is not optional, value cannot be nil (sequence: #{@sequence})"
                 end                
             elsif @sequence                
                 if value.kind_of? Array
@@ -129,7 +128,7 @@ module SlowBlink::Message
         # @return field value or nil
         def get
             if @value
-                if self.class.sequence?
+                if @sequence
                     @value.map{|v|v.get}                
                 else
                     @value.get
@@ -162,12 +161,22 @@ module SlowBlink::Message
             end
         end
 
-        private
-
-            def sequenceOfSameType(value)
-                value.each do ||
-                end
+        def to_tag
+            if @value
+                if @value.is_a? Array
+                    @value.inject("|#{self.class.name}=[") do |out,v|
+                        if @value.first != v
+                            out << ";"
+                        end
+                        out << v.to_tag
+                    end << "]"
+                else
+                    "|#{self.class.name}=#{@value.to_tag}"
+                end                
+            else
+                ""
             end
+        end
 
     end
 

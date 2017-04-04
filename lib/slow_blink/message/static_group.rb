@@ -19,64 +19,45 @@
 #   IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 #   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-require 'bigdecimal'
-
 module SlowBlink::Message
 
-    # @abstract
-    class DECIMAL
+    class StaticGroup
 
-        def self.type
-            @type
+        def self.group
+            @groups[@type.name]
         end
-
-        # @private
+        
         def self.from_compact(input, depth)
-            if e = input.getI8
-                if m = input.getI64
-                    self.new("#{m}E#{e}")                    
-                else
-                    raise NullMantissa
-                end
-            else
-                nil
-            end                
+            self.new(group.from_compact(input, depth))            
         end
 
-        # @note calls {#set}(value)
         def initialize(value)
             set(value)
         end
+        
+        def set(value)
+            if value.is_a? self.class.group
+                @value = value
+            elsif value.is_a? Hash
+                @value = self.class.group.new(value)
+            else
+                raise
+            end
+        end
 
-        # @return [BigDecimal]
         def get
             @value
         end
-
-        # Set a decimal value
-        # @param value [Numeric]
-        # @raise [TypeError]
-        def set(value)
-            @value = BigDecimal.new(value.to_s)            
-        end
-
+        
         # @private
         def to_compact(out)
-
-            split = @value.split
-
-            exponent = - split[1].size + split[3]
-            mantissa = split[0]*split[1].to_i
-
-            out.putI8(exponent)
-            out.putI64(mantissa)
-
+            @value.to_compact(out)
         end
 
         def to_tag
-            @value.to_s
+            "{#{@value.to_tag_value.sub("|","")}}"            
         end
-    
+
     end
 
 end

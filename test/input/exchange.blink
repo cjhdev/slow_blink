@@ -13,13 +13,13 @@ GroupDef/16001 : Annotated ->
 FieldDef : Annotated ->
     string Name, 
     u32 Id?, 
-    TypeDef Type,
+    TypeDef* Type,
     bool Optional
 
 Define/16002 : Annotated ->
     NsName Name, 
     u32 Id?, 
-    TypeDef Type
+    TypeDef* Type
 
 TypeDef : Annotated
 
@@ -30,7 +30,7 @@ DynRef/16004 : TypeDef ->
     NsName Type
 
 Sequence/16005 : TypeDef ->
-    TypeDef Type
+    TypeDef* Type
 
 String/16006 : TypeDef ->
     u32 MaxSize?

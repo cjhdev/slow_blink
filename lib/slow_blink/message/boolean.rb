@@ -24,9 +24,14 @@ module SlowBlink::Message
     # @abstract
     class BOOLEAN
 
+        def self.type
+            @type
+        end
+
         # @private
         def self.from_compact(input, depth)
-            if value = input.getBool
+            value = input.getBool
+            if !value.nil?
                 self.new(value)
             else
                 nil
@@ -51,12 +56,16 @@ module SlowBlink::Message
 
         # @note calls {#set}(value)
         def initialize(value)
-            set(value)                
+            set(value)
         end
 
         # @private
         def to_compact(out)
             out.putBool(@value)
+        end
+
+        def to_tag
+            ( @value ? "Y" : "N" )
         end
         
     end

@@ -26,6 +26,8 @@ puts rx["Header"]["SeqNo"]
 puts rx["Header"]["SendingTime"]
 puts rx["Text"]
 
+puts rx.to_tag
+
 # or
 
 message = model.group("MyMessage").new(
@@ -40,3 +42,5 @@ rx = model.decode_compact(message.encode_compact)
 puts rx["Header"]["SeqNo"]
 puts rx["Header"]["SendingTime"]
 puts rx["Text"]
+
+puts rx.to_tag

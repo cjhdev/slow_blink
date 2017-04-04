@@ -1,19 +1,30 @@
 SlowBlink
 ==========
 
+SlowBlink is a Ruby implementation of [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
+
+The Blink Protocol is serialisation specification that uses a schema to define the structure of
+binary messages. The wire format is optimised for size and codec efficiency which makes it
+a useful format for applications operating over constrained networks.
+
+SlowBlink is a tool to support rapid development of telemetry systems.
+It features an integrated schema parser, a dynamic message generator, and an extensible codec
+generator (to generate codecs in languages other than Ruby).
+
 [![Build Status](https://travis-ci.org/cjhdev/slow_blink.svg?branch=master)](https://travis-ci.org/cjhdev/slow_blink)
 [![Gem Version](https://badge.fury.io/rb/slow_blink.svg)](https://badge.fury.io/rb/slow_blink)
-
-SlowBlink is a Ruby implementation of [Blink Protocol](http://www.blinkprotocol.org/ "Blink Protocol").
 
 ## Highlights
 
 - Implements Blink Specification [beta4-2013-06-14](specification/blink/BlinkSpec-beta4.pdf "Blink Specification").
-- Integrated Blink Protocol schema parser
-- Dynamic message model generator
+- Integrated schema parser
+- Dynamic message class generator
+    - Create message classes on-the-fly without code generation
+    - Derives anonymous subclasses from `SlowBlink::Message::Group`    
     - Does not generate constants or symbols
+    - Use `SlowBlink::Message::Group#to_tag` produce [blink tag specification](specification/blink/BlinkTagSpec-beta4.pdf "Blink Tag Specification").    
 - Support for compact mode serialisation
-- C codec generator
+- Extensible ERB based codec generator
 
 ## Todo
 
@@ -32,7 +43,7 @@ Requires Ruby 2.0 and support for building native extensions.
 
 ## Examples
 
-see `examples`
+see [examples](examples).
 
 ## Documentation
 
@@ -41,9 +52,6 @@ see `examples`
 - The version of Blink Specification implemented by SlowBlink is included in this repository under `specification/blink`
 
 ## Typical Performance
-
-
-
 
 ~~~
 schema with data:
@@ -75,7 +83,7 @@ on Intel(R) Core(TM) i7-4500U CPU @ 1.80GHz
 ~~~
 
 Run the same test by calling `rake benchmark`.
-    
+
 ## License
 
 SlowBlink has an MIT license.
@@ -84,10 +92,5 @@ SlowBlink has an MIT license.
 ## Thanks
 
 Many thanks to the authors of Blink Protocol.
-
-
-## Contact
-
-Cameron Harper (contact@cjh.id.au)
 
 

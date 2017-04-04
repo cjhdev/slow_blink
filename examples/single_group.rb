@@ -26,4 +26,6 @@ decoded = model.decode_compact(compact_form)
 # read the fields of a message instance
 puts decoded["greeting"]
 
+puts decoded.to_tag
+
 

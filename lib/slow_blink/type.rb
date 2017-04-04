@@ -25,7 +25,7 @@ module SlowBlink
     class Type
 
         # @macro location
-        attr_reader :location
+        attr_reader :location   
 
         # @return [true] this type is sequence (repeating) type
         def sequence?
@@ -38,8 +38,8 @@ module SlowBlink
 
         # @private
         def initialize(attr)
-            @location = attr[:loc].freeze
-            @sequence = attr[:sequence]||false
+            @sequence = (attr[:sequence] ? true : false )
+            @location = attr[:loc].freeze            
             @ns = attr[:ns].freeze
         end
 

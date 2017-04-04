@@ -28,3 +28,5 @@ message = model.group("Canvas").new(
 puts message.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join
  
 rx = model.decode_compact(message.encode_compact)
+
+puts rx.to_tag

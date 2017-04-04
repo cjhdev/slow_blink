@@ -38,7 +38,8 @@ module SlowBlink
         # @private
         def initialize(attr)
 
-            @location = attr[:loc]
+            super(attr)
+
             @symbols = {}
             @name = attr[:name].dup.freeze
 

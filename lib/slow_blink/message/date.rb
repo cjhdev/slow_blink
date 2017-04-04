@@ -24,6 +24,10 @@ module SlowBlink::Message
     # @abstract
     class DATE
 
+        def self.type
+            @type
+        end
+
         # @private
         def self.from_compact(input, depth)
             if value = input.getI32
@@ -48,6 +52,10 @@ module SlowBlink::Message
         # @private
         def to_compact(out)
             out.putI32(@value.strftime('%Q'))            
+        end
+
+        def to_tag
+            @value.to_s
         end
         
     end

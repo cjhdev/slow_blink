@@ -82,9 +82,14 @@ static VALUE cWeakError4;
 static VALUE cWeakError9;
 static VALUE cWeakError11;
 
-static struct blink_stream_user cUserStream = {
+static const struct blink_stream_user cUserStream = {
     .read = myRead,
-    .write = myWrite
+    .write = myWrite,
+    .tell = NULL,
+    .peek = NULL,
+    .seekCur = NULL,
+    .seekSet = NULL,
+    .eof = NULL
 };
 
 /* functions **********************************************************/
@@ -147,13 +152,15 @@ void Init_ext_compact_encoder(void)
 
 /* static functions ***************************************************/
 
+#include <assert.h>
+
 static bool myRead(void *state, void *buf, size_t nbyte)
 {
     bool retval = false;
-    VALUE stringIO = *(VALUE *)state;
     
+    VALUE stringIO = *(VALUE *)state;
     VALUE out = rb_funcall(stringIO, rb_intern("read"), 1, SIZET2NUM(nbyte));
-
+    
     if((size_t)RSTRING_LEN(out) == nbyte){
 
         (void)memcpy(buf, RSTRING_PTR(out), (size_t)RSTRING_LEN(out));
@@ -182,6 +189,7 @@ static VALUE putU8(VALUE self, VALUE val)
         if(NUM2ULL(val) <= UINT8_MAX){
 
             struct blink_stream stream;
+            
             (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
             (void)BLINK_Compact_encodeU8((uint8_t)NUM2ULL(val), &stream);
         }
@@ -203,6 +211,7 @@ static VALUE putU16(VALUE self, VALUE val)
         if(NUM2ULL(val) <= UINT16_MAX){
 
             struct blink_stream stream;
+            
             (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
             (void)BLINK_Compact_encodeU16((uint16_t)NUM2ULL(val), &stream);
         }
@@ -224,6 +233,7 @@ static VALUE putU32(VALUE self, VALUE val)
         if(NUM2ULL(val) <= UINT32_MAX){
 
             struct blink_stream stream;
+            
             (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
             (void)BLINK_Compact_encodeU32((uint32_t)NUM2ULL(val), &stream);
         }
@@ -242,16 +252,11 @@ static VALUE putU64(VALUE self, VALUE val)
         (void)putNull(self);
     }
     else{
-        if(NUM2ULL(val) <= UINT64_MAX){
 
-            struct blink_stream stream;
-            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
-            (void)BLINK_Compact_encodeU64(NUM2ULL(val), &stream);
-        }
-        else{
-
-            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
-        }
+        struct blink_stream stream;
+        
+        (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+        (void)BLINK_Compact_encodeU64(NUM2ULL(val), &stream);        
     }
     
     return self;
@@ -266,6 +271,7 @@ static VALUE putI8(VALUE self, VALUE val)
         if((NUM2LL(val) >= INT8_MIN) && (NUM2LL(val) <= INT8_MAX)){
 
             struct blink_stream stream;
+            
             (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
             (void)BLINK_Compact_encodeI8((int8_t)NUM2LL(val), &stream);
         }
@@ -287,6 +293,7 @@ static VALUE putI16(VALUE self, VALUE val)
         if((NUM2LL(val) >= INT16_MIN) && (NUM2LL(val) <= INT16_MAX)){
 
             struct blink_stream stream;
+            
             (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
             (void)BLINK_Compact_encodeI16((int16_t)NUM2LL(val), &stream);
         }
@@ -308,6 +315,7 @@ static VALUE putI32(VALUE self, VALUE val)
         if((NUM2LL(val) >= INT32_MIN) && (NUM2LL(val) <= INT32_MAX)){
 
             struct blink_stream stream;
+            
             (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
             (void)BLINK_Compact_encodeI32((int32_t)NUM2LL(val), &stream);
         }
@@ -326,16 +334,10 @@ static VALUE putI64(VALUE self, VALUE val)
     }
     else{
 
-        if((NUM2LL(val) >= INT64_MIN) && (NUM2LL(val) <= INT64_MAX)){
-
-            struct blink_stream stream;
-            (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
-            (void)BLINK_Compact_encodeI64(NUM2LL(val), &stream);
-        }
-        else{
-
-            rb_raise(rb_eRangeError, "Input exceeds allowable range of type");
-        }
+        struct blink_stream stream;
+        
+        (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
+        (void)BLINK_Compact_encodeI64(NUM2LL(val), &stream);        
     }
     return self;
 }
@@ -348,6 +350,7 @@ static VALUE putF64(VALUE self, VALUE val)
     else{
     
         struct blink_stream stream;
+        
         (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
         (void)BLINK_Compact_encodeF64(NUM2DBL(val), &stream);
     }
@@ -363,8 +366,9 @@ static VALUE putBool(VALUE self, VALUE val)
     else{
         
         struct blink_stream stream;
+        
         (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
-        (void)BLINK_Compact_encodeBool((val == Qfalse) ? false : true, &stream);
+        (void)BLINK_Compact_encodeBool(((val == Qfalse) ? false : true), &stream);
     }
     return self;
 }
@@ -372,6 +376,7 @@ static VALUE putBool(VALUE self, VALUE val)
 static VALUE putNull(VALUE self)
 {
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     (void)BLINK_Compact_encodeNull(&stream);
     return self;    
@@ -380,6 +385,7 @@ static VALUE putNull(VALUE self)
 static VALUE putPresent(VALUE self)
 {
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     (void)BLINK_Compact_encodePresent(&stream);
     return self;
@@ -389,6 +395,7 @@ static VALUE putBinary(VALUE self, VALUE val)
 {  
     VALUE retval = Qnil;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
 
     if(val == Qnil){
@@ -428,6 +435,7 @@ static VALUE getU8(VALUE self)
     uint8_t val;
     bool isNull;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeU8(&stream, &val, &isNull)){
 
@@ -447,6 +455,7 @@ static VALUE getU16(VALUE self)
     uint16_t val;
     bool isNull;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeU16(&stream, &val, &isNull)){
 
@@ -465,6 +474,7 @@ static VALUE getU32(VALUE self)
     VALUE retval = Qnil;
     uint32_t val;
     bool isNull;
+    rb_gc_mark(self);
     struct blink_stream stream;
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeU32(&stream, &val, &isNull)){
@@ -485,6 +495,7 @@ static VALUE getU64(VALUE self)
     uint64_t val;
     bool isNull;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeU64(&stream, &val, &isNull)){
 
@@ -504,6 +515,7 @@ static VALUE getI8(VALUE self)
     int8_t val;
     bool isNull;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeI8(&stream, &val, &isNull)){
 
@@ -523,6 +535,7 @@ static VALUE getI16(VALUE self)
     int16_t val;
     bool isNull;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeI16(&stream, &val, &isNull)){
 
@@ -542,6 +555,7 @@ static VALUE getI32(VALUE self)
     int32_t val;
     bool isNull;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeI32(&stream, &val, &isNull)){
 
@@ -561,6 +575,7 @@ static VALUE getI64(VALUE self)
     int64_t val;
     bool isNull;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeI64(&stream, &val, &isNull)){
 
@@ -580,6 +595,7 @@ static VALUE getF64(VALUE self)
     double val;
     bool isNull;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeF64(&stream, &val, &isNull)){
 
@@ -598,6 +614,7 @@ static VALUE getPresent(VALUE self)
     VALUE retval = Qnil;
     bool val;
     struct blink_stream stream;
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodePresent(&stream, &val)){
 
@@ -617,6 +634,8 @@ static VALUE getBool(VALUE self)
     bool val;
     bool isNull;
     struct blink_stream stream;
+    rb_gc_mark(self);
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeBool(&stream, &val, &isNull)){
 
@@ -636,6 +655,8 @@ static VALUE getBinary(VALUE self)
     uint32_t size;
     bool isNull;
     struct blink_stream stream;
+    rb_gc_mark(self);
+    
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
 
     if(BLINK_Compact_decodeU32(&stream, &size, &isNull)){
@@ -643,6 +664,7 @@ static VALUE getBinary(VALUE self)
         if(!isNull){
 
             retval = rb_funcall(self, rb_intern("read"), 1, UINT2NUM(size));
+            rb_gc_mark(retval);
 
             if((retval == Qnil) || ((uint32_t)NUM2UINT(rb_funcall(retval, rb_intern("size"), 0)) != size)){
 
