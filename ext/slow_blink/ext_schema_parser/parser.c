@@ -63,7 +63,7 @@ typedef void * yyscan_t;
 
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg);
 
-static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self);
+static VALUE parseFileBuffer(VALUE self, VALUE buffer, VALUE filename);
 static VALUE newLocation(VALUE filename, const YYLTYPE *locp);
 
 static VALUE cSlowBlink;
@@ -3724,7 +3724,7 @@ void Init_ext_schema_parser(void)
 {
     cSlowBlink = rb_define_module("SlowBlink");
     cParseError = rb_const_get(cSlowBlink, rb_intern("ParseError"));
-    rb_define_singleton_method(cSlowBlink, "parse_file_buffer", parseFileBuffer, -1);
+    rb_define_singleton_method(cSlowBlink, "parse_file_buffer", parseFileBuffer, 2);
 }
 
 void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char const *msg)
@@ -3735,26 +3735,11 @@ void yyerror(YYLTYPE *locp, yyscan_t scanner, VALUE filename, VALUE *tree, char 
     rb_funcall(rb_stderr, rb_intern("puts"), 1, message);
 }
 
-static VALUE parseFileBuffer(int argc, VALUE* argv, VALUE self)
+static VALUE parseFileBuffer(VALUE self, VALUE buffer, VALUE filename)
 {
     yyscan_t scanner;    
     VALUE tree = Qnil;
-    VALUE buffer;
-    VALUE opts;
-    VALUE filename;
     int retval = 0;
-
-    rb_scan_args(argc, argv, "10:", &buffer, &opts);
-
-    if(buffer == Qnil){
-        rb_raise(rb_eTypeError, "error: input must be a string");
-    }
-
-    if(opts == Qnil){
-        opts = rb_hash_new();
-    }
-
-    filename = rb_hash_aref(opts, ID2SYM(rb_intern("filename")));
 
     rb_gc_mark(filename);
 

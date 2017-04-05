@@ -75,9 +75,9 @@ module SlowBlink
             if buffer.size > 0
                 buffer.each do |b|
                     if b.kind_of? String
-                        namespace << SlowBlink.parse_file_buffer(b)
+                        namespace << SlowBlink.parse_file_buffer(b, nil)
                     else
-                        namespace << SlowBlink.parse_file_buffer(b.buffer, filename: b.filename)
+                        namespace << SlowBlink.parse_file_buffer(b.buffer, b.filename)
                     end
                 end
             else
