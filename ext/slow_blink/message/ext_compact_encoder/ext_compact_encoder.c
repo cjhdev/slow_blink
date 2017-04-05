@@ -84,12 +84,7 @@ static VALUE cWeakError11;
 
 static const struct blink_stream_user cUserStream = {
     .read = myRead,
-    .write = myWrite,
-    .tell = NULL,
-    .peek = NULL,
-    .seekCur = NULL,
-    .seekSet = NULL,
-    .eof = NULL
+    .write = myWrite
 };
 
 /* functions **********************************************************/
@@ -151,8 +146,6 @@ void Init_ext_compact_encoder(void)
 }
 
 /* static functions ***************************************************/
-
-#include <assert.h>
 
 static bool myRead(void *state, void *buf, size_t nbyte)
 {
@@ -474,7 +467,7 @@ static VALUE getU32(VALUE self)
     VALUE retval = Qnil;
     uint32_t val;
     bool isNull;
-    rb_gc_mark(self);
+    
     struct blink_stream stream;
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeU32(&stream, &val, &isNull)){
@@ -634,7 +627,6 @@ static VALUE getBool(VALUE self)
     bool val;
     bool isNull;
     struct blink_stream stream;
-    rb_gc_mark(self);
     
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
     if(BLINK_Compact_decodeBool(&stream, &val, &isNull)){
@@ -655,7 +647,6 @@ static VALUE getBinary(VALUE self)
     uint32_t size;
     bool isNull;
     struct blink_stream stream;
-    rb_gc_mark(self);
     
     (void)BLINK_Stream_initUser(&stream, &self, cUserStream);
 
@@ -664,7 +655,6 @@ static VALUE getBinary(VALUE self)
         if(!isNull){
 
             retval = rb_funcall(self, rb_intern("read"), 1, UINT2NUM(size));
-            rb_gc_mark(retval);
 
             if((retval == Qnil) || ((uint32_t)NUM2UINT(rb_funcall(retval, rb_intern("size"), 0)) != size)){
 
