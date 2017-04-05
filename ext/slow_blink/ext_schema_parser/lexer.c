@@ -3293,7 +3293,7 @@ case 4:
 case 5:
 YY_RULE_SETUP
 #line 31 "etc/slow_blink/ext_schema_parser/parser.l"
-{ *yylval = rb_str_new(&yytext[1], yyleng-2); return TOK_LITERAL; }
+{ *yylval = rb_str_new(&yytext[1], yyleng-2); rb_ary_push(crefs, *yylval); return TOK_LITERAL; }
 	YY_BREAK
 case 6:
 #line 34 "etc/slow_blink/ext_schema_parser/parser.l"
@@ -3452,32 +3452,32 @@ YY_RULE_SETUP
 case 44:
 YY_RULE_SETUP
 #line 74 "etc/slow_blink/ext_schema_parser/parser.l"
-{ *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 1, UINT2NUM(16U)); return TOK_HEX; }
+{ *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 1, UINT2NUM(16U)); rb_ary_push(crefs, *yylval); return TOK_HEX; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
 #line 75 "etc/slow_blink/ext_schema_parser/parser.l"
-{ *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); return TOK_UINT; }
+{ *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); rb_ary_push(crefs, *yylval); return TOK_UINT; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
 #line 76 "etc/slow_blink/ext_schema_parser/parser.l"
-{ *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); return TOK_INT; }
+{ *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); rb_ary_push(crefs, *yylval); return TOK_INT; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
 #line 78 "etc/slow_blink/ext_schema_parser/parser.l"
-{ *yylval = rb_str_new(yytext, yyleng); return TOK_C_NAME; }
+{ *yylval = rb_str_new(yytext, yyleng); rb_ary_push(crefs, *yylval); return TOK_C_NAME; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
 #line 79 "etc/slow_blink/ext_schema_parser/parser.l"
-{ *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
+{ *yylval = rb_str_new(yytext, yyleng); rb_ary_push(crefs, *yylval); return TOK_NC_NAME; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
 #line 80 "etc/slow_blink/ext_schema_parser/parser.l"
-{ *yylval = rb_str_new(&yytext[1], yyleng-1); return TOK_ESCAPED_NC_NAME; }
+{ *yylval = rb_str_new(&yytext[1], yyleng-1); rb_ary_push(crefs, *yylval); return TOK_ESCAPED_NC_NAME; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP

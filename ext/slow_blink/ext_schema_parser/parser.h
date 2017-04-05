@@ -39,6 +39,14 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 7 "etc/slow_blink/ext_schema_parser/parser.y" /* glr.c:197  */
+
+
+#define YY_DECL int yylex(YYSTYPE * yylval_param, YYLTYPE * yylloc_param, yyscan_t yyscanner, VALUE crefs)
+
+
+#line 50 "ext/slow_blink/ext_schema_parser/parser.h" /* glr.c:197  */
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -106,6 +114,6 @@ struct YYLTYPE
 
 
 
-int yyparse (yyscan_t scanner, VALUE filename, VALUE *tree);
+int yyparse (yyscan_t scanner, VALUE filename, VALUE crefs, VALUE *tree);
 
 #endif /* !YY_YY_EXT_SLOW_BLINK_EXT_SCHEMA_PARSER_PARSER_H_INCLUDED  */

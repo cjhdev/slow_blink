@@ -28,7 +28,7 @@
 [\n]+               { yylloc->last_column = 0; yylloc->last_line += yyleng; }
 
 ["][^\n\"]*["]      |
-['][^\n']*[']       { *yylval = rb_str_new(&yytext[1], yyleng-2); return TOK_LITERAL; }
+['][^\n']*[']       { *yylval = rb_str_new(&yytext[1], yyleng-2); rb_ary_push(crefs, *yylval); return TOK_LITERAL; }
 
 "="                 |
 ","                 |
@@ -71,13 +71,13 @@
 "->"                { return TOK_RIGHT_ARROW; }
 "<-"                { return TOK_LEFT_ARROW; }
 
-[0][x][0-9a-fA-F]+ { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 1, UINT2NUM(16U)); return TOK_HEX; }
-[0-9]+             { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); return TOK_UINT; }
-[-][1-9][0-9]*     { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); return TOK_INT; }
+[0][x][0-9a-fA-F]+ { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 1, UINT2NUM(16U)); rb_ary_push(crefs, *yylval); return TOK_HEX; }
+[0-9]+             { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); rb_ary_push(crefs, *yylval); return TOK_UINT; }
+[-][1-9][0-9]*     { *yylval = rb_funcall(rb_str_new(yytext, yyleng), rb_intern("to_i"), 0); rb_ary_push(crefs, *yylval); return TOK_INT; }
 
-[_a-zA-Z][_a-zA-Z0-9]*[:][_a-zA-Z][_a-zA-Z0-9]* { *yylval = rb_str_new(yytext, yyleng); return TOK_C_NAME; }
-[_a-zA-Z][_a-zA-Z0-9]*      { *yylval = rb_str_new(yytext, yyleng); return TOK_NC_NAME; }
-[\\][_a-zA-Z][_a-zA-Z0-9]*  { *yylval = rb_str_new(&yytext[1], yyleng-1); return TOK_ESCAPED_NC_NAME; }
+[_a-zA-Z][_a-zA-Z0-9]*[:][_a-zA-Z][_a-zA-Z0-9]* { *yylval = rb_str_new(yytext, yyleng); rb_ary_push(crefs, *yylval); return TOK_C_NAME; }
+[_a-zA-Z][_a-zA-Z0-9]*      { *yylval = rb_str_new(yytext, yyleng); rb_ary_push(crefs, *yylval); return TOK_NC_NAME; }
+[\\][_a-zA-Z][_a-zA-Z0-9]*  { *yylval = rb_str_new(&yytext[1], yyleng-1); rb_ary_push(crefs, *yylval); return TOK_ESCAPED_NC_NAME; }
 
 .                   { return TOK_UNKNOWN; }
 

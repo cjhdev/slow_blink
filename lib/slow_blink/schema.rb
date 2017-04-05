@@ -70,19 +70,26 @@ module SlowBlink
         # @param buffer [Array<SchemaBuffer,String>]
         def initialize(*buffer)
 
+            # This array keeps references to the various objects
+            # created in the C extension parser
+            @crefs = []
+            
             namespace = []
 
             if buffer.size > 0
                 buffer.each do |b|
                     if b.kind_of? String
-                        namespace << SlowBlink.parse_file_buffer(b, nil)
+                        namespace << parse_file_buffer(b, nil)
                     else
-                        namespace << SlowBlink.parse_file_buffer(b.buffer, b.filename)
+                        namespace << parse_file_buffer(b.buffer, b.filename)
                     end
                 end
             else
                 raise ArgumentError.new "at least one buffer required"
             end
+
+            # we safely have all our c references rooted at namespace so this can go away
+            @crefs = nil
 
             @defs = {}
 
