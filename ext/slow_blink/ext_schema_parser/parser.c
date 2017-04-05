@@ -3742,6 +3742,7 @@ static VALUE parseFileBuffer(VALUE self, VALUE buffer, VALUE filename)
     int retval = 0;
 
     rb_gc_mark(filename);
+    rb_gc_mark(buffer);
 
     if(yylex_init(&scanner) == 0){
 
