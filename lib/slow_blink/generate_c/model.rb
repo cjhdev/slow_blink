@@ -72,7 +72,7 @@ module SlowBlink
                 end
 
                 def gname(g)
-                    "#{@prefix}#{g.name.gsub("::","_")}"
+                    "#{@prefix}#{g.name.gsub(":","_")}"
                 end
 
                 def fname(f)

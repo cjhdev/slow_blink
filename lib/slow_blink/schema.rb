@@ -98,7 +98,7 @@ module SlowBlink
                 ns[:defs].select{|d|d[:class] != :IncrementalAnnotation}.each do |d|
                     key = d[:name][:name].dup
                     if ns[:name]
-                        key.prepend "#{ns[:name]}::"
+                        key.prepend "#{ns[:name]}:"
                     end
                     if @defs[key]
                         raise ParseError.new "#{d[:loc]}: duplicate definition: '#{key}' first defined at '#{@defs[key].location}'"

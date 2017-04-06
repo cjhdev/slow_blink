@@ -14,13 +14,9 @@ const static struct blink_allocator alloc = {
 <%@schema.groups.select{|g|g.id}.each do |g| -%>
 static void test_decodeCompact_<%= gname(g) %>(void **user)
 {
-<%
-    model = SlowBlink::Message::Model.new(@schema).group(g.name).new 
-    g.fields.each do |f|
-      model[f.name] = SlowBlink::MessageTest.testField(f)
-    end
--%>
+<% model = Message::TestData.new(Message::Model.new(@schema)).set(g.name) -%>
 
+    /* <%= model.to_tag %> */
     const uint8_t input[] = "<%= model.encode_compact.bytes.map{ |c| sprintf("\\x%02X",c) }.join %>";
     struct blink_stream s;
     (void)BLINK_Stream_initBufferReadOnly(&s, input, sizeof(input)-1U);

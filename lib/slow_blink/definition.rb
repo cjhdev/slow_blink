@@ -46,7 +46,7 @@ module SlowBlink
             @ns = attr[:ns].freeze
             @name = attr[:name][:name].dup
             if @ns
-                @name.prepend "#{@ns}::"
+                @name.prepend "#{@ns}:"
             end
             @name.freeze
             @id = attr[:name][:id]

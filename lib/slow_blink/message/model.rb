@@ -215,7 +215,7 @@ module SlowBlink
                             @type = type             
                         end                                                                           
                     else                    
-                        Class.new(SlowBlink::Message.const_get(type.class.name.split('::').last)) do
+                        Class.new(SlowBlink::Message.const_get(type.class.name.split(':').last)) do
                             @type = type                                       
                         end                    
                     end

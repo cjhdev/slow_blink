@@ -41,8 +41,8 @@ module SlowBlink
             result = nil
             if @table
                 if (result = @table[@ref]).nil?                    
-                    if @ns and @ref.split("::").size == 1
-                        result = @table[@ns + "::" + @ref]
+                    if @ns and @ref.split(":").size == 1
+                        result = @table[@ns + ":" + @ref]
                     end
                 end                
             end

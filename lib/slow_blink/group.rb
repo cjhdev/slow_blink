@@ -139,7 +139,7 @@ module SlowBlink
             @ns = attr[:ns].freeze
             @name = attr[:name][:name].dup
             if @ns
-                @name.prepend "#{@ns}::"
+                @name.prepend "#{@ns}:"
             end
             @name.freeze 
             @id = attr[:name][:id]
@@ -148,7 +148,7 @@ module SlowBlink
 
             if attr[:super]
                 @super = REF.new(attr[:super].merge(:table=>attr[:table], :ns=>attr[:ns]))
-                if @super.ref == @name or @super.ref.split("::").last == @name
+                if @super.ref == @name or @super.ref.split(":").last == @name
                     raise ParseError.new "#{@location}: supergroup cannot be own group"
                 end
             else
